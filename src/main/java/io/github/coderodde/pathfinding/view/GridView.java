@@ -2,20 +2,20 @@ package io.github.coderodde.pathfinding.view;
 
 import static io.github.coderodde.pathfinding.Configuration.BORDER_PAINT;
 import static io.github.coderodde.pathfinding.Configuration.BORDER_THICKNESS;
-import static io.github.coderodde.pathfinding.Configuration.LEFT_SOURCE_SHIFT;
 import static io.github.coderodde.pathfinding.Configuration.MINIMUM_CELL_WIDTH_HEIGHT;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.GridBounds;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.stage.Screen;
 
 /**
- *
+ * This class implements the grid view.
+ * 
  * @author Rodion "rodde" Efremov
  * @version 1.0.0 (Aug 24, 2025)
  * @since 1.0.0 (Aug 24, 2025)
@@ -32,12 +32,15 @@ public final class GridView extends Canvas {
      */
     private GridModel model;
     
-//    public void setGridView(GridView gridView) {
-//        this.gridView = gridView;
-//    }
+    public GridView() {
+        Rectangle2D screenRect = Screen.getPrimary().getBounds();
+        setWidth(screenRect.getWidth());
+        setHeight(screenRect.getHeight());
+    }
     
     @Override
     public boolean isResizable() {
+        // Refuse to resize.
         return false;
     }
 
@@ -60,6 +63,9 @@ public final class GridView extends Canvas {
                                         MINIMUM_CELL_WIDTH_HEIGHT);
     }
     
+    /**
+     * The actual draw method.
+     */
     public void draw() {
         GraphicsContext gc = this.getGraphicsContext2D();
         GridBounds gridBounds = 
@@ -109,15 +115,13 @@ public final class GridView extends Canvas {
                           y);
         }
         
-        System.out.println(verticalCells + " " + horizontalCells);
-        System.out.println(cellWidthHeight);
         // Paint the cells:
         for (int y = 0; y < verticalCells; ++y) {
             for (int x = 0; x < horizontalCells; ++x) {
                 Cell cell = model.getCell(x, y);
                 CellType cellType = cell.getCellType();
                 Color color = cellType.getColor();
-                gc.setFill(Color.RED);
+                gc.setFill(color);
                 gc.fillRect(
                         leftMargin +
                                 x * (cellWidthHeight + BORDER_THICKNESS) 
@@ -131,8 +135,6 @@ public final class GridView extends Canvas {
                         cellWidthHeight);
             }
         }
-        
-        gc.fillRect(10, 10, 100, 100);
     }
 
     public void setGridModel(GridModel model) {

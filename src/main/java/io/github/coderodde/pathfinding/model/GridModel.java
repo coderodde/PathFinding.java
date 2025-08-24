@@ -4,13 +4,25 @@ import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
 
 /**
- *
- * @author rodio
+ * This class implements the grid model representing the cell configurations.
+ * 
+ * @author Rodion "rodde" Efremov
+ * @version 1.0.0 (Aug 24, 2025)
+ * @since 1.0.0 (Aug 24, 2025)
  */
 public final class GridModel {
     
+    /**
+     * The actual grid.
+     */
     private final Cell[][] cells;
     
+    /**
+     * Constructs this grid model.
+     * 
+     * @param width  the number of cells in horizontal direction.
+     * @param height the number of cells in vertical direction.
+     */
     public GridModel(int width, int height) {
         cells = new Cell[height][width];
         

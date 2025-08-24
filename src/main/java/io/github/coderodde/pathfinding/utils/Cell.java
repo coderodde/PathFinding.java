@@ -3,7 +3,9 @@ package io.github.coderodde.pathfinding.utils;
 import java.util.Objects;
 
 /**
- *
+ * This class represents a cell in the grid model 
+ * {@link io.github.coderodde.pathfinding.model.GridModel}.
+ * 
  * @author Rodion "rodde" Efremov
  * @version 1.0.0 (Aug 24, 2025)
  * @since 1.0.0 (Aug 24, 2025)
@@ -25,6 +27,13 @@ public final class Cell {
      */
     private int y;
     
+    /**
+     * Constructs this cell.
+     * 
+     * @param cellType the type of the cell.
+     * @param x        the {@code X}-coordinate of this cell.
+     * @param y        the {@code Y}-coordinate of this cell.
+     */
     public Cell(CellType cellType, int x, int y) {
         setCellType(cellType);
         this.x = x;

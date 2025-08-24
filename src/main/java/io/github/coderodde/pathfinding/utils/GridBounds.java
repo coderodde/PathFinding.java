@@ -3,11 +3,24 @@ package io.github.coderodde.pathfinding.utils;
 import static io.github.coderodde.pathfinding.Configuration.BORDER_THICKNESS;
 import javafx.geometry.Rectangle2D;
 
+/**
+ * This class holds the grid bounds.
+ * 
+ * @author Rodion "rodde" Efremov
+ * @version 1.0.0 (Aug 24, 2025)
+ * @since 1.0.0 (Aug 24, 2025)
+ */
 public final class GridBounds {
 
     public final int horizontalCells;
     public final int verticalCells;
 
+    /**
+     * Constructs this {@code GridBounds} object.
+     * 
+     * @param rect            the rectangle representing the view port.
+     * @param cellWidthHeight the width and height of the cells.
+     */
     public GridBounds(Rectangle2D rect,
                       int cellWidthHeight) {
         int w = (int) rect.getWidth();
