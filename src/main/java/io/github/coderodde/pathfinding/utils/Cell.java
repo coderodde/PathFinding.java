@@ -10,10 +10,20 @@ import java.util.Objects;
  */
 public final class Cell {
     
+    /**
+     * The cell type of this cell.
+     */
     private final CellType cellType;
     
-    private final int x;
-    private final int y;
+    /**
+     * The {@code X}-coordinate of this cell.
+     */
+    private int x;
+    
+    /**
+     * The {@code Y}-coordinate of this cell.
+     */
+    private int y;
     
     public Cell(CellType cellType, int x, int y) {
         this.cellType = 
@@ -33,6 +43,14 @@ public final class Cell {
     
     public int gety() {
         return y;
+    }
+    
+    public void setx(int x) {
+        this.x = x;
+    }
+    
+    public void sety(int y) {
+        this.y = y;
     }
     
     public int hashCode() {

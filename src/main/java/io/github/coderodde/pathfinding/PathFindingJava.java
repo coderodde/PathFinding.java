@@ -15,10 +15,12 @@ import javafx.stage.StageStyle;
  */
 public final class PathFindingJava extends Application {
 
+    private static final int DEFAULT_CELL_WIDTH_HEIGHT = 26;
+    
     @Override
     public void start(Stage stage) throws Exception {
-        GridCanvas canvas = new GridCanvas();
-        canvas.setCellWidthHeight(47); // optional, choose cell size
+        GridCanvas canvas = new GridCanvas(DEFAULT_CELL_WIDTH_HEIGHT);
+//        canvas.setCellWidthHeight(47); // optional, choose cell size
         canvas.draw();                // trigger initial draw
 
         // Add canvas to a layout (StackPane preserves fixed size)
