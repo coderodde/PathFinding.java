@@ -1,5 +1,7 @@
-io\github\coderodde\pathfinding\ui\GridCanvas$GridBounds.class
-io\github\coderodde\pathfinding\utils\CellType.class
-io\github\coderodde\pathfinding\PathFindingJava.class
-io\github\coderodde\pathfinding\ui\GridCanvas.class
+io\github\coderodde\pathfinding\model\GridModel.class
+io\github\coderodde\pathfinding\view\GridView.class
+io\github\coderodde\pathfinding\PathFindingApp.class
+io\github\coderodde\pathfinding\utils\GridBounds.class
 io\github\coderodde\pathfinding\utils\Cell.class
+io\github\coderodde\pathfinding\utils\CellType.class
+io\github\coderodde\pathfinding\Configuration.class

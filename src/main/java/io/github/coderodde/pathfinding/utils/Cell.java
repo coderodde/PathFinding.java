@@ -13,7 +13,7 @@ public final class Cell {
     /**
      * The cell type of this cell.
      */
-    private final CellType cellType;
+    private CellType cellType;
     
     /**
      * The {@code X}-coordinate of this cell.
@@ -26,9 +26,7 @@ public final class Cell {
     private int y;
     
     public Cell(CellType cellType, int x, int y) {
-        this.cellType = 
-                Objects.requireNonNull(cellType, "The cell type is null");
-        
+        setCellType(cellType);
         this.x = x;
         this.y = y;
     }
@@ -45,6 +43,11 @@ public final class Cell {
         return y;
     }
     
+    public void setCellType(CellType cellType) {
+        this.cellType =
+                Objects.requireNonNull(cellType, "The cellType is null");
+    }
+    
     public void setx(int x) {
         this.x = x;
     }
@@ -53,10 +56,12 @@ public final class Cell {
         this.y = y;
     }
     
+    @Override
     public int hashCode() {
         return Objects.hash(x, y);
     }
     
+    @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;

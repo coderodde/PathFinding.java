@@ -8,7 +8,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>24</maven.compiler.release>
-        <exec.mainClass>io.github.coderodde.pathfinding.PathFindingJava</exec.mainClass>
+        <exec.mainClass>io.github.coderodde.pathfinding.PathFindingApp</exec.mainClass>
     </properties>
     <dependencies>
         <!-- JavaFX base modules -->
@@ -36,7 +36,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8  </version>
                 <configuration>
-                    <mainClass>io.github.coderodde.pathfinding.PathFindingJava</mainClass>
+                    <mainClass>io.github.coderodde.pathfinding.PathFindingApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>
