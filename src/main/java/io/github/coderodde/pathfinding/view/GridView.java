@@ -6,7 +6,6 @@ import static io.github.coderodde.pathfinding.Configuration.MINIMUM_CELL_WIDTH_H
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.GridBounds;
 import io.github.coderodde.pathfinding.utils.Cell;
-import io.github.coderodde.pathfinding.utils.CellType;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -32,10 +31,44 @@ public final class GridView extends Canvas {
      */
     private GridModel model;
     
+    private int topMargin;
+    
+    private int leftMargin;
+    
+    private int horizontalCells;
+    
+    private int verticalCells;
+    
+    private int contentWidth;
+    
+    private int contentHeight;
+    
     public GridView() {
         Rectangle2D screenRect = Screen.getPrimary().getBounds();
         setWidth(screenRect.getWidth());
         setHeight(screenRect.getHeight());
+    }
+    
+    public void initializeState() {
+        GridBounds gridBounds = 
+                new GridBounds(
+                        Screen.getPrimary()
+                              .getBounds(), 
+                        cellWidthHeight);
+        System.out.println("cds " + cellWidthHeight);
+        horizontalCells = gridBounds.horizontalCells;
+        verticalCells   = gridBounds.verticalCells;
+        
+        contentWidth  = (int)(horizontalCells 
+                      * (cellWidthHeight + BORDER_THICKNESS) 
+                      + BORDER_THICKNESS);
+        
+        contentHeight = (int)(verticalCells 
+                      * (cellWidthHeight + BORDER_THICKNESS) 
+                      + BORDER_THICKNESS);
+        
+        topMargin  = (int)((getHeight() - contentHeight) / 2.0);
+        leftMargin = (int)((getWidth()  - contentWidth)  / 2.0);
     }
     
     @Override
@@ -63,35 +96,34 @@ public final class GridView extends Canvas {
                                         MINIMUM_CELL_WIDTH_HEIGHT);
     }
     
-    /**
-     * The actual draw method.
-     */
-    public void draw() {
-        GraphicsContext gc = this.getGraphicsContext2D();
-        GridBounds gridBounds = 
-                new GridBounds(
-                        Screen.getPrimary()
-                              .getBounds(), 
-                        cellWidthHeight);
-        
-        int horizontalCells = gridBounds.horizontalCells;
-        int verticalCells   = gridBounds.verticalCells;
-        
-        if (horizontalCells < 1 || verticalCells < 1) {
-            throw new IllegalStateException("Should not get here");
+    public void drawAllCels() {
+        for (int y = 0; y < verticalCells; ++y) {
+            for (int x = 0; x < horizontalCells; ++x) {
+                drawCell(model.getCell(x, y));
+            }
         }
+    }
+    
+    public void drawCell(Cell cell) {
+        Color color = cell.getCellType().getColor();
+        GraphicsContext gc = getGraphicsContext2D();
         
-        int contentWidth  = (int)(horizontalCells 
-                          * (cellWidthHeight + BORDER_THICKNESS) 
-                          + BORDER_THICKNESS);
-        
-        int contentHeight = (int)(verticalCells 
-                          * (cellWidthHeight + BORDER_THICKNESS) 
-                          + BORDER_THICKNESS);
-        
-        int topMargin  = (int)((getHeight() - contentHeight) / 2.0);
-        int leftMargin = (int)((getWidth()  - contentWidth)  / 2.0);
-        
+        gc.setFill(color);
+        gc.fillRect(
+                leftMargin +
+                        cell.getx() * (cellWidthHeight + BORDER_THICKNESS) 
+                        + BORDER_THICKNESS,
+
+                topMargin +
+                        cell.gety() * (cellWidthHeight + BORDER_THICKNESS) 
+                        + BORDER_THICKNESS,
+
+                cellWidthHeight,
+                cellWidthHeight);
+    }
+    
+    public void drawBorders() {
+        GraphicsContext gc = getGraphicsContext2D();
         gc.setStroke(BORDER_PAINT);
         gc.setLineWidth(BORDER_THICKNESS);
         
@@ -113,27 +145,6 @@ public final class GridView extends Canvas {
                           y,
                           leftMargin + contentWidth, 
                           y);
-        }
-        
-        // Paint the cells:
-        for (int y = 0; y < verticalCells; ++y) {
-            for (int x = 0; x < horizontalCells; ++x) {
-                Cell cell = model.getCell(x, y);
-                CellType cellType = cell.getCellType();
-                Color color = cellType.getColor();
-                gc.setFill(color);
-                gc.fillRect(
-                        leftMargin +
-                                x * (cellWidthHeight + BORDER_THICKNESS) 
-                                + BORDER_THICKNESS,
-                        
-                        topMargin +
-                                y * (cellWidthHeight + BORDER_THICKNESS) 
-                                + BORDER_THICKNESS,
-                        
-                        cellWidthHeight,
-                        cellWidthHeight);
-            }
         }
     }
 

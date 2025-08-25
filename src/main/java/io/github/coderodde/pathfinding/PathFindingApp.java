@@ -26,6 +26,8 @@ public final class PathFindingApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         GridView view = new GridView();
+        view.setCellWidthHeight(DEFAULT_CELL_WIDTH_HEIGHT);
+        view.initializeState(); // Mandatory!
         
         GridBounds bounds = 
                 new GridBounds(
@@ -54,7 +56,9 @@ public final class PathFindingApp extends Application {
         
         view.setGridModel(model);
         view.setCellWidthHeight(DEFAULT_CELL_WIDTH_HEIGHT);
-        view.draw();
+        
+        view.drawBorders();
+        view.drawAllCels();
 
         // Add canvas to a layout (StackPane preserves fixed size)
         StackPane root = new StackPane(view);
