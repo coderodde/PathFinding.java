@@ -87,4 +87,9 @@ public final class Cell {
         Cell other = (Cell) o;
         return x == other.x && y == other.y;
     }
+    
+    @Override
+    public String toString() {
+        return "Cell[type = " + cellType + ", x = " + x + ", y = " + y + "]";
+    }
 }

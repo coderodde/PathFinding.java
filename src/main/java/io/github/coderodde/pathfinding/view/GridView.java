@@ -10,6 +10,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Screen;
 
 /**
@@ -43,6 +45,10 @@ public final class GridView extends Canvas {
     
     private int contentHeight;
     
+    private int screenWidth;
+    
+    private int screenHeight;
+    
     public GridView() {
         Rectangle2D screenRect = Screen.getPrimary().getBounds();
         setWidth(screenRect.getWidth());
@@ -50,11 +56,14 @@ public final class GridView extends Canvas {
     }
     
     public void initializeState() {
+        Rectangle2D screenRectangle = Screen.getPrimary().getBounds();
+        
+        screenWidth  = (int)(screenRectangle.getWidth());
+        screenHeight = (int)(screenRectangle.getHeight()); 
+        
         GridBounds gridBounds = 
-                new GridBounds(
-                        Screen.getPrimary()
-                              .getBounds(), 
-                        cellWidthHeight);
+                new GridBounds(screenRectangle, cellWidthHeight);
+        
         System.out.println("cds " + cellWidthHeight);
         horizontalCells = gridBounds.horizontalCells;
         verticalCells   = gridBounds.verticalCells;
@@ -150,5 +159,60 @@ public final class GridView extends Canvas {
 
     public void setGridModel(GridModel model) {
         this.model = model;
+    }
+    
+    /**
+     * Returns {@code true} if and only if the cursor position {@code (x, y)} 
+     * points to a border.
+     * 
+     * @param x the {@code X}-coordinate of the cursor in pixels.
+     * @param y the {@code Y}-coordinate of the cursor in pixels.
+     * @return {@code true} if the cursor points to a border.
+     */
+    public boolean isBorder(int x, int y) {
+        if (x <= leftMargin || y <= topMargin) {
+            return true;
+        }
+        
+        if (x >= screenWidth  - leftMargin || 
+            y >= screenHeight - topMargin) {
+            return true;
+        }
+        
+        x -= leftMargin;
+        
+        if (x % (cellWidthHeight + BORDER_THICKNESS) == 1) {
+            return true;
+        }
+        
+        y -= topMargin;
+        
+        if (y % (cellWidthHeight + BORDER_THICKNESS) == 1) {
+            
+        }
+        
+        return false;
+    }
+    
+    public Cell getCellAtCursor(int x, int y) {
+        if (isBorder(x, y)) {
+            return null;
+        }
+        
+        int cellX = (x - leftMargin) / (cellWidthHeight + BORDER_THICKNESS);
+        int cellY = (y - topMargin)  / (cellWidthHeight + BORDER_THICKNESS);
+        
+        return model.getCell(cellX, cellY);
+    }
+    
+    public void drawDebug(String s) {
+        drawBorders();
+        drawAllCels();
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.setFill(Color.RED);
+        
+        Font monoFont = Font.font("Monospaced", FontWeight.BOLD, 26);
+        gc.setFont(monoFont);
+        gc.fillText(s, 100, 100);
     }
 }   

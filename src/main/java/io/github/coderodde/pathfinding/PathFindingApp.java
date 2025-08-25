@@ -1,6 +1,7 @@
 package io.github.coderodde.pathfinding;
 
 import static io.github.coderodde.pathfinding.Configuration.DEFAULT_CELL_WIDTH_HEIGHT;
+import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -38,6 +39,8 @@ public final class PathFindingApp extends Application {
         
         GridModel model = new GridModel(bounds.horizontalCells, 
                                         bounds.verticalCells);
+        
+        GridController controller = new GridController(view, model);
         
         Cell cell = model.getCell(0, 0);
         cell.setCellType(CellType.WALL);
