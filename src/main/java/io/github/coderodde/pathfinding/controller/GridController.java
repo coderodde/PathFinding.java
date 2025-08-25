@@ -62,13 +62,35 @@ public final class GridController {
         int y = cell.gety();
         
         switch (drawMode) {
-            case DRAW_WALL   -> model.setCellType(x, y, CellType.WALL);
-            case UNDRAW_WALL -> model.setCellType(x, y, CellType.FREE);
+            case DRAW_WALL -> {
+                if (cell.getCellType().equals(CellType.SOURCE)) {
+                    // Don't draw the wall on top of cell occupied by source.
+                    // Just draw the wall below it:
+                    model.setSourceCellCoversWallCell(true);
+                } else if (cell.getCellType().equals(CellType.TARGET)) {
+                    // Don't draw the wall on top of cell occupied by target.
+                    // Just draw the wall below it:
+                    model.setTargetCellCoversWallCell(true);
+                } else {
+                    model.setCellType(x, y, CellType.WALL);
+                }
+            }
+            
+            case UNDRAW_WALL -> {
+                if (cell.getCellType().equals(CellType.SOURCE)) {
+                    model.setSourceCellCoversWallCell(false);
+                } else if (cell.getCellType().equals(CellType.TARGET)) {
+                    model.setTargetCellCoversWallCell(false);
+                } else {
+                    model.setCellType(x, y, CellType.FREE);
+                }
+            }
+            
             case MOVE_SOURCE -> model.moveSource(x, y);
             case MOVE_TARGET -> model.moveTarget(x, y);
                 
-            default -> // "Handle" the case NONE:
-                throw new IllegalStateException("Should not get here");
+//            default -> // "Handle" the case NONE:
+//                throw new IllegalStateException("Should not get here");
         }
         
         view.drawAllCels();
@@ -94,24 +116,28 @@ public final class GridController {
         }
         
         switch (cell.getCellType()) {
-            case FREE:
+            case FREE -> {
                 drawMode = DrawMode.DRAW_WALL;
-                break;
                 
-            case WALL:
+                model.setCellType(
+                        cell.getx(),
+                        cell.gety(),
+                        CellType.WALL);
+            }
+                
+            case WALL -> {
                 drawMode = DrawMode.UNDRAW_WALL;
-                break;
                 
-            case SOURCE:
-                drawMode = DrawMode.MOVE_SOURCE;
-                break;
+                model.setCellType(
+                        cell.getx(),
+                        cell.gety(),
+                        CellType.FREE);
+            }
                 
-            case TARGET:
-                drawMode = DrawMode.MOVE_TARGET;
-                break;
+            case SOURCE -> drawMode = DrawMode.MOVE_SOURCE;
+            case TARGET -> drawMode = DrawMode.MOVE_TARGET;
                 
-            default:
-                // "Handle" OPENED, VISITED, TRACED:
+            default -> // "Handle" OPENED, VISITED, TRACED:
                 throw new IllegalStateException("Should not get here");
         }
     }

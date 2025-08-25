@@ -63,6 +63,14 @@ public final class GridModel {
         cells[terminalY][targetX] = targetCell;
     }
     
+    public void setSourceCellCoversWallCell(boolean sourceCellCoversWallCell) {
+        this.sourceCellCoversWallCell = sourceCellCoversWallCell;
+    }
+    
+    public void setTargetCellCoversWallCell(boolean targetCellCoversWallCell) {
+        this.targetCellCoversWallCell = targetCellCoversWallCell;
+    }
+    
     public void moveSource(int x, int y) {
         int oldSourceX = sourceCell.getx();
         int oldSourceY = sourceCell.gety();
@@ -85,6 +93,9 @@ public final class GridModel {
         setCellType(x, 
                     y,
                     CellType.SOURCE);
+        
+        sourceCell.setx(x);
+        sourceCell.sety(y);
     }
     
     public void moveTarget(int x, int y) {
@@ -110,7 +121,9 @@ public final class GridModel {
                     y,
                     CellType.TARGET);
         
-        view.drawDebug(targetCell.toString());
+        targetCell.setx(x);
+        targetCell.sety(y);
+//        view.drawDebug(targetCell.toString()); // TODO: Remove this.
     }
     
     public Cell getCell(int x, int y) {
