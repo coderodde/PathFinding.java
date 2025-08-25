@@ -40,7 +40,11 @@ public final class PathFindingApp extends Application {
         GridModel model = new GridModel(bounds.horizontalCells, 
                                         bounds.verticalCells);
         
-        GridController controller = new GridController(view, model);
+        GridController controller = new GridController();
+
+        controller.setGridModel(model);
+        controller.setGridView(view);
+        controller.setEventHandlers();
         
         Cell cell = model.getCell(0, 0);
         cell.setCellType(CellType.WALL);

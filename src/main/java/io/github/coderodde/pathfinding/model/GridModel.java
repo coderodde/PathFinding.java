@@ -23,6 +23,13 @@ public final class GridModel {
      */
     private GridView view;
     
+    private Cell sourceCell;
+    
+    private Cell targetCell;
+    
+    private boolean sourceCellCoversWallCell = false;
+    private boolean targetCellCoversWallCell = false;
+    
     /**
      * Constructs this grid model.
      * 
@@ -44,8 +51,16 @@ public final class GridModel {
         int targetX = width - sourceX;
         int terminalY = height / 2;
         
-        cells[terminalY][sourceX].setCellType(CellType.SOURCE);
-        cells[terminalY][targetX].setCellType(CellType.TARGET);
+        sourceCell = new Cell(CellType.SOURCE, 
+                              sourceX, 
+                              terminalY);
+        
+        targetCell = new Cell(CellType.TARGET,
+                              targetX,
+                              terminalY);
+        
+        cells[terminalY][sourceX] = sourceCell;
+        cells[terminalY][targetX] = targetCell;
     }
     
     public Cell getCell(int x, int y) {

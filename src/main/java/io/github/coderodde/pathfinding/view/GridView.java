@@ -188,7 +188,7 @@ public final class GridView extends Canvas {
         y -= topMargin;
         
         if (y % (cellWidthHeight + BORDER_THICKNESS) == 1) {
-            
+            return true;
         }
         
         return false;
