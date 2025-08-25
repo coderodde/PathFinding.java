@@ -63,6 +63,56 @@ public final class GridModel {
         cells[terminalY][targetX] = targetCell;
     }
     
+    public void moveSource(int x, int y) {
+        int oldSourceX = sourceCell.getx();
+        int oldSourceY = sourceCell.gety();
+        
+        if (sourceCellCoversWallCell) {
+            setCellType(oldSourceX,
+                        oldSourceY,
+                        CellType.WALL);
+        } else {
+            setCellType(oldSourceX, 
+                        oldSourceY,
+                        CellType.FREE);
+        }
+        
+        sourceCellCoversWallCell = 
+                getCell(x, y)
+                        .getCellType()
+                        .equals(CellType.WALL);
+        
+        setCellType(x, 
+                    y,
+                    CellType.SOURCE);
+    }
+    
+    public void moveTarget(int x, int y) {
+        int oldTargetX = targetCell.getx();
+        int oldTargetY = targetCell.gety();
+        
+        if (sourceCellCoversWallCell) {
+            setCellType(oldTargetX,
+                        oldTargetY,
+                        CellType.WALL);
+        } else {
+            setCellType(oldTargetX, 
+                        oldTargetY,
+                        CellType.FREE);
+        }
+        
+        targetCellCoversWallCell = 
+                getCell(x, y)
+                        .getCellType()
+                        .equals(CellType.WALL);
+        
+        setCellType(x, 
+                    y,
+                    CellType.TARGET);
+        
+        view.drawDebug(targetCell.toString());
+    }
+    
     public Cell getCell(int x, int y) {
         return cells[y][x];
     }
@@ -82,5 +132,9 @@ public final class GridModel {
     
     public int getHeight() {
         return cells.length;
+    }
+    
+    public void setGridView(GridView view) {
+        this.view = view;
     }
 }

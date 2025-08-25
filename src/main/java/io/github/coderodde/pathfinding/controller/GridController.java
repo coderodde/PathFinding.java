@@ -2,6 +2,7 @@ package io.github.coderodde.pathfinding.controller;
 
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
+import io.github.coderodde.pathfinding.utils.CellType;
 import io.github.coderodde.pathfinding.view.GridView;
 import java.util.Objects;
 import javafx.scene.input.MouseEvent;
@@ -17,6 +18,16 @@ public final class GridController {
     private GridView view;
     private GridModel model;
     
+    private enum DrawMode {
+        NONE,
+        MOVE_SOURCE,
+        MOVE_TARGET,
+        DRAW_WALL,
+        UNDRAW_WALL
+    }
+    
+    private DrawMode drawMode = DrawMode.NONE;
+    
     public void setGridView(GridView view) {
         this.view = Objects.requireNonNull(view,  "The input view is null");
     }
@@ -26,23 +37,82 @@ public final class GridController {
     }
     
     public void setEventHandlers() {
-        view.setOnMouseMoved(eh -> {
-            onMousePress(eh);   
+        view.setOnMousePressed(eh -> {
+            onMousePressed(eh);
+        });
+        
+        view.setOnMouseReleased(eh -> {
+            onMouseReleased(eh);   
+        });
+        
+        view.setOnMouseDragged(eh -> {
+            onMouseDrag(eh);
         });
     }
     
-    private void onMousePress(MouseEvent event) {
-        int cursorX = (int) event.getSceneX();
-        int cursorY = (int) event.getSceneY();
-        Cell cell = view.getCellAtCursor(cursorX,
-                                         cursorY);
-        view.drawDebug(Objects.toString(cell));
+    private void onMouseDrag(MouseEvent event) {
+        Cell cell = accessCellViaEvent(event);
         
         if (cell == null) {
-            // Once here, the cursor points to a border or outside of the grid:
+            // We are pointing at a border or magin:
             return;
         }
         
+        int x = cell.getx();
+        int y = cell.gety();
         
+        switch (drawMode) {
+            case DRAW_WALL   -> model.setCellType(x, y, CellType.WALL);
+            case UNDRAW_WALL -> model.setCellType(x, y, CellType.FREE);
+            case MOVE_SOURCE -> model.moveSource(x, y);
+            case MOVE_TARGET -> model.moveTarget(x, y);
+                
+            default -> // "Handle" the case NONE:
+                throw new IllegalStateException("Should not get here");
+        }
+        
+        view.drawAllCels();
+    }
+    
+    private Cell accessCellViaEvent(MouseEvent event) {
+        int cursorX = (int) event.getSceneX();
+        int cursorY = (int) event.getSceneY();
+        return view.getCellAtCursor(cursorX,
+                                    cursorY);
+    }
+    
+    private void onMouseReleased(MouseEvent event) {
+        drawMode = DrawMode.NONE;
+    }
+    
+    private void onMousePressed(MouseEvent event) {
+        Cell cell = accessCellViaEvent(event);
+        
+        if (cell == null) {
+            // Pressed at the border or margin:
+            return;
+        }
+        
+        switch (cell.getCellType()) {
+            case FREE:
+                drawMode = DrawMode.DRAW_WALL;
+                break;
+                
+            case WALL:
+                drawMode = DrawMode.UNDRAW_WALL;
+                break;
+                
+            case SOURCE:
+                drawMode = DrawMode.MOVE_SOURCE;
+                break;
+                
+            case TARGET:
+                drawMode = DrawMode.MOVE_TARGET;
+                break;
+                
+            default:
+                // "Handle" OPENED, VISITED, TRACED:
+                throw new IllegalStateException("Should not get here");
+        }
     }
 }
