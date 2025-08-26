@@ -125,7 +125,6 @@ public final class GridModel {
         
         if (x == previousSourceCellX && y == previousSourceCellY) {
             // Source cell position did not change. Nothing to update!
-            System.out.println("shit at x = " + x + ", y = " + y);
             return;
         }
         
@@ -180,8 +179,8 @@ public final class GridModel {
                         CellType.FREE);
         }
         
-        previousTargetCellX = targetCell.getx();
-        previousTargetCellY = targetCell.gety();
+        previousTargetCellX = x;
+        previousTargetCellY = y;
         
         targetCellCoversWallCell = 
                 getCell(x, y)

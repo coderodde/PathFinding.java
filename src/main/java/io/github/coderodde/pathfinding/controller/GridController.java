@@ -5,6 +5,8 @@ import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
 import io.github.coderodde.pathfinding.view.GridView;
 import java.util.Objects;
+import javafx.application.Platform;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -58,6 +60,8 @@ public final class GridController {
     }
     
     public void setEventHandlers() {
+        view.setFocusTraversable(true);
+        
         view.setOnMousePressed(eh -> {
             onMousePressed(eh);
         });
@@ -83,15 +87,12 @@ public final class GridController {
             return;
         }
         
-        
         switch (drawMode) {
             case DRAW_WALL   -> drawWall(cell);
             case ERASE_WALL  -> eraseWall(cell);
             case MOVE_SOURCE -> moveSource(cell);
             case MOVE_TARGET -> moveTarget(cell);
         }
-        
-        view.drawAllCels();
     }
     
     private void drawWall(Cell cell) {
