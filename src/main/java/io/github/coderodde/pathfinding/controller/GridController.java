@@ -5,8 +5,6 @@ import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
 import io.github.coderodde.pathfinding.view.GridView;
 import java.util.Objects;
-import javafx.application.Platform;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -60,8 +58,6 @@ public final class GridController {
     }
     
     public void setEventHandlers() {
-        view.setFocusTraversable(true);
-        
         view.setOnMousePressed(eh -> {
             onMousePressed(eh);
         });
@@ -76,6 +72,11 @@ public final class GridController {
     }
     
     private void onMouseDrag(MouseEvent event) {
+        if (!userInteractionEnabled) {
+            // User interaction not allowed. Return with NO-OP.
+            return;
+        }
+        
         Cell cell = accessCellViaEvent(event);
         
         if (cell == null) {
@@ -151,10 +152,17 @@ public final class GridController {
     }
     
     private void onMouseReleased(MouseEvent event) {
-        drawMode = DrawMode.NONE;
+        if (userInteractionEnabled) {
+            drawMode = DrawMode.NONE;
+        }
     }
     
     private void onMousePressed(MouseEvent event) {
+        if (!userInteractionEnabled) {
+            // No user interaction allowed. Return with NO-OP.
+            return;
+        }
+        
         Cell cell = accessCellViaEvent(event);
         
         if (cell == null) {

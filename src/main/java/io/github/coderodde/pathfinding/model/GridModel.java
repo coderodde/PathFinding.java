@@ -191,23 +191,37 @@ public final class GridModel {
                     CellType.TARGET);
     }
     
-    public Cell getCell(int x, int y) {
+    public boolean isValidCellLocation(int x, int y) {
         if (x < 0) {
-            throw new IndexOutOfBoundsException(String.format("x(%d) < 0", x));
+            return false;
         }
         
         if (y < 0) {
-            throw new IndexOutOfBoundsException(String.format("y(%d) < 0", y));
+            return false;
         }
         
         if (x >= cells[0].length) {
-            throw new IndexOutOfBoundsException(
-                    String.format("x(%d) >= width(%d)", x, cells[0].length));
+            return false;
         }
         
         if (y >= cells.length) {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public Cell getCell(int x, int y) {
+        if (!isValidCellLocation(x, y)) {
             throw new IndexOutOfBoundsException(
-                    String.format("y(%d) >= height(%d)", y, cells.length));
+                    String.format(
+                            "Invalid cell location: (x = %d, y = %d). " + 
+                            "The width of the model is %d and " +
+                            "the height is %d cells",
+                            x,
+                            y,
+                            getWidth(), 
+                            getHeight()));
         }
         
         return cells[y][x];
