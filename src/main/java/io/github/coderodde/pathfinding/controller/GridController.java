@@ -77,10 +77,6 @@ public final class GridController {
     
     private void onMouseDrag(MouseEvent event) {
         Cell cell = accessCellViaEvent(event);
-//        System.out.println(cell);
-//        view.drawBorders();
-//        view.drawAllCels();
-//        view.drawDebug(Objects.toString(cell));
         
         if (cell == null) {
             // We are pointing at a border or magin:
@@ -96,7 +92,6 @@ public final class GridController {
     }
     
     private void drawWall(Cell cell) {
-        System.out.println("Drawing wall at " + cell);
         int x = cell.getx();
         int y = cell.gety();
                 
@@ -130,7 +125,6 @@ public final class GridController {
     }
     
     private void eraseWall(Cell cell) {
-        System.out.println("Erasing wall at " + cell);
         int x = cell.getx();
         int y = cell.gety();
                 

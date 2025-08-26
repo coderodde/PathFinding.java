@@ -128,8 +128,6 @@ public final class GridModel {
             return;
         }
         
-        System.out.println("Moving source from " + sourceCell + " to (" + x + ", " + y + ")");
-        
         if (sourceCellCoversWallCell) {
             setCellType(previousSourceCellX,
                         previousSourceCellY,
@@ -166,8 +164,6 @@ public final class GridModel {
             // Target cell position did not change. Nothing to update!
             return;
         }
-        
-        System.out.println("Moving target from " + sourceCell + " to (" + x + ", " + y + ")");
         
         if (targetCellCoversWallCell) {
             setCellType(previousTargetCellX,
