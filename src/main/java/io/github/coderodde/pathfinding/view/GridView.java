@@ -170,39 +170,49 @@ public final class GridView extends Canvas {
      * @return {@code true} if the cursor points to a border.
      */
     public boolean isBorder(int x, int y) {
-        if (x <= leftMargin || y <= topMargin) {
-            return true;
+        if (x < leftMargin || y < topMargin ||
+            x >= leftMargin + contentWidth ||
+            y >= topMargin + contentHeight) {
+            return true; // outside the grid
         }
-        
-        if (x >= screenWidth  - leftMargin || 
-            y >= screenHeight - topMargin) {
-            return true;
-        }
-        
-        x -= leftMargin;
-        
-        if (x % (cellWidthHeight + BORDER_THICKNESS) == 1) {
-            return true;
-        }
-        
-        y -= topMargin;
-        
-        if (y % (cellWidthHeight + BORDER_THICKNESS) == 1) {
-            return true;
-        }
-        
-        return false;
+
+        int relX = x - leftMargin;
+        int relY = y - topMargin;
+        int stride = cellWidthHeight + BORDER_THICKNESS;
+
+        return (relX % stride < BORDER_THICKNESS) ||
+               (relY % stride < BORDER_THICKNESS);
     }
     
     public Cell getCellAtCursor(int x, int y) {
+        
         if (isBorder(x, y)) {
+            drawDebug(x + " : " + y);
             return null;
         }
-        
-        int cellX = (x - leftMargin) / (cellWidthHeight + BORDER_THICKNESS);
-        int cellY = (y - topMargin)  / (cellWidthHeight + BORDER_THICKNESS);
-        
+
+        int relX = x - leftMargin;
+        int relY = y - topMargin;
+        int stride = cellWidthHeight + BORDER_THICKNESS;
+
+        int cellX = relX / stride;
+        int cellY = relY / stride;
+
+        if (cellX < 0 || cellX >= horizontalCells ||
+            cellY < 0 || cellY >= verticalCells) {
+            return null; // out of bounds
+        }
+
         return model.getCell(cellX, cellY);
+//        if (isBorder(x, y)) {
+//            drawDebug(x + " " + y);
+//            return null;
+//        }
+//        
+//        int cellX = (x - leftMargin) / (cellWidthHeight + BORDER_THICKNESS);
+//        int cellY = (y - topMargin)  / (cellWidthHeight + BORDER_THICKNESS);
+//        
+//        return model.getCell(cellX, cellY);
     }
     
     public void drawDebug(String s) {
