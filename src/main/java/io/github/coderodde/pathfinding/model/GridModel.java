@@ -23,16 +23,44 @@ public final class GridModel {
      */
     private GridView view;
     
-    private int oldSourceCellX;
-    private int oldSourceCellY;
-    private int oldTargetCellX;
-    private int oldTargetCellY;
+    /**
+     * The previous {@code X}-coordinate of the source cell.
+     */
+    private int previousSourceCellX;
     
+    /**
+     * The previous {@code Y}-coordinate of the source cell.
+     */
+    private int previousSourceCellY;
+    
+    /**
+     * The previous {@code X}-coordinate of the target cell.
+     */
+    private int previousTargetCellX;
+    
+    /**
+     * The previous {@code Y}-coordinate of the target cell.
+     */
+    private int previousTargetCellY;
+    
+    /**
+     * Caches the cell representing the source cell.
+     */
     private Cell sourceCell;
     
+    /**
+     * Caches the cell representing the target cell.
+     */
     private Cell targetCell;
     
+    /**
+     * If set to {@code true}, the source cell covers a wall cell drawn before.
+     */
     private boolean sourceCellCoversWallCell = false;
+    
+    /**
+     * If set to {@code true}, the target cell covers a wall cell drawn before.
+     */
     private boolean targetCellCoversWallCell = false;
     
     /**
@@ -54,7 +82,8 @@ public final class GridModel {
         
         int sourceX = width / 4;
         int targetX = width - sourceX;
-        int terminalY = height / 2;
+        int terminalY = height / 2; // The y-coodinate for both the source and 
+                                    // target.
         
         sourceCell = new Cell(CellType.SOURCE, 
                               sourceX, 
@@ -67,11 +96,11 @@ public final class GridModel {
         cells[terminalY][sourceX] = sourceCell;
         cells[terminalY][targetX] = targetCell;
         
-        oldSourceCellX = sourceX;
-        oldSourceCellY = terminalY;
+        previousSourceCellX = sourceX;
+        previousSourceCellY = terminalY;
         
-        oldTargetCellX = targetX;
-        oldTargetCellY = terminalY;
+        previousTargetCellX = targetX;
+        previousTargetCellY = terminalY;
     }
     
     public void setSourceCellCoversWallCell(boolean sourceCellCoversWallCell) {
@@ -94,7 +123,7 @@ public final class GridModel {
             return;
         }
         
-        if (x == oldSourceCellX && y == oldSourceCellY) {
+        if (x == previousSourceCellX && y == previousSourceCellY) {
             // Source cell position did not change. Nothing to update!
             System.out.println("shit at x = " + x + ", y = " + y);
             return;
@@ -103,17 +132,17 @@ public final class GridModel {
         System.out.println("Moving source from " + sourceCell + " to (" + x + ", " + y + ")");
         
         if (sourceCellCoversWallCell) {
-            setCellType(oldSourceCellX,
-                        oldSourceCellY,
+            setCellType(previousSourceCellX,
+                        previousSourceCellY,
                         CellType.WALL);
         } else {
-            setCellType(oldSourceCellX, 
-                        oldSourceCellY,
+            setCellType(previousSourceCellX, 
+                        previousSourceCellY,
                         CellType.FREE);
         }
         
-        oldSourceCellX = x;
-        oldSourceCellY = y;
+        previousSourceCellX = x;
+        previousSourceCellY = y;
         
         sourceCellCoversWallCell = 
                 getCell(x, y)
@@ -134,7 +163,7 @@ public final class GridModel {
             return;
         }
         
-        if (x == oldTargetCellX && y == oldTargetCellY) {
+        if (x == previousTargetCellX && y == previousTargetCellY) {
             // Target cell position did not change. Nothing to update!
             return;
         }
@@ -142,17 +171,17 @@ public final class GridModel {
         System.out.println("Moving target from " + sourceCell + " to (" + x + ", " + y + ")");
         
         if (targetCellCoversWallCell) {
-            setCellType(oldTargetCellX,
-                        oldTargetCellY,
+            setCellType(previousTargetCellX,
+                        previousTargetCellY,
                         CellType.WALL);
         } else {
-            setCellType(oldTargetCellX, 
-                        oldTargetCellY,
+            setCellType(previousTargetCellX, 
+                        previousTargetCellY,
                         CellType.FREE);
         }
         
-        oldTargetCellX = targetCell.getx();
-        oldTargetCellY = targetCell.gety();
+        previousTargetCellX = targetCell.getx();
+        previousTargetCellY = targetCell.gety();
         
         targetCellCoversWallCell = 
                 getCell(x, y)
