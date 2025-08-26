@@ -23,10 +23,31 @@ public final class GridController {
         MOVE_SOURCE,
         MOVE_TARGET,
         DRAW_WALL,
-        UNDRAW_WALL
+        ERASE_WALL
     }
     
+    /**
+     * The drawing mode of this controller.
+     */
     private DrawMode drawMode = DrawMode.NONE;
+    
+    /**
+     * The flag marking whether the user interaction such as drawing/erasing the
+     * walls and moving the terminal cells is enabled or not.
+     */
+    private boolean userInteractionEnabled = true;
+    
+    public boolean isUserInteractionEnabled() {
+        return userInteractionEnabled;
+    }
+    
+    public void enableUserInteraction() {
+        userInteractionEnabled = true;
+    }
+    
+    public void disableUserInteraction() {
+        userInteractionEnabled = false;
+    }
     
     public void setGridView(GridView view) {
         this.view = Objects.requireNonNull(view,  "The input view is null");
@@ -52,48 +73,79 @@ public final class GridController {
     
     private void onMouseDrag(MouseEvent event) {
         Cell cell = accessCellViaEvent(event);
+//        System.out.println(cell);
+//        view.drawBorders();
+//        view.drawAllCels();
+//        view.drawDebug(Objects.toString(cell));
         
         if (cell == null) {
             // We are pointing at a border or magin:
             return;
         }
         
-        int x = cell.getx();
-        int y = cell.gety();
         
         switch (drawMode) {
-            case DRAW_WALL -> {
-                if (cell.getCellType().equals(CellType.SOURCE)) {
-                    // Don't draw the wall on top of cell occupied by source.
-                    // Just draw the wall below it:
-                    model.setSourceCellCoversWallCell(true);
-                } else if (cell.getCellType().equals(CellType.TARGET)) {
-                    // Don't draw the wall on top of cell occupied by target.
-                    // Just draw the wall below it:
-                    model.setTargetCellCoversWallCell(true);
-                } else {
-                    model.setCellType(x, y, CellType.WALL);
-                }
-            }
-            
-            case UNDRAW_WALL -> {
-                if (cell.getCellType().equals(CellType.SOURCE)) {
-                    model.setSourceCellCoversWallCell(false);
-                } else if (cell.getCellType().equals(CellType.TARGET)) {
-                    model.setTargetCellCoversWallCell(false);
-                } else {
-                    model.setCellType(x, y, CellType.FREE);
-                }
-            }
-            
-            case MOVE_SOURCE -> model.moveSource(x, y);
-            case MOVE_TARGET -> model.moveTarget(x, y);
-                
-//            default -> // "Handle" the case NONE:
-//                throw new IllegalStateException("Should not get here");
+            case DRAW_WALL   -> drawWall(cell);
+            case ERASE_WALL  -> eraseWall(cell);
+            case MOVE_SOURCE -> moveSource(cell);
+            case MOVE_TARGET -> moveTarget(cell);
         }
         
         view.drawAllCels();
+    }
+    
+    private void drawWall(Cell cell) {
+        System.out.println("Drawing wall at " + cell);
+        int x = cell.getx();
+        int y = cell.gety();
+                
+        switch (cell.getCellType()) {
+            case SOURCE:
+                // Don't draw the wall on top of cell occupied by source.
+                // Just draw the wall below it:
+                model.setSourceCellCoversWallCell(true);
+                break;
+                
+            case TARGET:
+                // Don't draw the wall on top of cell occupied by target.
+                // Just draw the wall below it:
+                model.setTargetCellCoversWallCell(true);
+                break;
+                
+            default:
+                model.setCellType(x, y, CellType.WALL);
+                break;
+        }
+    }
+    
+    private void moveSource(Cell cell) {
+        model.moveSource(cell.getx(), 
+                         cell.gety());
+    }
+    
+    private void moveTarget(Cell cell) {
+        model.moveTarget(cell.getx(), 
+                         cell.gety());
+    }
+    
+    private void eraseWall(Cell cell) {
+        System.out.println("Erasing wall at " + cell);
+        int x = cell.getx();
+        int y = cell.gety();
+                
+        switch (cell.getCellType()) {
+            case SOURCE:
+                model.setSourceCellCoversWallCell(false);
+                break;
+                
+            case TARGET:
+                model.setTargetCellCoversWallCell(false);
+                break;
+                
+            default:
+                model.setCellType(x, y, CellType.FREE);
+                break;
+        }
     }
     
     private Cell accessCellViaEvent(MouseEvent event) {
@@ -126,7 +178,7 @@ public final class GridController {
             }
                 
             case WALL -> {
-                drawMode = DrawMode.UNDRAW_WALL;
+                drawMode = DrawMode.ERASE_WALL;
                 
                 model.setCellType(
                         cell.getx(),

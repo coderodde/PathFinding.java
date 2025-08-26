@@ -35,8 +35,6 @@ public final class PathFindingApp extends Application {
                         Screen.getPrimary().getBounds(),
                         DEFAULT_CELL_WIDTH_HEIGHT);
         
-        System.out.println("Grid bounds: " + bounds);
-        
         GridModel model = new GridModel(bounds.horizontalCells, 
                                         bounds.verticalCells);
         

@@ -23,6 +23,11 @@ public final class GridModel {
      */
     private GridView view;
     
+    private int oldSourceCellX;
+    private int oldSourceCellY;
+    private int oldTargetCellX;
+    private int oldTargetCellY;
+    
     private Cell sourceCell;
     
     private Cell targetCell;
@@ -61,6 +66,12 @@ public final class GridModel {
         
         cells[terminalY][sourceX] = sourceCell;
         cells[terminalY][targetX] = targetCell;
+        
+        oldSourceCellX = sourceX;
+        oldSourceCellY = terminalY;
+        
+        oldTargetCellX = targetX;
+        oldTargetCellY = terminalY;
     }
     
     public void setSourceCellCoversWallCell(boolean sourceCellCoversWallCell) {
@@ -71,62 +82,110 @@ public final class GridModel {
         this.targetCellCoversWallCell = targetCellCoversWallCell;
     }
     
+    /**
+     * Moves the source cell to the cell with cell coordinates {@code (x, y)}.
+     * 
+     * @param x the {@code X}-coordinates of the new source cell position.
+     * @param y the {@code Y}-coordinates of the new source cell position.
+     */
     public void moveSource(int x, int y) {
-        int oldSourceX = sourceCell.getx();
-        int oldSourceY = sourceCell.gety();
+        if (x == targetCell.getx() && y == targetCell.gety()) {
+            // Do not move the source on top of the target cell!
+            return;
+        }
+        
+        if (x == oldSourceCellX && y == oldSourceCellY) {
+            // Source cell position did not change. Nothing to update!
+            System.out.println("shit at x = " + x + ", y = " + y);
+            return;
+        }
+        
+        System.out.println("Moving source from " + sourceCell + " to (" + x + ", " + y + ")");
         
         if (sourceCellCoversWallCell) {
-            setCellType(oldSourceX,
-                        oldSourceY,
+            setCellType(oldSourceCellX,
+                        oldSourceCellY,
                         CellType.WALL);
         } else {
-            setCellType(oldSourceX, 
-                        oldSourceY,
+            setCellType(oldSourceCellX, 
+                        oldSourceCellY,
                         CellType.FREE);
         }
+        
+        oldSourceCellX = x;
+        oldSourceCellY = y;
         
         sourceCellCoversWallCell = 
                 getCell(x, y)
                         .getCellType()
                         .equals(CellType.WALL);
         
+        sourceCell.setx(x);
+        sourceCell.sety(y);
+        
         setCellType(x, 
                     y,
                     CellType.SOURCE);
-        
-        sourceCell.setx(x);
-        sourceCell.sety(y);
     }
     
     public void moveTarget(int x, int y) {
-        int oldTargetX = targetCell.getx();
-        int oldTargetY = targetCell.gety();
+        if (x == sourceCell.getx() && y == sourceCell.gety()) {
+            // Do not move the target on top of the source cell!
+            return;
+        }
         
-        if (sourceCellCoversWallCell) {
-            setCellType(oldTargetX,
-                        oldTargetY,
+        if (x == oldTargetCellX && y == oldTargetCellY) {
+            // Target cell position did not change. Nothing to update!
+            return;
+        }
+        
+        System.out.println("Moving target from " + sourceCell + " to (" + x + ", " + y + ")");
+        
+        if (targetCellCoversWallCell) {
+            setCellType(oldTargetCellX,
+                        oldTargetCellY,
                         CellType.WALL);
         } else {
-            setCellType(oldTargetX, 
-                        oldTargetY,
+            setCellType(oldTargetCellX, 
+                        oldTargetCellY,
                         CellType.FREE);
         }
+        
+        oldTargetCellX = targetCell.getx();
+        oldTargetCellY = targetCell.gety();
         
         targetCellCoversWallCell = 
                 getCell(x, y)
                         .getCellType()
                         .equals(CellType.WALL);
         
+        targetCell.setx(x);
+        targetCell.sety(y);
+        
         setCellType(x, 
                     y,
                     CellType.TARGET);
-        
-        targetCell.setx(x);
-        targetCell.sety(y);
-//        view.drawDebug(targetCell.toString()); // TODO: Remove this.
     }
     
     public Cell getCell(int x, int y) {
+        if (x < 0) {
+            throw new IndexOutOfBoundsException(String.format("x(%d) < 0", x));
+        }
+        
+        if (y < 0) {
+            throw new IndexOutOfBoundsException(String.format("y(%d) < 0", y));
+        }
+        
+        if (x >= cells[0].length) {
+            throw new IndexOutOfBoundsException(
+                    String.format("x(%d) >= width(%d)", x, cells[0].length));
+        }
+        
+        if (y >= cells.length) {
+            throw new IndexOutOfBoundsException(
+                    String.format("y(%d) >= height(%d)", y, cells.length));
+        }
+        
         return cells[y][x];
     }
     

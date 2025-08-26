@@ -64,7 +64,6 @@ public final class GridView extends Canvas {
         GridBounds gridBounds = 
                 new GridBounds(screenRectangle, cellWidthHeight);
         
-        System.out.println("cds " + cellWidthHeight);
         horizontalCells = gridBounds.horizontalCells;
         verticalCells   = gridBounds.verticalCells;
         
@@ -161,6 +160,15 @@ public final class GridView extends Canvas {
         this.model = model;
     }
     
+    public boolean isMargin(int x, int y) {
+        if (x < leftMargin || y < topMargin) {
+            return true;
+        }
+        
+        return x >= leftMargin + contentWidth ||
+               y >= topMargin  + contentHeight;
+    }
+    
     /**
      * Returns {@code true} if and only if the cursor position {@code (x, y)} 
      * points to a border.
@@ -170,49 +178,33 @@ public final class GridView extends Canvas {
      * @return {@code true} if the cursor points to a border.
      */
     public boolean isBorder(int x, int y) {
-        if (x < leftMargin || y < topMargin ||
-            x >= leftMargin + contentWidth ||
-            y >= topMargin + contentHeight) {
-            return true; // outside the grid
-        }
-
-        int relX = x - leftMargin;
-        int relY = y - topMargin;
+        x -= leftMargin;
+        y -= topMargin;
+        
         int stride = cellWidthHeight + BORDER_THICKNESS;
-
-        return (relX % stride < BORDER_THICKNESS) ||
-               (relY % stride < BORDER_THICKNESS);
+        
+        return x % stride == 0 ||
+               y % stride == 0;
     }
     
     public Cell getCellAtCursor(int x, int y) {
-        
-        if (isBorder(x, y)) {
-            drawDebug(x + " : " + y);
+        if (isMargin(x, y)) {
             return null;
         }
-
-        int relX = x - leftMargin;
-        int relY = y - topMargin;
-        int stride = cellWidthHeight + BORDER_THICKNESS;
-
-        int cellX = relX / stride;
-        int cellY = relY / stride;
-
-        if (cellX < 0 || cellX >= horizontalCells ||
-            cellY < 0 || cellY >= verticalCells) {
-            return null; // out of bounds
+        
+        if (isBorder(x, y)) {
+            return null;
         }
-
+        
+        x -= leftMargin;
+        y -= topMargin;
+        
+        int stride = cellWidthHeight + BORDER_THICKNESS;
+        
+        int cellX = x / stride;
+        int cellY = y / stride;
+        
         return model.getCell(cellX, cellY);
-//        if (isBorder(x, y)) {
-//            drawDebug(x + " " + y);
-//            return null;
-//        }
-//        
-//        int cellX = (x - leftMargin) / (cellWidthHeight + BORDER_THICKNESS);
-//        int cellY = (y - topMargin)  / (cellWidthHeight + BORDER_THICKNESS);
-//        
-//        return model.getCell(cellX, cellY);
     }
     
     public void drawDebug(String s) {
