@@ -40,6 +40,16 @@ public final class Configuration {
      */
     public static final int DEFAULT_CELL_WIDTH_HEIGHT = 26;
     
+    /**
+     * The minimum frequency in Hz for generating a neighbour cell.
+     */
+    public static final int MINIMUM_FREQUENCY = 1;
+    
+    /**
+     * The maximum frequency in Hz for generating a neighbour cell.
+     */
+    public static final int MAXIMUM_FREQUENCY = 10;
+    
     private Configuration() {
         
     }
