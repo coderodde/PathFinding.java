@@ -61,35 +61,43 @@ public final class GridNodeExpander {
         if (pathfindingSettings.dontCrossCorners()) {
             
             if (canCrossNorthWest(x, y)) {
-                neighbours.add(model.getCell(x - 1, y - 1));
+                neighbours.add(model.getCell(x - 1,
+                                             y - 1));
             }
             
             if (canCrossNorthEast(x, y)) {
-                neighbours.add(model.getCell(x + 1, y - 1));
+                neighbours.add(model.getCell(x + 1,
+                                             y - 1));
             }
             
             if (canCrossSouthWest(x, y)) {
-                neighbours.add(model.getCell(x - 1, y + 1));
+                neighbours.add(model.getCell(x - 1,
+                                             y + 1));
             }
             
             if (canCrossSouthEast(x, y)) {
-                neighbours.add(model.getCell(x + 1, y + 1));
+                neighbours.add(model.getCell(x + 1,
+                                             y + 1));
             }
         } else {
             if (isValidNeighbourCell(x - 1, y - 1)) {
-                neighbours.add(model.getCell(x - 1, y - 1));
+                neighbours.add(model.getCell(x - 1, 
+                                             y - 1));
             }
             
             if (isValidNeighbourCell(x + 1, y - 1)) {
-                neighbours.add(model.getCell(x + 1, y - 1));
+                neighbours.add(model.getCell(x + 1, 
+                                             y - 1));
             }
             
             if (isValidNeighbourCell(x - 1, y + 1)) {
-                neighbours.add(model.getCell(x - 1, y + 1));
+                neighbours.add(model.getCell(x - 1,
+                                             y + 1));
             }
             
             if (isValidNeighbourCell(x + 1, y + 1)) {
-                neighbours.add(model.getCell(x + 1, y + 1));
+                neighbours.add(model.getCell(x + 1, 
+                                             y + 1));
             }
         }
         
@@ -135,7 +143,7 @@ public final class GridNodeExpander {
             return false;
         }
         
-        cell = model.getCell(x, y + 1);
+        cell = model.getCell(x, y - 1);
         
         if (cell.getCellType().equals(CellType.WALL)) {
             return false;
