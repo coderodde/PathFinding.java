@@ -2,8 +2,11 @@ package io.github.coderodde.pathfinding.app;
 
 import static io.github.coderodde.pathfinding.Configuration.MAXIMUM_FREQUENCY;
 import static io.github.coderodde.pathfinding.Configuration.MINIMUM_FREQUENCY;
+import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.model.GridModel;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TitledPane;
@@ -23,12 +26,13 @@ public final class SettingsPane extends Pane {
     private static final int PIXELS_HEIGHT = 300;
     private static final int PIXELS_MARGIN = 20;
     private final double[] offset = new double[2];
+    private GridModel gridModel;
+    private final SearchState searchState;
     
-    private boolean bfsAllowDiagonals = false;
-    private boolean bfsDontCrossCorners = false;
-    private boolean requestBiditectinal = false;
-    
-    public SettingsPane() {
+    public SettingsPane(GridModel gridModel, SearchState searchState) {
+        this.gridModel = gridModel;
+        this.searchState = searchState;
+        
         setPrefSize(PIXELS_WIDTH,
                     PIXELS_HEIGHT);
         
@@ -40,6 +44,8 @@ public final class SettingsPane extends Pane {
         setLayoutX(screenRectangle.getWidth()  - PIXELS_WIDTH - PIXELS_MARGIN);
         setLayoutY(PIXELS_MARGIN);
         
+        VBox mainVBox = new VBox();
+        
         ComboBox<String> frequencyComboBox = new ComboBox();
         frequencyComboBox.setPrefWidth(PIXELS_WIDTH);
         
@@ -50,6 +56,8 @@ public final class SettingsPane extends Pane {
             frequencyComboBox.getItems()
                              .add(String.format("%d Hz", frequency));
         }
+        
+        frequencyComboBox.setValue("10 Hz");
         
         TitledPane frequencyTitledPane = new TitledPane("Frequency", 
                                                         frequencyComboBox);
@@ -82,7 +90,35 @@ public final class SettingsPane extends Pane {
         accordion.getPanes().addAll(frequencyTitledPane, 
                                     bfsFinderSettingsPane);
         
-        getChildren().add(accordion);
+        mainVBox.getChildren().add(accordion);
+        
+        getChildren().add(mainVBox);
+        
+        VBox buttonVBox = new VBox();
+        
+        Button startPauseButton = new Button("Start");
+        Button resetButton      = new Button("Reset");
+        Button clearWallsButton = new Button("Clear walls");
+        
+        startPauseButton.setPrefWidth(PIXELS_WIDTH);
+        resetButton     .setPrefWidth(PIXELS_WIDTH);
+        clearWallsButton.setPrefWidth(PIXELS_WIDTH);
+        
+        resetButton.setOnAction(event -> {
+            searchState.requestHalt();
+            gridModel.reinit();
+        });
+        
+        clearWallsButton.setOnAction(event -> {
+            searchState.requestHalt();
+            gridModel.clearWalls();
+        });    
+        
+        buttonVBox.getChildren().addAll(startPauseButton,
+                                        resetButton,
+                                        clearWallsButton);
+        
+        mainVBox.getChildren().add(buttonVBox);
         
         setStyle("-fx-background-color: rgba(0, 0, 0, 0.3);"
                + "-fx-background-radius: 8;"

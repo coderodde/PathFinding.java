@@ -23,6 +23,9 @@ public final class GridModel {
      */
     private GridView view;
     
+    private final int width;
+    private final int height;
+    
     /**
      * The previous {@code X}-coordinate of the source cell.
      */
@@ -63,15 +66,17 @@ public final class GridModel {
      */
     private boolean targetCellCoversWallCell = false;
     
-    /**
-     * Constructs this grid model.
-     * 
-     * @param width  the number of cells in horizontal direction.
-     * @param height the number of cells in vertical direction.
-     */
-    public GridModel(int width, int height) {
-        cells = new Cell[height][width];
-        
+    public void clearWalls() {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                if (getCellType(x, y).equals(CellType.WALL)) {
+                    setCellType(x, y, CellType.FREE);
+                }
+            }
+        }
+    }
+    
+    public void reinit() {
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 cells[y][x] = new Cell(CellType.FREE, 
@@ -101,6 +106,19 @@ public final class GridModel {
         
         previousTargetCellX = targetX;
         previousTargetCellY = terminalY;
+    }
+    
+    /**
+     * Constructs this grid model.
+     * 
+     * @param width  the number of cells in horizontal direction.
+     * @param height the number of cells in vertical direction.
+     */
+    public GridModel(int width, int height) {
+        this.width = width;
+        this.height = height;
+        cells = new Cell[height][width];
+        reinit();
     }
     
     public void setSourceCellCoversWallCell(boolean sourceCellCoversWallCell) {
@@ -227,16 +245,20 @@ public final class GridModel {
         return cells[y][x];
     }
     
-    public CellType getCellType(Cell cell) {
-        if (!isValidCellLocation(cell.getx(), cell.gety())) {
+    public CellType getCellType(int x, int y) {
+        if (!isValidCellLocation(x, y)) {
             throw new IllegalArgumentException(
                     String.format(
                             "(%d, %d), not a valid cell coordinates",
-                            cell.getx(), 
-                            cell.gety()));
+                            x, 
+                            y));
         }
         
-        return cells[cell.gety()][cell.getx()].getCellType();
+        return cells[y][x].getCellType();
+    }
+    
+    public CellType getCellType(Cell cell) {
+        return getCellType(cell.getx(), cell.gety());
     }
     
     public void setCellType(int x, int y, CellType cellType) {
