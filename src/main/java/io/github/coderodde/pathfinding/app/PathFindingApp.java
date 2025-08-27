@@ -1,14 +1,13 @@
-package io.github.coderodde.pathfinding;
+package io.github.coderodde.pathfinding.app;
 
 import static io.github.coderodde.pathfinding.Configuration.DEFAULT_CELL_WIDTH_HEIGHT;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.model.GridModel;
-import io.github.coderodde.pathfinding.utils.Cell;
-import io.github.coderodde.pathfinding.utils.CellType;
 import io.github.coderodde.pathfinding.utils.GridBounds;
 import io.github.coderodde.pathfinding.view.GridView;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -46,30 +45,17 @@ public final class PathFindingApp extends Application {
         controller.setGridView(view);
         controller.setEventHandlers();
         
-        Cell cell = model.getCell(0, 0);
-        cell.setCellType(CellType.WALL);
-        
-        cell = model.getCell(1, 1);
-        cell.setCellType(CellType.PATH);
-        
-        cell = model.getCell(2, 2);
-        cell.setCellType(CellType.OPENED);
-        
-        cell = model.getCell(3, 3);
-        cell.setCellType(CellType.VISITED);
-        
-        cell = model.getCell(4, 4);
-        cell.setCellType(CellType.TRACED);
-        
         view.setGridModel(model);
         view.setCellWidthHeight(DEFAULT_CELL_WIDTH_HEIGHT);
         
         view.drawBorders();
         view.drawAllCels();
 
-        // Add canvas to a layout (StackPane preserves fixed size)
-        StackPane root = new StackPane(view);
-
+        SettingsPane settingsPane = new SettingsPane();
+        Pane root = new Pane();
+        
+        root.getChildren().addAll(view, settingsPane);
+        
         // Create the scene
         Scene scene = new Scene(root,
                                 view.getWidth(),

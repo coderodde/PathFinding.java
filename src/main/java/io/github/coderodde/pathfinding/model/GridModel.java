@@ -227,6 +227,18 @@ public final class GridModel {
         return cells[y][x];
     }
     
+    public CellType getCellType(Cell cell) {
+        if (!isValidCellLocation(cell.getx(), cell.gety())) {
+            throw new IllegalArgumentException(
+                    String.format(
+                            "(%d, %d), not a valid cell coordinates",
+                            cell.getx(), 
+                            cell.gety()));
+        }
+        
+        return cells[cell.gety()][cell.getx()].getCellType();
+    }
+    
     public void setCellType(int x, int y, CellType cellType) {
         Cell cell = getCell(x, y);
         cell.setCellType(cellType);
@@ -234,6 +246,12 @@ public final class GridModel {
         if (view != null) {
             view.drawCell(cell);
         }
+    }
+    
+    public void setCellType(Cell cell, CellType cellType) {
+        setCellType(cell.getx(),
+                    cell.gety(), 
+                    cellType);
     }
     
     public int getWidth() {

@@ -46,6 +46,7 @@ public final class GridController {
     }
     
     public void disableUserInteraction() {
+        drawMode = DrawMode.NONE;
         userInteractionEnabled = false;
     }
     

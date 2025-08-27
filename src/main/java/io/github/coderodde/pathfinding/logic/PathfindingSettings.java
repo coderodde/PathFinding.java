@@ -1,5 +1,7 @@
 package io.github.coderodde.pathfinding.logic;
 
+import java.util.Objects;
+
 /**
  *
  * @author Rodion "rodde" Efremov
@@ -8,10 +10,26 @@ package io.github.coderodde.pathfinding.logic;
  */
 public final class PathfindingSettings {
     
+    public enum DiagonalWeight {
+        UNIFORM(1.0),
+        SQRT(Math.sqrt(2.0));
+        
+        private final double weight;
+        
+        private DiagonalWeight(double weight) {
+            this.weight = weight;
+        }
+        
+        public double getWeight() {
+            return weight;
+        }
+    }
+    
     private boolean allowDiagonals;
     private boolean dontCrossCorners;
     private boolean bidirectional;
     private int frequency;
+    private DiagonalWeight diagonalWeight = DiagonalWeight.SQRT;
 
     public boolean allowDiagonals() {
         return allowDiagonals;
@@ -44,6 +62,17 @@ public final class PathfindingSettings {
     public void setFrequency(int frequency) {
         checkFrequency(frequency);
         this.frequency = frequency;
+    }
+    
+    public DiagonalWeight getDiagonalWeight() {
+        return diagonalWeight;
+    }
+    
+    public void setDiagonalWeight(DiagonalWeight diagonalWeight) {
+        this.diagonalWeight = 
+                Objects.requireNonNull(
+                        diagonalWeight, 
+                        "The diagonal weight is null");
     }
     
     private void checkFrequency(int frequency) {

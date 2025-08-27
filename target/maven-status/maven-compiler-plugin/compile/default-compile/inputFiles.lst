@@ -1,10 +1,14 @@
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\app\PathFindingApp.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\app\SettingsPane.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\Configuration.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\controller\GridController.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BFSFinder.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\Finder.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\logic\GridCellNeighbourIterable.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\logic\GridCellNeighbourIterator.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\logic\GridNodeExpander.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\logic\PathfindingSettings.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\model\GridModel.java
-C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\PathFindingApp.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\utils\Cell.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\utils\CellType.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\utils\GridBounds.java
