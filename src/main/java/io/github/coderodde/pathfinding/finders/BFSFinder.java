@@ -1,5 +1,6 @@
 package io.github.coderodde.pathfinding.finders;
 
+import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
@@ -65,7 +66,7 @@ public final class BFSFinder implements Finder {
                     continue;
                 }
                 
-                model.setCellType(current, CellType.VISITED);
+                model.setCellType(current, CellType.OPENED);
                 parentMap.put(neighbour, current);
                 queue.addLast(current);
             }

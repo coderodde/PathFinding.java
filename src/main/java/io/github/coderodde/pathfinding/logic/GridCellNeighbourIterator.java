@@ -1,5 +1,7 @@
 package io.github.coderodde.pathfinding.logic;
 
+import io.github.coderodde.pathfinding.finders.Finder;
+import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.utils.Cell;
 import java.util.Iterator;
 import java.util.List;
@@ -12,15 +14,15 @@ import java.util.List;
  */
 public final class GridCellNeighbourIterator implements Iterator<Cell> {
 
+    private final PathfindingSettings pathfindingSettings;
     private final List<Cell> gridCellNeighbours;
-    private final long waitTime;
     private int iterated = 0;
     
     public GridCellNeighbourIterator(Cell startingCell,
                                      GridNodeExpander gridNodeExpander,
                                      PathfindingSettings pathfindingSettings) {
+        this.pathfindingSettings = pathfindingSettings;
         this.gridCellNeighbours = gridNodeExpander.expand(startingCell);
-        this.waitTime = 1000L / pathfindingSettings.getFrequency();
     }
     
     @Override
@@ -30,18 +32,7 @@ public final class GridCellNeighbourIterator implements Iterator<Cell> {
 
     @Override
     public Cell next() {
-        try {
-            Thread.sleep(waitTime);
-        } catch (InterruptedException ex) {
-            System.getLogger(
-                    GridCellNeighbourIterator
-                            .class
-                            .getName())
-                    .log(System.Logger.Level.ERROR, 
-                         (String) null, 
-                         ex);
-        }
-        
+        searchSleep(pathfindingSettings);
         return gridCellNeighbours.get(iterated++);
     }    
 }

@@ -2,8 +2,15 @@ package io.github.coderodde.pathfinding.app;
 
 import static io.github.coderodde.pathfinding.Configuration.MAXIMUM_FREQUENCY;
 import static io.github.coderodde.pathfinding.Configuration.MINIMUM_FREQUENCY;
+import io.github.coderodde.pathfinding.finders.BFSFinder;
+import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
+import io.github.coderodde.pathfinding.logic.GridNodeExpander;
+import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchState.CurrentState;
 import io.github.coderodde.pathfinding.model.GridModel;
+import io.github.coderodde.pathfinding.utils.Cell;
+import java.util.List;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -29,6 +36,7 @@ public final class SettingsPane extends Pane {
     private static final int PIXELS_MARGIN = 20;
     private final double[] offset = new double[2];
     private GridModel gridModel;
+    private final GridNodeExpander gridNodeExpander = new GridNodeExpander();
     private final SearchState searchState;
     
     public SettingsPane(GridModel gridModel, SearchState searchState) {
@@ -48,7 +56,7 @@ public final class SettingsPane extends Pane {
         
         VBox mainVBox = new VBox();
         
-        ComboBox<String> frequencyComboBox = new ComboBox();
+        ComboBox<String> frequencyComboBox = new ComboBox<>();
         frequencyComboBox.setPrefWidth(PIXELS_WIDTH);
         
         for (int frequency = MINIMUM_FREQUENCY; 
@@ -63,11 +71,23 @@ public final class SettingsPane extends Pane {
         
         TitledPane frequencyTitledPane = new TitledPane("Frequency", 
                                                         frequencyComboBox);
+        
+        ComboBox<String> diagonalWeightComboBox = new ComboBox<>();
+        diagonalWeightComboBox.getItems().add("1");
+        diagonalWeightComboBox.getItems().add("SQRT2");
+        
+        TitledPane diagonalWeightTitledPane = 
+                new TitledPane(
+                        "Diagonal weight", 
+                        diagonalWeightComboBox);
+        
         VBox bfsVBox = new VBox();
         
-        CheckBox bfsVBoxAllowDiagonal    = new CheckBox("Allow diagonal");
-        CheckBox bfsVBoxDontCrossCorners = new CheckBox("Don't cross coreners");
-        CheckBox bfsVBoxBidirectional    = new CheckBox("Bidirectinal");
+        CheckBox bfsCheckBoxAllowDiagonal    = new CheckBox("Allow diagonal");
+        CheckBox bfsCheckBoxBidirectional    = new CheckBox("Bidirectinal");
+        CheckBox bfsCehckBoxDontCrossCorners = 
+                new CheckBox("Don't cross coreners");
+        
         
 //        bfsVBoxAllowDiagonal.setOnAction(e -> {
 //            this.bfsAllowDiagonals = bfsVBoxAllowDiagonal.isSelected();
@@ -81,15 +101,16 @@ public final class SettingsPane extends Pane {
 //            this.requestBiditectinal = bfsVBoxBidirectional.isSelected();
 //        });
         
-        bfsVBox.getChildren().addAll(bfsVBoxAllowDiagonal,
-                                     bfsVBoxDontCrossCorners,
-                                     bfsVBoxBidirectional);
+        bfsVBox.getChildren().addAll(bfsCheckBoxAllowDiagonal,
+                                     bfsCehckBoxDontCrossCorners,
+                                     bfsCheckBoxBidirectional);
         
         TitledPane bfsFinderSettingsPane = new TitledPane("BFS", bfsVBox);
         
         Accordion accordion = new Accordion();  
         accordion.setPrefWidth(PIXELS_WIDTH);
         accordion.getPanes().addAll(frequencyTitledPane, 
+                                    diagonalWeightTitledPane,
                                     bfsFinderSettingsPane);
         
         mainVBox.getChildren().add(accordion);
@@ -105,6 +126,40 @@ public final class SettingsPane extends Pane {
         startPauseButton.setPrefWidth(PIXELS_WIDTH);
         resetButton     .setPrefWidth(PIXELS_WIDTH);
         clearWallsButton.setPrefWidth(PIXELS_WIDTH);
+        
+        startPauseButton.setOnAction(event -> {
+            PathfindingSettings pathfindingSettings = new PathfindingSettings();
+            
+            pathfindingSettings.setAllowDiagonals(
+                    bfsCheckBoxAllowDiagonal.isSelected());
+            
+            pathfindingSettings.setBidirectional(
+                    bfsCheckBoxBidirectional.isSelected());
+            
+            pathfindingSettings.setDontCrossCorners(
+                    bfsCehckBoxDontCrossCorners.isSelected());
+            
+            pathfindingSettings.setDiagonalWeight(PathfindingSettings.DiagonalWeight.UNIFORM);
+            
+            if (searchState.getCurrentState().equals(CurrentState.IDLE)) {
+                // Once here, start search:
+                searchState.setCurrentState(CurrentState.SEARCHING);
+                startPauseButton.setText("Pause");
+                BFSFinder finder = new BFSFinder();
+                List<Cell> path = 
+                    finder.findPath(
+                        gridModel.getSourceGridCell(), 
+                        gridModel.getTargetGridCell(),
+                        gridModel,
+                        new GridCellNeighbourIterable(
+                                gridNodeExpander, 
+                                pathfindingSettings),
+                        pathfindingSettings,
+                        searchState);
+                
+                System.out.println("Path: " + path);
+            } 
+        });
         
         resetButton.setOnAction(event -> {
             searchState.requestHalt();

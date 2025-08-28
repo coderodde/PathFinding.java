@@ -76,12 +76,18 @@ public final class GridModel {
         }
     }
     
+    public void createCells() {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                cells[y][x] = new Cell(CellType.FREE, x, y);
+            }
+        }
+    }
+    
     public void reinit() {
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                cells[y][x] = new Cell(CellType.FREE, 
-                                       x,
-                                       y);
+                setCellType(x, y, CellType.FREE);
             }
         }
         
@@ -90,16 +96,11 @@ public final class GridModel {
         int terminalY = height / 2; // The y-coodinate for both the source and 
                                     // target.
         
-        sourceCell = new Cell(CellType.SOURCE, 
-                              sourceX, 
-                              terminalY);
+        setCellType(sourceX, terminalY, CellType.SOURCE);
+        setCellType(targetX, terminalY, CellType.TARGET);
         
-        targetCell = new Cell(CellType.TARGET,
-                              targetX,
-                              terminalY);
-        
-        cells[terminalY][sourceX] = sourceCell;
-        cells[terminalY][targetX] = targetCell;
+        sourceCell = getCell(sourceX, terminalY);
+        targetCell = getCell(targetX, terminalY);
         
         previousSourceCellX = sourceX;
         previousSourceCellY = terminalY;
@@ -118,6 +119,7 @@ public final class GridModel {
         this.width = width;
         this.height = height;
         cells = new Cell[height][width];
+        createCells();
         reinit();
     }
     
@@ -227,6 +229,14 @@ public final class GridModel {
         }
         
         return true;
+    }
+    
+    public Cell getSourceGridCell() {
+        return sourceCell;
+    }
+    
+    public Cell getTargetGridCell() {
+        return targetCell;
     }
     
     public Cell getCell(int x, int y) {

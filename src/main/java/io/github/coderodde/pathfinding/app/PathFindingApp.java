@@ -2,13 +2,13 @@ package io.github.coderodde.pathfinding.app;
 
 import static io.github.coderodde.pathfinding.Configuration.DEFAULT_CELL_WIDTH_HEIGHT;
 import io.github.coderodde.pathfinding.controller.GridController;
+import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.GridBounds;
 import io.github.coderodde.pathfinding.view.GridView;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -51,7 +51,9 @@ public final class PathFindingApp extends Application {
         view.drawBorders();
         view.drawAllCels();
 
-        SettingsPane settingsPane = new SettingsPane();
+        SearchState searchState = new SearchState();
+        SettingsPane settingsPane = new SettingsPane(model,
+                                                     searchState);
         Pane root = new Pane();
         
         root.getChildren().addAll(view, settingsPane);

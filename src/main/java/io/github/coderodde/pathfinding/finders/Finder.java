@@ -50,7 +50,7 @@ public interface Finder {
         return path.reversed();
     }
         
-    public default void searchSleep(PathfindingSettings pathfindingSettings) {
+    public static void searchSleep(PathfindingSettings pathfindingSettings) {
         try {
             Thread.sleep(pathfindingSettings.getWaitTime());
         } catch (InterruptedException ex) {

@@ -12,12 +12,11 @@ import java.util.Objects;
  */
 public final class GridCellNeighbourIterable implements Iterable<Cell> {
 
-    private final Cell startingCell;
+    private Cell startingCell;
     private final GridNodeExpander gridNodeExpander;
     private final PathfindingSettings pathfindingSettings;
     
-    public GridCellNeighbourIterable(Cell startingCell,
-                                     GridNodeExpander gridNodeExpander,
+    public GridCellNeighbourIterable(GridNodeExpander gridNodeExpander,
                                      PathfindingSettings pathfindingSettings) {
         this.startingCell = 
                 Objects.requireNonNull(
@@ -33,6 +32,10 @@ public final class GridCellNeighbourIterable implements Iterable<Cell> {
                 Objects.requireNonNull(
                         pathfindingSettings, 
                         "The input pathfinding settings are null");
+    }
+    
+    public void setStartingCell(Cell startingCell) {
+        this.startingCell = startingCell;
     }
     
     @Override

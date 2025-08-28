@@ -1,8 +1,6 @@
 package io.github.coderodde.pathfinding.logic;
 
-import io.github.coderodde.pathfinding.Configuration;
 import static io.github.coderodde.pathfinding.Configuration.MAXIMUM_FREQUENCY;
-import static io.github.coderodde.pathfinding.Configuration.MINIMUM_CELL_WIDTH_HEIGHT;
 import static io.github.coderodde.pathfinding.Configuration.MINIMUM_FREQUENCY;
 import java.util.Objects;
 
