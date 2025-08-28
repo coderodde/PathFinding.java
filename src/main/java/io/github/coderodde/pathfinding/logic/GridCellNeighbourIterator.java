@@ -2,6 +2,7 @@ package io.github.coderodde.pathfinding.logic;
 
 import io.github.coderodde.pathfinding.finders.Finder;
 import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
+import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import java.util.Iterator;
 import java.util.List;
@@ -19,8 +20,10 @@ public final class GridCellNeighbourIterator implements Iterator<Cell> {
     private int iterated = 0;
     
     public GridCellNeighbourIterator(Cell startingCell,
+                                     GridModel gridModel,
                                      GridNodeExpander gridNodeExpander,
                                      PathfindingSettings pathfindingSettings) {
+        
         this.pathfindingSettings = pathfindingSettings;
         this.gridCellNeighbours = gridNodeExpander.expand(startingCell);
     }

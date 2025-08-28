@@ -23,16 +23,13 @@ public interface Finder {
      * and taking {@code pathfindingSettings} into account. The path is not 
      * necessarily optimal.
      * 
-     * @param source
-     * @param target
      * @param model
      * @param neighbourIterable
      * @param pathfindingSettings
+     * @param searchState
      * @return 
      */
-    public List<Cell> findPath(Cell source,
-                               Cell target,
-                               GridModel model,
+    public List<Cell> findPath(GridModel model,
                                GridCellNeighbourIterable neighbourIterable,
                                PathfindingSettings pathfindingSettings,
                                SearchState searchState);

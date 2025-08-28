@@ -22,15 +22,17 @@ import java.util.Map;
 public final class BFSFinder implements Finder {
 
     @Override
-    public List<Cell> findPath(Cell source, 
-                               Cell target, 
-                               GridModel model,
+    public List<Cell> findPath(GridModel model,
                                GridCellNeighbourIterable neighbourIterable,
                                PathfindingSettings pathfindingSettings,
                                SearchState searchState) {
         
         Map<Cell, Cell> parentMap = new HashMap<>();
         Deque<Cell> queue = new ArrayDeque<>();
+        
+        Cell source = model.getSourceGridCell();
+        Cell target = model.getTargetGridCell();
+        
         parentMap.put(source, null);
         queue.addLast(source);
         model.setCellType(source, CellType.OPENED);
@@ -51,6 +53,8 @@ public final class BFSFinder implements Finder {
             if (current.equals(target)) {
                 return tracebackPath(target, parentMap);
             }
+            
+            neighbourIterable.setStartingCell(current);
             
             for (Cell neighbour : neighbourIterable) {
                 if (searchState.haltRequested()) {

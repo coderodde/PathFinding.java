@@ -11,6 +11,7 @@ import io.github.coderodde.pathfinding.logic.SearchState.CurrentState;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import java.util.List;
+import java.util.Objects;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -36,13 +37,17 @@ public final class SettingsPane extends Pane {
     private static final int PIXELS_MARGIN = 20;
     private final double[] offset = new double[2];
     private GridModel gridModel;
-    private final GridNodeExpander gridNodeExpander = new GridNodeExpander();
+    private GridNodeExpander gridNodeExpander;
     private final SearchState searchState;
     
     public SettingsPane(GridModel gridModel, SearchState searchState) {
-        this.gridModel = gridModel;
-        this.searchState = searchState;
+        this.gridModel = 
+                Objects.requireNonNull(
+                        gridModel, 
+                        "The input grid model is null");
         
+        this.searchState = searchState;
+        this.searchState.setCurrentState(CurrentState.IDLE);
         setPrefSize(PIXELS_WIDTH,
                     PIXELS_HEIGHT);
         
@@ -75,6 +80,8 @@ public final class SettingsPane extends Pane {
         ComboBox<String> diagonalWeightComboBox = new ComboBox<>();
         diagonalWeightComboBox.getItems().add("1");
         diagonalWeightComboBox.getItems().add("SQRT2");
+        diagonalWeightComboBox.setPrefWidth(PIXELS_WIDTH);
+        diagonalWeightComboBox.setValue("SQRT2");
         
         TitledPane diagonalWeightTitledPane = 
                 new TitledPane(
@@ -128,6 +135,7 @@ public final class SettingsPane extends Pane {
         clearWallsButton.setPrefWidth(PIXELS_WIDTH);
         
         startPauseButton.setOnAction(event -> {
+            
             PathfindingSettings pathfindingSettings = new PathfindingSettings();
             
             pathfindingSettings.setAllowDiagonals(
@@ -145,13 +153,15 @@ public final class SettingsPane extends Pane {
                 // Once here, start search:
                 searchState.setCurrentState(CurrentState.SEARCHING);
                 startPauseButton.setText("Pause");
+                
                 BFSFinder finder = new BFSFinder();
+                gridNodeExpander = new GridNodeExpander(gridModel, pathfindingSettings);
+                
                 List<Cell> path = 
                     finder.findPath(
-                        gridModel.getSourceGridCell(), 
-                        gridModel.getTargetGridCell(),
-                        gridModel,
+                        this.gridModel,
                         new GridCellNeighbourIterable(
+                                this.gridModel,
                                 gridNodeExpander, 
                                 pathfindingSettings),
                         pathfindingSettings,

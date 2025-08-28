@@ -5,6 +5,7 @@ import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -14,16 +15,20 @@ import java.util.List;
  */
 public final class GridNodeExpander {
     
-    private GridModel model;
-    private PathfindingSettings pathfindingSettings;
+    private final GridModel gridModel;
+    private final PathfindingSettings pathfindingSettings;
     
-    public void setGridModel(GridModel model) {
-        this.model = model;
-    }
-    
-    public void setPathfindingSettings(
-            PathfindingSettings pathfindingSettings) {
-        this.pathfindingSettings = pathfindingSettings;
+    public GridNodeExpander(GridModel gridModel, 
+                            PathfindingSettings pathfindingSettings) {
+        this.gridModel = 
+                Objects.requireNonNull(
+                        gridModel, 
+                        "The input grid model is null");
+        
+        this.pathfindingSettings =
+                Objects.requireNonNull(
+                        pathfindingSettings, 
+                        "The input pathfinding settings is null");
     }
     
     public List<Cell> expand(Cell cell) {
@@ -34,19 +39,19 @@ public final class GridNodeExpander {
         
         // BEGIN: neighbors in west, north, east, sourth directions:
         if (isValidNeighbourCell(x - 1, y)) {
-            neighbours.add(model.getCell(x - 1, y));
+            neighbours.add(gridModel.getCell(x - 1, y));
         }
         
         if (isValidNeighbourCell(x, y - 1)) {
-            neighbours.add(model.getCell(x, y - 1));
+            neighbours.add(gridModel.getCell(x, y - 1));
         }
         
         if (isValidNeighbourCell(x + 1, y)) {
-            neighbours.add(model.getCell(x + 1, y));
+            neighbours.add(gridModel.getCell(x + 1, y));
         }
         
         if (isValidNeighbourCell(x, y + 1)) {
-            neighbours.add(model.getCell(x, y + 1));
+            neighbours.add(gridModel.getCell(x, y + 1));
         }
         
         // END: neighbors in west, north, east, south directions:
@@ -61,42 +66,42 @@ public final class GridNodeExpander {
         if (pathfindingSettings.dontCrossCorners()) {
             
             if (canCrossNorthWest(x, y)) {
-                neighbours.add(model.getCell(x - 1,
+                neighbours.add(gridModel.getCell(x - 1,
                                              y - 1));
             }
             
             if (canCrossNorthEast(x, y)) {
-                neighbours.add(model.getCell(x + 1,
+                neighbours.add(gridModel.getCell(x + 1,
                                              y - 1));
             }
             
             if (canCrossSouthWest(x, y)) {
-                neighbours.add(model.getCell(x - 1,
+                neighbours.add(gridModel.getCell(x - 1,
                                              y + 1));
             }
             
             if (canCrossSouthEast(x, y)) {
-                neighbours.add(model.getCell(x + 1,
+                neighbours.add(gridModel.getCell(x + 1,
                                              y + 1));
             }
         } else {
             if (isValidNeighbourCell(x - 1, y - 1)) {
-                neighbours.add(model.getCell(x - 1, 
+                neighbours.add(gridModel.getCell(x - 1, 
                                              y - 1));
             }
             
             if (isValidNeighbourCell(x + 1, y - 1)) {
-                neighbours.add(model.getCell(x + 1, 
+                neighbours.add(gridModel.getCell(x + 1, 
                                              y - 1));
             }
             
             if (isValidNeighbourCell(x - 1, y + 1)) {
-                neighbours.add(model.getCell(x - 1,
+                neighbours.add(gridModel.getCell(x - 1,
                                              y + 1));
             }
             
             if (isValidNeighbourCell(x + 1, y + 1)) {
-                neighbours.add(model.getCell(x + 1, 
+                neighbours.add(gridModel.getCell(x + 1, 
                                              y + 1));
             }
         }
@@ -105,11 +110,11 @@ public final class GridNodeExpander {
     }
     
     private boolean isValidNeighbourCell(int x, int y) {
-        if (x < 0 || y < 0 || x >= model.getWidth() || y >= model.getHeight()) {
+        if (x < 0 || y < 0 || x >= gridModel.getWidth() || y >= gridModel.getHeight()) {
             return false;
         }
         
-        return !model.getCell(x, y).getCellType().equals(CellType.WALL);
+        return !gridModel.getCell(x, y).getCellType().equals(CellType.WALL);
     }
     
     public boolean canCrossNorthWest(int x, int y) {
@@ -117,13 +122,13 @@ public final class GridNodeExpander {
             return false;
         }
         
-        Cell cell = model.getCell(x - 1, y);
+        Cell cell = gridModel.getCell(x - 1, y);
         
         if (cell.getCellType().equals(CellType.WALL)) {
             return false;
         }
         
-        cell = model.getCell(x, y - 1);
+        cell = gridModel.getCell(x, y - 1);
         
         if (cell.getCellType().equals(CellType.WALL)) {
             return false;
@@ -133,17 +138,17 @@ public final class GridNodeExpander {
     }
     
     public boolean canCrossNorthEast(int x, int y) {
-        if (x >= model.getWidth() - 1 || y < 1) {
+        if (x >= gridModel.getWidth() - 1 || y < 1) {
             return false;
         }
         
-        Cell cell = model.getCell(x + 1, y);
+        Cell cell = gridModel.getCell(x + 1, y);
         
         if (cell.getCellType().equals(CellType.WALL)) {
             return false;
         }
         
-        cell = model.getCell(x, y - 1);
+        cell = gridModel.getCell(x, y - 1);
         
         if (cell.getCellType().equals(CellType.WALL)) {
             return false;
@@ -153,17 +158,17 @@ public final class GridNodeExpander {
     }
     
     public boolean canCrossSouthWest(int x, int y) {
-        if (x < 1 || y >= model.getHeight() - 1) {
+        if (x < 1 || y >= gridModel.getHeight() - 1) {
             return false;
         }
         
-        Cell cell = model.getCell(x - 1, y);
+        Cell cell = gridModel.getCell(x - 1, y);
         
         if (cell.getCellType().equals(CellType.WALL)) {
             return false;
         }
         
-        cell = model.getCell(x, y + 1);
+        cell = gridModel.getCell(x, y + 1);
         
         if (cell.getCellType().equals(CellType.WALL)) {
             return false;
@@ -173,17 +178,17 @@ public final class GridNodeExpander {
     }
     
     public boolean canCrossSouthEast(int x, int y) {
-        if (x >= model.getWidth() - 1 || y >= model.getHeight() - 1) {
+        if (x >= gridModel.getWidth() - 1 || y >= gridModel.getHeight() - 1) {
             return false;
         }
         
-        Cell cell = model.getCell(x + 1, y);
+        Cell cell = gridModel.getCell(x + 1, y);
         
         if (cell.getCellType().equals(CellType.WALL)) {
             return false;
         }
         
-        cell = model.getCell(x, y + 1);
+        cell = gridModel.getCell(x, y + 1);
         
         if (cell.getCellType().equals(CellType.WALL)) {
             return false;

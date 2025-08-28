@@ -1,5 +1,6 @@
 package io.github.coderodde.pathfinding.logic;
 
+import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import java.util.Iterator;
 import java.util.Objects;
@@ -13,15 +14,17 @@ import java.util.Objects;
 public final class GridCellNeighbourIterable implements Iterable<Cell> {
 
     private Cell startingCell;
+    private final GridModel gridModel;
     private final GridNodeExpander gridNodeExpander;
     private final PathfindingSettings pathfindingSettings;
     
-    public GridCellNeighbourIterable(GridNodeExpander gridNodeExpander,
+    public GridCellNeighbourIterable(GridModel gridModel,
+                                     GridNodeExpander gridNodeExpander,
                                      PathfindingSettings pathfindingSettings) {
-        this.startingCell = 
+        this.gridModel = 
                 Objects.requireNonNull(
-                        startingCell, 
-                        "The input starting cell is null");
+                        gridModel, 
+                        "The input grid model is null");
         
         this.gridNodeExpander = 
                 Objects.requireNonNull(
@@ -41,6 +44,7 @@ public final class GridCellNeighbourIterable implements Iterable<Cell> {
     @Override
     public Iterator<Cell> iterator() {
         return new GridCellNeighbourIterator(startingCell, 
+                                             gridModel,
                                              gridNodeExpander, 
                                              pathfindingSettings);
      
