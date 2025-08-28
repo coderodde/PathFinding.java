@@ -22,6 +22,8 @@ import javafx.stage.Screen;
  */
 public final class SettingsPane extends Pane {
     
+    
+    
     private static final int PIXELS_WIDTH  = 150;
     private static final int PIXELS_HEIGHT = 300;
     private static final int PIXELS_MARGIN = 20;
@@ -67,17 +69,17 @@ public final class SettingsPane extends Pane {
         CheckBox bfsVBoxDontCrossCorners = new CheckBox("Don't cross coreners");
         CheckBox bfsVBoxBidirectional    = new CheckBox("Bidirectinal");
         
-        bfsVBoxAllowDiagonal.setOnAction(e -> {
-            this.bfsAllowDiagonals = bfsVBoxAllowDiagonal.isSelected();
-        });
-        
-        bfsVBoxDontCrossCorners.setOnAction(e -> {
-            this.bfsDontCrossCorners = bfsVBoxDontCrossCorners.isSelected();
-        });
-        
-        bfsVBoxBidirectional.setOnAction(e -> {
-            this.requestBiditectinal = bfsVBoxBidirectional.isSelected();
-        });
+//        bfsVBoxAllowDiagonal.setOnAction(e -> {
+//            this.bfsAllowDiagonals = bfsVBoxAllowDiagonal.isSelected();
+//        });
+//        
+//        bfsVBoxDontCrossCorners.setOnAction(e -> {
+//            this.bfsDontCrossCorners = bfsVBoxDontCrossCorners.isSelected();
+//        });
+//        
+//        bfsVBoxBidirectional.setOnAction(e -> {
+//            this.requestBiditectinal = bfsVBoxBidirectional.isSelected();
+//        });
         
         bfsVBox.getChildren().addAll(bfsVBoxAllowDiagonal,
                                      bfsVBoxDontCrossCorners,

@@ -2,6 +2,7 @@ package io.github.coderodde.pathfinding.finders;
 
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
+import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -24,7 +25,8 @@ public final class BFSFinder implements Finder {
                                Cell target, 
                                GridModel model,
                                GridCellNeighbourIterable neighbourIterable,
-                               PathfindingSettings pathfindingSettings) {
+                               PathfindingSettings pathfindingSettings,
+                               SearchState searchState) {
         
         Map<Cell, Cell> parentMap = new HashMap<>();
         Deque<Cell> queue = new ArrayDeque<>();
@@ -33,6 +35,15 @@ public final class BFSFinder implements Finder {
         model.setCellType(source, CellType.OPENED);
         
         while (!queue.isEmpty()) {
+            if (searchState.haltRequested()) {
+                return List.of();
+            }
+            
+            if (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
+                continue;
+            }
+            
             Cell current = queue.removeFirst();
             model.setCellType(current, CellType.VISITED);
             
@@ -41,6 +52,15 @@ public final class BFSFinder implements Finder {
             }
             
             for (Cell neighbour : neighbourIterable) {
+                if (searchState.haltRequested()) {
+                    return List.of();
+                }                
+                
+                if (neighbour == null) {
+                    searchSleep(pathfindingSettings);
+                    continue;
+                }
+                
                 if (model.getCellType(neighbour).equals(CellType.VISITED)) {
                     continue;
                 }

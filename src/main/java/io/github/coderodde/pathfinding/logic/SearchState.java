@@ -7,9 +7,11 @@ package io.github.coderodde.pathfinding.logic;
 public final class SearchState {
     
     private boolean requestHalt;
+    private boolean requestPause;
     
     public void resetState() {
-        requestHalt = false;
+        requestHalt  = false;
+        requestPause = false;
     }
     
     public void requestHalt() {
@@ -18,5 +20,13 @@ public final class SearchState {
     
     public boolean haltRequested() {
         return requestHalt;
+    }
+    
+    public void requestPause() {
+        this.requestPause = true;
+    }
+    
+    public boolean pauseRequested() {
+        return requestPause;
     }
 }

@@ -2,6 +2,7 @@ package io.github.coderodde.pathfinding.finders;
 
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
+import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import java.util.ArrayList;
@@ -33,7 +34,8 @@ public interface Finder {
                                Cell target,
                                GridModel model,
                                GridCellNeighbourIterable neighbourIterable,
-                               PathfindingSettings pathfindingSettings);
+                               PathfindingSettings pathfindingSettings,
+                               SearchState searchState);
     
     public default List<Cell> 
         tracebackPath(Cell target, Map<Cell, Cell> parentMap) {
@@ -46,5 +48,14 @@ public interface Finder {
         }
         
         return path.reversed();
+    }
+        
+    public default void searchSleep(PathfindingSettings pathfindingSettings) {
+        try {
+            Thread.sleep(pathfindingSettings.getWaitTime());
+        } catch (InterruptedException ex) {
+            System.getLogger(Finder.class.getName())
+                  .log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 }

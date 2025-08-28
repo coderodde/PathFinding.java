@@ -1,5 +1,9 @@
 package io.github.coderodde.pathfinding.logic;
 
+import io.github.coderodde.pathfinding.Configuration;
+import static io.github.coderodde.pathfinding.Configuration.MAXIMUM_FREQUENCY;
+import static io.github.coderodde.pathfinding.Configuration.MINIMUM_CELL_WIDTH_HEIGHT;
+import static io.github.coderodde.pathfinding.Configuration.MINIMUM_FREQUENCY;
 import java.util.Objects;
 
 /**
@@ -28,7 +32,7 @@ public final class PathfindingSettings {
     private boolean allowDiagonals;
     private boolean dontCrossCorners;
     private boolean bidirectional;
-    private int frequency;
+    private int frequency = MAXIMUM_FREQUENCY;
     private DiagonalWeight diagonalWeight = DiagonalWeight.SQRT;
 
     public boolean allowDiagonals() {
@@ -75,14 +79,18 @@ public final class PathfindingSettings {
                         "The diagonal weight is null");
     }
     
+    public long getWaitTime() {
+        return 1000L / frequency;
+    }
+    
     private void checkFrequency(int frequency) {
-        if (frequency < 1) {
+        if (frequency < MINIMUM_FREQUENCY) {
             throw new IllegalArgumentException(
                     String.format("frequency(%d) < 1", 
                                   frequency));
         }
         
-        if (frequency > 10) {
+        if (frequency > MAXIMUM_FREQUENCY) {
             throw new IllegalArgumentException(
                     String.format("frequency(%d) > 10", 
                                   frequency));
