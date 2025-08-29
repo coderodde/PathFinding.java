@@ -48,6 +48,7 @@ public final class BFSFinder implements Finder {
             }
             
             Cell current = queue.removeFirst();
+            System.out.println(current);
             model.setCellType(current, CellType.VISITED);
             
             if (current.equals(target)) {
@@ -70,9 +71,9 @@ public final class BFSFinder implements Finder {
                     continue;
                 }
                 
-                model.setCellType(current, CellType.OPENED);
+                model.setCellType(neighbour, CellType.OPENED);
                 parentMap.put(neighbour, current);
-                queue.addLast(current);
+                queue.addLast(neighbour);
             }
         }
         

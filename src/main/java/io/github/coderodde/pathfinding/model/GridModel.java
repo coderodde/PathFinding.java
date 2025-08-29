@@ -75,7 +75,7 @@ public final class GridModel {
             }
         }
     }
-    
+        
     public void createCells() {
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
@@ -96,11 +96,17 @@ public final class GridModel {
         int terminalY = height / 2; // The y-coodinate for both the source and 
                                     // target.
         
-        setCellType(sourceX, terminalY, CellType.SOURCE);
-        setCellType(targetX, terminalY, CellType.TARGET);
-        
         sourceCell = getCell(sourceX, terminalY);
         targetCell = getCell(targetX, terminalY);
+        
+        sourceCell.setx(sourceX);
+        sourceCell.sety(terminalY);
+        
+        targetCell.setx(targetX);
+        targetCell.sety(terminalY);
+                                    
+        setCellType(sourceCell, CellType.SOURCE);
+        setCellType(targetCell, CellType.TARGET);
         
         previousSourceCellX = sourceX;
         previousSourceCellY = terminalY;

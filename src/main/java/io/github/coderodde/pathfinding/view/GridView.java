@@ -6,6 +6,7 @@ import static io.github.coderodde.pathfinding.Configuration.MINIMUM_CELL_WIDTH_H
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.GridBounds;
 import io.github.coderodde.pathfinding.utils.Cell;
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -115,7 +116,7 @@ public final class GridView extends Canvas {
     public void drawCell(Cell cell) {
         Color color = cell.getCellType().getColor();
         GraphicsContext gc = getGraphicsContext2D();
-        
+
         gc.setFill(color);
         gc.fillRect(
                 leftMargin +
@@ -128,7 +129,7 @@ public final class GridView extends Canvas {
 
                 cellWidthHeight,
                 cellWidthHeight);
-    }
+                            }
     
     public void drawBorders() {
         GraphicsContext gc = getGraphicsContext2D();

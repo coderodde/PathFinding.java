@@ -30,8 +30,6 @@ import javafx.stage.Screen;
  */
 public final class SettingsPane extends Pane {
     
-    
-    
     private static final int PIXELS_WIDTH  = 150;
     private static final int PIXELS_HEIGHT = 300;
     private static final int PIXELS_MARGIN = 20;
@@ -48,6 +46,7 @@ public final class SettingsPane extends Pane {
         
         this.searchState = searchState;
         this.searchState.setCurrentState(CurrentState.IDLE);
+        
         setPrefSize(PIXELS_WIDTH,
                     PIXELS_HEIGHT);
         
@@ -168,6 +167,8 @@ public final class SettingsPane extends Pane {
                         searchState);
                 
                 System.out.println("Path: " + path);
+                searchState.setCurrentState(CurrentState.IDLE);
+                startPauseButton.setText("Search");
             } 
         });
         
