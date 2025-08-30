@@ -27,6 +27,7 @@ public final class BFSFinder implements Finder {
                                PathfindingSettings pathfindingSettings,
                                SearchState searchState) {
         
+        
         Map<Cell, Cell> parentMap = new HashMap<>();
         Deque<Cell> queue = new ArrayDeque<>();
         

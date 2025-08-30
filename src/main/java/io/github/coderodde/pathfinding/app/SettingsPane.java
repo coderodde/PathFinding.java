@@ -180,14 +180,26 @@ public final class SettingsPane extends Pane {
                 task.setOnSucceeded(e -> {
                     List<Cell> path = task.getValue();
                     gridView.drawPath(path);
+                    gridController.enableUserInteraction();
+                    searchState.setCurrentState(CurrentState.IDLE);
+                    startPauseButton.setText("Search");
                 });
                 
                 new Thread(task).start();
+            } else if (searchState
+                    .getCurrentState()
+                    .equals(CurrentState.SEARCHING)) {
                 
-                searchState.setCurrentState(CurrentState.IDLE);
-                startPauseButton.setText("Search");
-                gridController.enableUserInteraction();
-            } 
+                // Once here, we need to pause the search:
+                searchState.requestPause();
+                searchState.setCurrentState(CurrentState.PAUSED);
+                startPauseButton.setText("Continue");
+            } else if (searchState.getCurrentState()
+                                  .equals(CurrentState.PAUSED)) {
+                searchState.resetState();
+                searchState.setCurrentState(CurrentState.SEARCHING);
+                startPauseButton.setText("Pause");
+            }
         });
         
         resetButton.setOnAction(event -> {
