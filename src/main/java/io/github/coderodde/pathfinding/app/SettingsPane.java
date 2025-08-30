@@ -2,7 +2,9 @@ package io.github.coderodde.pathfinding.app;
 
 import static io.github.coderodde.pathfinding.Configuration.MAXIMUM_FREQUENCY;
 import static io.github.coderodde.pathfinding.Configuration.MINIMUM_FREQUENCY;
+import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
+import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.GridNodeExpander;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
@@ -10,8 +12,10 @@ import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.logic.SearchState.CurrentState;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
+import io.github.coderodde.pathfinding.view.GridView;
 import java.util.List;
 import java.util.Objects;
+import javafx.concurrent.Task;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
@@ -35,14 +39,25 @@ public final class SettingsPane extends Pane {
     private static final int PIXELS_MARGIN = 20;
     private final double[] offset = new double[2];
     private GridModel gridModel;
+    private GridView gridView;
+    private GridController gridController;
     private GridNodeExpander gridNodeExpander;
     private final SearchState searchState;
+    private Finder finder;
     
-    public SettingsPane(GridModel gridModel, SearchState searchState) {
+    public SettingsPane(GridModel gridModel,
+                        GridView gridView,
+                        GridController gridController,
+                        SearchState searchState) {
         this.gridModel = 
                 Objects.requireNonNull(
                         gridModel, 
                         "The input grid model is null");
+        
+        this.gridView = 
+                Objects.requireNonNull(
+                        gridView, 
+                        "The input grid view is null");
         
         this.searchState = searchState;
         this.searchState.setCurrentState(CurrentState.IDLE);
@@ -112,6 +127,7 @@ public final class SettingsPane extends Pane {
                                      bfsCheckBoxBidirectional);
         
         TitledPane bfsFinderSettingsPane = new TitledPane("BFS", bfsVBox);
+        bfsFinderSettingsPane.setExpanded(true);
         
         Accordion accordion = new Accordion();  
         accordion.setPrefWidth(PIXELS_WIDTH);
@@ -151,24 +167,37 @@ public final class SettingsPane extends Pane {
             if (searchState.getCurrentState().equals(CurrentState.IDLE)) {
                 // Once here, start search:
                 searchState.setCurrentState(CurrentState.SEARCHING);
+                gridController.disableUserInteraction();
                 startPauseButton.setText("Pause");
                 
                 BFSFinder finder = new BFSFinder();
-                gridNodeExpander = new GridNodeExpander(gridModel, pathfindingSettings);
+                gridNodeExpander = new GridNodeExpander(gridModel,
+                                                        pathfindingSettings);
                 
-                List<Cell> path = 
-                    finder.findPath(
-                        this.gridModel,
-                        new GridCellNeighbourIterable(
-                                this.gridModel,
-                                gridNodeExpander, 
-                                pathfindingSettings),
-                        pathfindingSettings,
-                        searchState);
+                Task<List<Cell>> task = new Task<>() {
+                    @Override
+                    protected List<Cell> call() throws Exception {
+                        return finder.findPath(
+                                    gridModel,
+                                    new GridCellNeighbourIterable(
+                                            gridModel,
+                                            gridNodeExpander, 
+                                            pathfindingSettings),
+                                    pathfindingSettings,
+                                    searchState);
+                    }
+                };
                 
-                System.out.println("Path: " + path);
+                task.setOnSucceeded(e -> {
+                    List<Cell> path = task.getValue();
+                    gridView.drawPath(path);
+                });
+                
+                new Thread(task).start();
+                
                 searchState.setCurrentState(CurrentState.IDLE);
                 startPauseButton.setText("Search");
+                gridController.enableUserInteraction();
             } 
         });
         

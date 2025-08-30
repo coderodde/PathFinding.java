@@ -67,7 +67,8 @@ public final class BFSFinder implements Finder {
                     continue;
                 }
                 
-                if (model.getCellType(neighbour).equals(CellType.VISITED)) {
+                if (model.getCellType(neighbour).equals(CellType.VISITED) ||
+                    model.getCellType(neighbour).equals(CellType.OPENED)) {
                     continue;
                 }
                 

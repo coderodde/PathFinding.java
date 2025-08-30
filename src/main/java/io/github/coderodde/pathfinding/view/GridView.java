@@ -3,10 +3,13 @@ package io.github.coderodde.pathfinding.view;
 import static io.github.coderodde.pathfinding.Configuration.BORDER_PAINT;
 import static io.github.coderodde.pathfinding.Configuration.BORDER_THICKNESS;
 import static io.github.coderodde.pathfinding.Configuration.MINIMUM_CELL_WIDTH_HEIGHT;
+import static io.github.coderodde.pathfinding.Configuration.PATH_PAINT;
+import static io.github.coderodde.pathfinding.Configuration.PATH_THICKNESS;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.GridBounds;
 import io.github.coderodde.pathfinding.utils.Cell;
-import javafx.application.Platform;
+import io.github.coderodde.pathfinding.utils.CellType;
+import java.util.List;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -117,8 +120,8 @@ public final class GridView extends Canvas {
         Color color = cell.getCellType().getColor();
         GraphicsContext gc = getGraphicsContext2D();
 
-        gc.setFill(color);
-        gc.fillRect(
+         gc.setFill(color);
+         gc.fillRect(
                 leftMargin +
                         cell.getx() * (cellWidthHeight + BORDER_THICKNESS) 
                         + BORDER_THICKNESS,
@@ -129,7 +132,51 @@ public final class GridView extends Canvas {
 
                 cellWidthHeight,
                 cellWidthHeight);
-                            }
+    }
+    
+    public void drawPath(List<Cell> path) {
+        if (path.size() < 2) {
+            return;
+        }
+        
+        Cell sourceCell = model.getSourceGridCell();
+        Cell targetCell = model.getTargetGridCell();
+        
+        model.setCellType(sourceCell, CellType.SOURCE);
+        model.setCellType(targetCell, CellType.TARGET);
+        
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.setStroke(PATH_PAINT);
+        gc.setLineWidth(PATH_THICKNESS);
+        
+        Cell cell1 = path.get(0);
+        int stride = cellWidthHeight + BORDER_THICKNESS;
+        
+        for (int i = 1; i < path.size(); ++i) {
+            Cell cell2 = path.get(i);
+            
+            int startX = 
+                    (int)(leftMargin + cell1.getx() * stride 
+                                     + cellWidthHeight / 2.0);
+            
+            int startY = 
+                    (int)(topMargin + cell1.gety() * stride
+                                    + cellWidthHeight / 2.0);
+            
+            int endX = (int)(leftMargin + cell2.getx() * stride 
+                                        + cellWidthHeight / 2.0);
+            
+            int endY = (int)(topMargin + cell2.gety() * stride 
+                                       + cellWidthHeight / 2.0);
+            
+            gc.strokeLine(startX, 
+                          startY, 
+                          endX, 
+                          endY);
+            
+            cell1 = cell2;
+        }
+    }
     
     public void drawBorders() {
         GraphicsContext gc = getGraphicsContext2D();

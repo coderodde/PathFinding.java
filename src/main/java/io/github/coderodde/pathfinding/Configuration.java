@@ -30,6 +30,16 @@ public final class Configuration {
     public static final Paint BORDER_PAINT = Color.web("#555555");
     
     /**
+     * The path color. 
+     */
+    public static final Paint PATH_PAINT = Color.web("#fcba03");
+    
+    /**
+     * The thickness of the path in pixels.
+     */
+    public static final int PATH_THICKNESS = 3;
+    
+    /**
      * Multiplied by the number of cells in horizontal direction, gives the 
      * {@code X]-coordinate of the source cell.
      */

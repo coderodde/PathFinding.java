@@ -53,6 +53,8 @@ public final class PathFindingApp extends Application {
 
         SearchState searchState = new SearchState();
         SettingsPane settingsPane = new SettingsPane(model,
+                                                     view,
+                                                     controller,
                                                      searchState);
         Pane root = new Pane();
         
