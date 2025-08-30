@@ -157,6 +157,7 @@ public final class SettingsPane extends Pane {
                 // Once here, start search:
                 searchState.setCurrentState(CurrentState.SEARCHING);
                 gridController.disableUserInteraction();
+                gridModel.clearStateCells();
                 startPauseButton.setText("Pause");
                 
                 BFSFinder finder = new BFSFinder();
@@ -183,9 +184,10 @@ public final class SettingsPane extends Pane {
                     gridController.enableUserInteraction();
                     searchState.setCurrentState(CurrentState.IDLE);
                     startPauseButton.setText("Search");
-                });
+                    });
                 
                 new Thread(task).start();
+                
             } else if (searchState
                     .getCurrentState()
                     .equals(CurrentState.SEARCHING)) {
@@ -196,6 +198,7 @@ public final class SettingsPane extends Pane {
                 startPauseButton.setText("Continue");
             } else if (searchState.getCurrentState()
                                   .equals(CurrentState.PAUSED)) {
+                
                 searchState.resetState();
                 searchState.setCurrentState(CurrentState.SEARCHING);
                 startPauseButton.setText("Pause");
@@ -205,11 +208,12 @@ public final class SettingsPane extends Pane {
         resetButton.setOnAction(event -> {
             searchState.requestHalt();
             gridModel.reinit();
+            gridController.enableUserInteraction();
         });
         
         clearWallsButton.setOnAction(event -> {
-            searchState.requestHalt();
-            gridModel.clearWalls();
+           searchState.requestHalt();
+           gridModel.clearWalls();
         });    
         
         buttonVBox.getChildren().addAll(startPauseButton,

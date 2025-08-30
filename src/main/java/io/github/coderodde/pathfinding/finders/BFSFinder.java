@@ -49,6 +49,8 @@ public final class BFSFinder implements Finder {
             
             Cell current = queue.removeFirst();
             
+            System.out.println(current);
+            
             if (!current.equals(source)) {
                 model.setCellType(current, CellType.VISITED);
             }

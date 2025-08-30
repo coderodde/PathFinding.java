@@ -14,8 +14,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Screen;
 
 /**
@@ -255,14 +253,33 @@ public final class GridView extends Canvas {
         return model.getCell(cellX, cellY);
     }
     
-    public void drawDebug(String s) {
-        drawBorders();
-        drawAllCels();
-        GraphicsContext gc = getGraphicsContext2D();
-        gc.setFill(Color.RED);
+    public void clearPath() {
+        List<Cell> path = model.getPath();
         
-        Font monoFont = Font.font("Monospaced", FontWeight.BOLD, 26);
-        gc.setFont(monoFont);
-        gc.fillText(s, 100, 100);
+        if (path.isEmpty()) {
+            return;
+        }
+        
+        for (int i = 0; i < path.size(); ++i) {
+            Cell current = path.get(i);
+            
+            if (i == 0 && !current.equals(model.getSourceGridCell())) {
+                throw new IllegalArgumentException(
+                        "The first path cell is not the source cell");
+            } else if (i == path.size() - 1 && 
+                    !current.equals(model.getTargetGridCell())) {
+                throw new IllegalArgumentException
+                        ("The last path cell is not the target cell");
+            } 
+                
+            switch (current.getCellType()) {
+                case VISITED, OPENED, TRACED -> {
+                    current.setCellType(CellType.FREE);
+                    drawCell(current);
+                }
+                
+                case SOURCE, TARGET -> drawCell(current);
+            }
+        }
     }
 }   

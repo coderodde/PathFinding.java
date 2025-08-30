@@ -2,7 +2,14 @@ package io.github.coderodde.pathfinding.model;
 
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
+import static io.github.coderodde.pathfinding.utils.CellType.FREE;
+import static io.github.coderodde.pathfinding.utils.CellType.OPENED;
+import static io.github.coderodde.pathfinding.utils.CellType.TRACED;
+import static io.github.coderodde.pathfinding.utils.CellType.VISITED;
 import io.github.coderodde.pathfinding.view.GridView;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class implements the grid model representing the cell configurations.
@@ -66,6 +73,11 @@ public final class GridModel {
      */
     private boolean targetCellCoversWallCell = false;
     
+    /**
+     * Caches the current path.
+     */
+    private final List<Cell> path = new ArrayList<>();
+    
     public void clearWalls() {
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
@@ -113,6 +125,23 @@ public final class GridModel {
         
         previousTargetCellX = targetX;
         previousTargetCellY = terminalY;
+    }
+    
+    /**
+     * Resets all the cells of type {@link CellType#OPENED}, 
+     * {@link CellType#VISITED} and {@link CellType#TRACED} to 
+     * {@link CellType#FREE}.
+     */
+    public void clearStateCells() {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                if (getCell(x, y).getCellType().equals(VISITED) ||
+                    getCell(x, y).getCellType().equals(OPENED)  ||
+                    getCell(x, y).getCellType().equals(TRACED)) {
+                    setCellType(x, y, FREE);
+                }
+            }
+        }
     }
     
     /**
@@ -302,5 +331,14 @@ public final class GridModel {
     
     public void setGridView(GridView view) {
         this.view = view;
+    }
+    
+    public void setPath(List<Cell> path) {
+        path.clear();
+        path.addAll(path);
+    }
+    
+    public List<Cell> getPath() {
+        return Collections.unmodifiableList(path);
     }
 }

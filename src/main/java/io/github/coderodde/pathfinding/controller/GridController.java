@@ -192,9 +192,9 @@ public final class GridController {
                 
             case SOURCE -> drawMode = DrawMode.MOVE_SOURCE;
             case TARGET -> drawMode = DrawMode.MOVE_TARGET;
-                
-            default -> // "Handle" OPENED, VISITED, TRACED:
-                throw new IllegalStateException("Should not get here");
+            
+            case VISITED, OPENED, TRACED -> model.setCellType(cell, 
+                                                              CellType.FREE);
         }
     }
 }
