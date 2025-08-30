@@ -72,6 +72,7 @@ public final class BFSFinder implements Finder {
                     continue;
                 }
                 
+                searchSleep(pathfindingSettings);
                 model.setCellType(neighbour, CellType.OPENED);
                 parentMap.put(neighbour, current);
                 queue.addLast(neighbour);

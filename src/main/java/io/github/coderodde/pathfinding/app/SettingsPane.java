@@ -162,7 +162,11 @@ public final class SettingsPane extends Pane {
             pathfindingSettings.setDontCrossCorners(
                     bfsCehckBoxDontCrossCorners.isSelected());
             
-            pathfindingSettings.setDiagonalWeight(PathfindingSettings.DiagonalWeight.UNIFORM);
+            pathfindingSettings.setDiagonalWeight(
+                    PathfindingSettings.DiagonalWeight.SQRT2);
+            
+             // Search finder should sleep on neighbours:
+            pathfindingSettings.setDontSleep(false);
             
             if (searchState.getCurrentState().equals(CurrentState.IDLE)) {
                 // Once here, start search:

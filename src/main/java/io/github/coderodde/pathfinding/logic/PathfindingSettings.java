@@ -14,7 +14,7 @@ public final class PathfindingSettings {
     
     public enum DiagonalWeight {
         UNIFORM(1.0),
-        SQRT(Math.sqrt(2.0));
+        SQRT2(Math.sqrt(2.0));
         
         private final double weight;
         
@@ -30,8 +30,9 @@ public final class PathfindingSettings {
     private boolean allowDiagonals;
     private boolean dontCrossCorners;
     private boolean bidirectional;
+    private boolean dontSleep = true;
     private int frequency = MAXIMUM_FREQUENCY;
-    private DiagonalWeight diagonalWeight = DiagonalWeight.SQRT;
+    private DiagonalWeight diagonalWeight = DiagonalWeight.SQRT2;
 
     public boolean allowDiagonals() {
         return allowDiagonals;
@@ -57,6 +58,14 @@ public final class PathfindingSettings {
         this.bidirectional = bidirectional;
     }
 
+    public boolean dontSleep() {
+        return dontSleep;
+    }
+    
+    public void setDontSleep(boolean dontSleep) {
+        this.dontSleep = dontSleep;
+    }
+    
     public int getFrequency() {
         return frequency;
     }

@@ -35,7 +35,6 @@ public final class GridCellNeighbourIterator implements Iterator<Cell> {
 
     @Override
     public Cell next() {
-        searchSleep(pathfindingSettings);
         return gridCellNeighbours.get(iterated++);
     }    
 }
