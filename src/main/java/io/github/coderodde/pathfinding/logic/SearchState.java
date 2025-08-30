@@ -17,9 +17,9 @@ public final class SearchState {
         IDLE,
     }
     
-    private CurrentState currentState;
-    private boolean requestHalt;
-    private boolean requestPause;
+    private volatile CurrentState currentState;
+    private volatile boolean requestHalt;
+    private volatile boolean requestPause;
     
     public void resetState() {
         requestHalt  = false;

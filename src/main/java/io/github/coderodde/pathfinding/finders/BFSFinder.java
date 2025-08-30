@@ -35,7 +35,6 @@ public final class BFSFinder implements Finder {
         
         parentMap.put(source, null);
         queue.addLast(source);
-        model.setCellType(source, CellType.OPENED);
         
         while (!queue.isEmpty()) {
             if (searchState.haltRequested()) {
@@ -48,8 +47,10 @@ public final class BFSFinder implements Finder {
             }
             
             Cell current = queue.removeFirst();
-            System.out.println(current);
-            model.setCellType(current, CellType.VISITED);
+            
+            if (!current.equals(source)) {
+                model.setCellType(current, CellType.VISITED);
+            }
             
             if (current.equals(target)) {
                 return tracebackPath(target, parentMap);
@@ -67,13 +68,16 @@ public final class BFSFinder implements Finder {
                     continue;
                 }
                 
-                if (model.getCellType(neighbour).equals(CellType.VISITED) ||
-                    model.getCellType(neighbour).equals(CellType.OPENED)) {
+                if (parentMap.containsKey(neighbour)) {
                     continue;
                 }
                 
                 searchSleep(pathfindingSettings);
-                model.setCellType(neighbour, CellType.OPENED);
+                
+                if (!neighbour.equals(target)) {
+                    model.setCellType(neighbour, CellType.OPENED);
+                }
+                    
                 parentMap.put(neighbour, current);
                 queue.addLast(neighbour);
             }

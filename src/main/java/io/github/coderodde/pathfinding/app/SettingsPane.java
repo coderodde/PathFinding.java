@@ -1,7 +1,6 @@
 package io.github.coderodde.pathfinding.app;
 
-import static io.github.coderodde.pathfinding.Configuration.MAXIMUM_FREQUENCY;
-import static io.github.coderodde.pathfinding.Configuration.MINIMUM_FREQUENCY;
+import static io.github.coderodde.pathfinding.Configuration.FREQUENCIES;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
@@ -78,15 +77,14 @@ public final class SettingsPane extends Pane {
         ComboBox<String> frequencyComboBox = new ComboBox<>();
         frequencyComboBox.setPrefWidth(PIXELS_WIDTH);
         
-        for (int frequency = MINIMUM_FREQUENCY; 
-                 frequency < MAXIMUM_FREQUENCY + 1; 
-                 frequency++) {
+        for (Integer frequency : FREQUENCIES) {
             
             frequencyComboBox.getItems()
                              .add(String.format("%d Hz", frequency));
         }
         
-        frequencyComboBox.setValue("10 Hz");
+        frequencyComboBox.setValue(
+                String.format("%d Hz", FREQUENCIES.getLast()));
         
         TitledPane frequencyTitledPane = new TitledPane("Frequency", 
                                                         frequencyComboBox);
@@ -108,19 +106,6 @@ public final class SettingsPane extends Pane {
         CheckBox bfsCheckBoxBidirectional    = new CheckBox("Bidirectinal");
         CheckBox bfsCehckBoxDontCrossCorners = 
                 new CheckBox("Don't cross coreners");
-        
-        
-//        bfsVBoxAllowDiagonal.setOnAction(e -> {
-//            this.bfsAllowDiagonals = bfsVBoxAllowDiagonal.isSelected();
-//        });
-//        
-//        bfsVBoxDontCrossCorners.setOnAction(e -> {
-//            this.bfsDontCrossCorners = bfsVBoxDontCrossCorners.isSelected();
-//        });
-//        
-//        bfsVBoxBidirectional.setOnAction(e -> {
-//            this.requestBiditectinal = bfsVBoxBidirectional.isSelected();
-//        });
         
         bfsVBox.getChildren().addAll(bfsCheckBoxAllowDiagonal,
                                      bfsCehckBoxDontCrossCorners,
@@ -235,5 +220,9 @@ public final class SettingsPane extends Pane {
             setLayoutX(event.getSceneX() - offset[0]);
             setLayoutY(event.getSceneY() - offset[1]);
         });
+    }
+    
+    public SearchState getSearchState() {
+        return searchState;
     }
 }

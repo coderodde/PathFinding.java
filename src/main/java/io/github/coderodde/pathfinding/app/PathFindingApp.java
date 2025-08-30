@@ -70,6 +70,10 @@ public final class PathFindingApp extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+        
+        stage.setOnCloseRequest(event -> {
+            settingsPane.getSearchState().requestHalt();
+        });
     }
     
     public static void main(String[] args) {

@@ -1,5 +1,7 @@
 package io.github.coderodde.pathfinding;
 
+import java.util.Collections;
+import java.util.List;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
@@ -51,14 +53,9 @@ public final class Configuration {
     public static final int DEFAULT_CELL_WIDTH_HEIGHT = 26;
     
     /**
-     * The minimum frequency in Hz for generating a neighbour cell.
+     * The list of search frequencies.
      */
-    public static final int MINIMUM_FREQUENCY = 1;
-    
-    /**
-     * The maximum frequency in Hz for generating a neighbour cell.
-     */
-    public static final int MAXIMUM_FREQUENCY = 10;
+    public static final List<Integer> FREQUENCIES = List.of(5, 10, 20, 30);
     
     private Configuration() {
         
