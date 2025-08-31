@@ -4,11 +4,12 @@ import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
 import static io.github.coderodde.pathfinding.utils.CellType.FREE;
 import static io.github.coderodde.pathfinding.utils.CellType.OPENED;
+import static io.github.coderodde.pathfinding.utils.CellType.SOURCE;
+import static io.github.coderodde.pathfinding.utils.CellType.TARGET;
 import static io.github.coderodde.pathfinding.utils.CellType.TRACED;
 import static io.github.coderodde.pathfinding.utils.CellType.VISITED;
 import io.github.coderodde.pathfinding.view.GridView;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -96,13 +97,7 @@ public final class GridModel {
         }
     }
     
-    public void reinit() {
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                setCellType(x, y, CellType.FREE);
-            }
-        }
-        
+    public void initTerminalCells() {
         int sourceX = width / 4;
         int targetX = width - sourceX;
         int terminalY = height / 2; // The y-coodinate for both the source and 
@@ -127,6 +122,16 @@ public final class GridModel {
         previousTargetCellY = terminalY;
     }
     
+    public void initModel() {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                setCellType(x, y, CellType.FREE);
+            }
+        }
+        
+        initTerminalCells();
+    }
+    
     /**
      * Resets all the cells of type {@link CellType#OPENED}, 
      * {@link CellType#VISITED} and {@link CellType#TRACED} to 
@@ -135,10 +140,19 @@ public final class GridModel {
     public void clearStateCells() {
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-                if (getCell(x, y).getCellType().equals(VISITED) ||
-                    getCell(x, y).getCellType().equals(OPENED)  ||
-                    getCell(x, y).getCellType().equals(TRACED)) {
-                    setCellType(x, y, FREE);
+                switch (getCell(x, y).getCellType()) {
+                    case VISITED:
+                    case OPENED:
+                    case TRACED:
+                        setCellType(x, y, FREE);
+                        break;
+                    case SOURCE:
+                        setCellType(x, y, SOURCE); // Repaint source so that it has
+                        // the path visual artifact!
+                        break;
+                    case TARGET:
+                        setCellType(x, y, TARGET); // Repaint target!
+                        break;
                 }
             }
         }
@@ -155,7 +169,7 @@ public final class GridModel {
         this.height = height;
         cells = new Cell[height][width];
         createCells();
-        reinit();
+        initModel();
     }
     
     public void setSourceCellCoversWallCell(boolean sourceCellCoversWallCell) {
@@ -339,6 +353,6 @@ public final class GridModel {
     }
     
     public List<Cell> getPath() {
-        return Collections.unmodifiableList(path);
+        return new ArrayList<>(path);
     }
 }

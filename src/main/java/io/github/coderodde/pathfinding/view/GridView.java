@@ -1,10 +1,10 @@
 package io.github.coderodde.pathfinding.view;
 
-import static io.github.coderodde.pathfinding.Configuration.BORDER_PAINT;
-import static io.github.coderodde.pathfinding.Configuration.BORDER_THICKNESS;
-import static io.github.coderodde.pathfinding.Configuration.MINIMUM_CELL_WIDTH_HEIGHT;
-import static io.github.coderodde.pathfinding.Configuration.PATH_PAINT;
-import static io.github.coderodde.pathfinding.Configuration.PATH_THICKNESS;
+import static io.github.coderodde.pathfinding.app.Configuration.BORDER_PAINT;
+import static io.github.coderodde.pathfinding.app.Configuration.BORDER_THICKNESS;
+import static io.github.coderodde.pathfinding.app.Configuration.MINIMUM_CELL_WIDTH_HEIGHT;
+import static io.github.coderodde.pathfinding.app.Configuration.PATH_PAINT;
+import static io.github.coderodde.pathfinding.app.Configuration.PATH_THICKNESS;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.GridBounds;
 import io.github.coderodde.pathfinding.utils.Cell;
@@ -253,9 +253,7 @@ public final class GridView extends Canvas {
         return model.getCell(cellX, cellY);
     }
     
-    public void clearPath() {
-        List<Cell> path = model.getPath();
-        
+    public void clearPath(List<Cell> path) {
         if (path.isEmpty()) {
             return;
         }
@@ -278,7 +276,9 @@ public final class GridView extends Canvas {
                     drawCell(current);
                 }
                 
-                case SOURCE, TARGET -> drawCell(current);
+                // The following redraw of a cell will remove the partial path
+                // artifact from UI:
+                 case SOURCE, TARGET -> drawCell(current);
             }
         }
     }

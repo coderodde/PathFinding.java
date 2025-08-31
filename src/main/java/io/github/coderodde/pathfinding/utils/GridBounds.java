@@ -1,6 +1,6 @@
 package io.github.coderodde.pathfinding.utils;
 
-import static io.github.coderodde.pathfinding.Configuration.BORDER_THICKNESS;
+import static io.github.coderodde.pathfinding.app.Configuration.BORDER_THICKNESS;
 import javafx.geometry.Rectangle2D;
 
 /**

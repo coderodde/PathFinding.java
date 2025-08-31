@@ -1,6 +1,6 @@
 package io.github.coderodde.pathfinding.app;
 
-import static io.github.coderodde.pathfinding.Configuration.FREQUENCIES;
+import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
@@ -12,8 +12,11 @@ import io.github.coderodde.pathfinding.logic.SearchState.CurrentState;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.view.GridView;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Accordion;
@@ -43,6 +46,7 @@ public final class SettingsPane extends Pane {
     private GridNodeExpander gridNodeExpander;
     private final SearchState searchState;
     private Finder finder;
+    private List<Cell> path = new ArrayList<>();
     
     public SettingsPane(GridModel gridModel,
                         GridView gridView,
@@ -127,11 +131,9 @@ public final class SettingsPane extends Pane {
         VBox buttonVBox = new VBox();
         
         Button startPauseButton = new Button("Start");
-        Button resetButton      = new Button("Reset");
         Button clearWallsButton = new Button("Clear walls");
         
         startPauseButton.setPrefWidth(PIXELS_WIDTH);
-        resetButton     .setPrefWidth(PIXELS_WIDTH);
         clearWallsButton.setPrefWidth(PIXELS_WIDTH);
         
         startPauseButton.setOnAction(event -> {
@@ -155,6 +157,7 @@ public final class SettingsPane extends Pane {
             
             if (searchState.getCurrentState().equals(CurrentState.IDLE)) {
                 // Once here, start search:
+                gridView.clearPath(path); // Clear the possible previous path!
                 searchState.setCurrentState(CurrentState.SEARCHING);
                 gridController.disableUserInteraction();
                 gridModel.clearStateCells();
@@ -179,12 +182,24 @@ public final class SettingsPane extends Pane {
                 };
                 
                 task.setOnSucceeded(e -> {
-                    List<Cell> path = task.getValue();
-                    gridView.drawPath(path);
+                    try {
+                        this.path.clear();
+                        this.path.addAll(task.get());
+                    } catch (InterruptedException | ExecutionException ex) {
+                        System.getLogger(
+                                SettingsPane.class.getName()).log(
+                                        System.Logger.Level.ERROR,
+                                        (String) null,
+                                        ex);
+                        Platform.exit();
+                    }
+                    
+                    gridView.drawPath(this.path);
                     gridController.enableUserInteraction();
                     searchState.setCurrentState(CurrentState.IDLE);
                     startPauseButton.setText("Search");
-                    });
+                    searchState.resetState();
+                });
                 
                 new Thread(task).start();
                 
@@ -205,19 +220,12 @@ public final class SettingsPane extends Pane {
             }
         });
         
-        resetButton.setOnAction(event -> {
-            searchState.requestHalt();
-            gridModel.reinit();
-            gridController.enableUserInteraction();
-        });
-        
         clearWallsButton.setOnAction(event -> {
            searchState.requestHalt();
            gridModel.clearWalls();
         });    
         
         buttonVBox.getChildren().addAll(startPauseButton,
-                                        resetButton,
                                         clearWallsButton);
         
         mainVBox.getChildren().add(buttonVBox);

@@ -1,6 +1,6 @@
 package io.github.coderodde.pathfinding.logic;
 
-import static io.github.coderodde.pathfinding.Configuration.FREQUENCIES;
+import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
 import java.util.Objects;
 
 /**

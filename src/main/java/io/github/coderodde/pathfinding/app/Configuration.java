@@ -1,4 +1,4 @@
-package io.github.coderodde.pathfinding;
+package io.github.coderodde.pathfinding.app;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +55,8 @@ public final class Configuration {
     /**
      * The list of search frequencies.
      */
-    public static final List<Integer> FREQUENCIES = List.of(5, 10, 20, 30);
+    public static final List<Integer> FREQUENCIES =
+            List.of(5, 10, 20, 30, 40, 50);
     
     private Configuration() {
         

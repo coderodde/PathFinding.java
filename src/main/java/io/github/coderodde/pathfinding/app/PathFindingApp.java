@@ -1,6 +1,6 @@
 package io.github.coderodde.pathfinding.app;
 
-import static io.github.coderodde.pathfinding.Configuration.DEFAULT_CELL_WIDTH_HEIGHT;
+import static io.github.coderodde.pathfinding.app.Configuration.DEFAULT_CELL_WIDTH_HEIGHT;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.model.GridModel;
