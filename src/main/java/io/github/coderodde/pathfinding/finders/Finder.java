@@ -46,6 +46,30 @@ public interface Finder {
         
         return path.reversed();
     }
+     
+    public default List<Cell> 
+        tracebackPath(Cell target, 
+                      Map<Cell, Cell> parentMapForward,
+                      Map<Cell, Cell> parentMapBackward) {
+        List<Cell> path = new ArrayList<>();
+        Cell current = target;
+        
+        while (current != null) {
+            path.add(current);
+            current = parentMapForward.get(current);
+        }
+        
+        current = parentMapBackward.get(target);
+        
+        while (current != null) {
+            path.add(current);
+            current = parentMapBackward.get(current);
+        }
+        
+        return path.reversed();
+    }
+        
+     
         
     public static void searchSleep(PathfindingSettings pathfindingSettings) {
         try {

@@ -3,6 +3,7 @@ package io.github.coderodde.pathfinding.app;
 import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
+import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.GridNodeExpander;
@@ -23,6 +24,7 @@ import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -36,8 +38,8 @@ import javafx.stage.Screen;
  */
 public final class SettingsPane extends Pane {
     
-    private static final int PIXELS_WIDTH  = 150;
-    private static final int PIXELS_HEIGHT = 300;
+    private static final int PIXELS_WIDTH  = 300;
+    private static final int PIXELS_HEIGHT = 200;
     private static final int PIXELS_MARGIN = 20;
     private final double[] offset = new double[2];
     private GridModel gridModel;
@@ -68,8 +70,11 @@ public final class SettingsPane extends Pane {
         setPrefSize(PIXELS_WIDTH,
                     PIXELS_HEIGHT);
         
-        setMinSize(USE_PREF_SIZE, USE_PREF_SIZE);
-        setMaxSize(USE_PREF_SIZE, USE_PREF_SIZE);
+        setMinSize(PIXELS_WIDTH, 
+                   PIXELS_HEIGHT);
+        
+        setMaxSize(PIXELS_WIDTH, 
+                   PIXELS_HEIGHT);
         
         Rectangle2D screenRectangle = Screen.getPrimary().getBounds();
         
@@ -77,6 +82,15 @@ public final class SettingsPane extends Pane {
         setLayoutY(PIXELS_MARGIN);
         
         VBox mainVBox = new VBox();
+        
+        mainVBox.setPrefSize(PIXELS_WIDTH,
+                             PIXELS_HEIGHT);
+        
+        mainVBox.setMinSize(PIXELS_WIDTH,
+                            PIXELS_HEIGHT);   
+        
+        mainVBox.setMaxSize(PIXELS_WIDTH,
+                            PIXELS_HEIGHT);   
         
         ComboBox<String> frequencyComboBox = new ComboBox<>();
         frequencyComboBox.setPrefWidth(PIXELS_WIDTH);
@@ -92,6 +106,7 @@ public final class SettingsPane extends Pane {
         
         TitledPane frequencyTitledPane = new TitledPane("Frequency", 
                                                         frequencyComboBox);
+        
         
         ComboBox<String> diagonalWeightComboBox = new ComboBox<>();
         diagonalWeightComboBox.getItems().add("1");
@@ -109,13 +124,18 @@ public final class SettingsPane extends Pane {
         CheckBox bfsCheckBoxAllowDiagonal    = new CheckBox("Allow diagonal");
         CheckBox bfsCheckBoxBidirectional    = new CheckBox("Bidirectinal");
         CheckBox bfsCehckBoxDontCrossCorners = 
-                new CheckBox("Don't cross coreners");
+                new CheckBox("Don't cross corenrs");
         
         bfsVBox.getChildren().addAll(bfsCheckBoxAllowDiagonal,
                                      bfsCehckBoxDontCrossCorners,
                                      bfsCheckBoxBidirectional);
         
+        mainVBox.setPrefWidth(bfsVBox.getWidth());
+        
+        bfsCheckBoxAllowDiagonal.setSelected(true);
+        
         TitledPane bfsFinderSettingsPane = new TitledPane("BFS", bfsVBox);
+        
         bfsFinderSettingsPane.setExpanded(true);
         
         Accordion accordion = new Accordion();  
@@ -123,6 +143,8 @@ public final class SettingsPane extends Pane {
         accordion.getPanes().addAll(frequencyTitledPane, 
                                     diagonalWeightTitledPane,
                                     bfsFinderSettingsPane);
+        
+        accordion.setExpandedPane(bfsFinderSettingsPane);
         
         mainVBox.getChildren().add(accordion);
         
@@ -163,7 +185,14 @@ public final class SettingsPane extends Pane {
                 gridModel.clearStateCells();
                 startPauseButton.setText("Pause");
                 
-                BFSFinder finder = new BFSFinder();
+                finder = null;
+                
+                if (pathfindingSettings.isBidirectional()) {
+                    finder = new BidirectionalBFSFinder();
+                } else {
+                    finder = new BFSFinder();
+                }
+                
                 gridNodeExpander = new GridNodeExpander(gridModel,
                                                         pathfindingSettings);
                 
@@ -230,10 +259,10 @@ public final class SettingsPane extends Pane {
         
         mainVBox.getChildren().add(buttonVBox);
         
-        setStyle("-fx-background-color: rgba(0, 0, 0, 0.3);"
-               + "-fx-background-radius: 8;"
-               + "-fx-border-color: gray;"
-               + "-fx-border-radius: 8;");
+//        mainVBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.3);"
+//                           + "-fx-background-radius: 8;"
+//                           + "-fx-border-color: gray;"
+//                           + "-fx-border-radius: 8;");
         
         setOnMousePressed(event -> {
             offset[0] = event.getSceneX() - getLayoutX();
@@ -244,9 +273,35 @@ public final class SettingsPane extends Pane {
             setLayoutX(event.getSceneX() - offset[0]);
             setLayoutY(event.getSceneY() - offset[1]);
         });
+        
+        Label emptyLabel = new Label("");
+        emptyLabel.setPrefSize(PIXELS_WIDTH, 40.0);
+                                                                                    mainVBox.getChildren().add(emptyLabel);
+
+        // after: VBox mainVBox = new VBox();
+        mainVBox.setFillWidth(true);
+        mainVBox.prefWidthProperty().bind(widthProperty());
+        mainVBox.prefHeightProperty().bind(heightProperty()); // optional
+
+        // Make children take full width of the VBox:
+        accordion.setMaxWidth(Double.MAX_VALUE);
+        frequencyTitledPane.setMaxWidth(Double.MAX_VALUE);
+        diagonalWeightTitledPane.setMaxWidth(Double.MAX_VALUE);
+        bfsFinderSettingsPane.setMaxWidth(Double.MAX_VALUE);
+        startPauseButton.setMaxWidth(Double.MAX_VALUE);
+        clearWallsButton.setMaxWidth(Double.MAX_VALUE);
+
+        // If you keep Pane as the root, explicitly place the VBox at (0,0):
+        mainVBox.relocate(0, 0);
     }
     
     public SearchState getSearchState() {
         return searchState;
     }
+    
+    @Override
+    public boolean isResizable() {
+        return false;
+    }
 }
+    

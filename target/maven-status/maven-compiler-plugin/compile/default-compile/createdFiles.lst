@@ -13,6 +13,7 @@ io\github\coderodde\pathfinding\view\GridView.class
 io\github\coderodde\pathfinding\logic\GridCellNeighbourIterable.class
 io\github\coderodde\pathfinding\logic\GridNodeExpander.class
 io\github\coderodde\pathfinding\utils\GridBounds.class
+io\github\coderodde\pathfinding\finders\BidirectionalBFSFinder.class
 io\github\coderodde\pathfinding\controller\GridController$1.class
 io\github\coderodde\pathfinding\logic\PathfindingSettings.class
 io\github\coderodde\pathfinding\utils\Cell.class
