@@ -195,6 +195,6 @@ public final class GridController {
             
             case VISITED, OPENED, TRACED -> model.setCellType(cell, 
                                                               CellType.FREE);
-        }
+        }   
     }
 }

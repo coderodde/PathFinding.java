@@ -63,14 +63,12 @@ public final class BidirectionalBFSFinder implements Finder {
                 continue;
             }
             
-            if (distf < distb) {
+            if (distf <= distb) {
                 Cell current = queuef.removeFirst();
                 
                 if (!current.getCellType().equals(CellType.SOURCE)) {
                     model.setCellType(current, CellType.VISITED);
                 }
-                
-                System.out.println("fds " + current);
                 
                 if (distanceb.containsKey(current) &&
                         bestCost > distf + distb) {
@@ -111,8 +109,6 @@ public final class BidirectionalBFSFinder implements Finder {
                 if (!current.getCellType().equals(CellType.TARGET)) {
                     model.setCellType(current, CellType.VISITED);
                 }
-                
-                System.out.println("back " + current);
                 
                 if (distancef.containsKey(current)
                         && bestCost > distf + distb) {
