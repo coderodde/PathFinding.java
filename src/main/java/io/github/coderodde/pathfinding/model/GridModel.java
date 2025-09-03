@@ -207,20 +207,27 @@ public final class GridModel {
                         CellType.FREE);
         }
         
-        previousSourceCellX = x;
-        previousSourceCellY = y;
+        boolean oldSourceCellCoversWallCell = sourceCellCoversWallCell;
         
         sourceCellCoversWallCell = 
                 getCell(x, y)
                         .getCellType()
                         .equals(CellType.WALL);
         
-        sourceCell.setx(x);
-        sourceCell.sety(y);
+        setCellType(previousSourceCellX,
+                    previousSourceCellY,
+                    oldSourceCellCoversWallCell ? 
+                    CellType.WALL :
+                    CellType.FREE);
+        
+        previousSourceCellX = x;
+        previousSourceCellY = y;
         
         setCellType(x, 
                     y,
                     CellType.SOURCE);
+        
+        sourceCell = getCell(x, y);
     }
     
     public void moveTarget(int x, int y) {
@@ -244,20 +251,27 @@ public final class GridModel {
                         CellType.FREE);
         }
         
-        previousTargetCellX = x;
-        previousTargetCellY = y;
+        boolean oldTargetCellCoversWallCell = targetCellCoversWallCell;
         
         targetCellCoversWallCell = 
                 getCell(x, y)
                         .getCellType()
                         .equals(CellType.WALL);
         
-        targetCell.setx(x);
-        targetCell.sety(y);
+        setCellType(previousTargetCellX,
+                    previousTargetCellY, 
+                    oldTargetCellCoversWallCell ? 
+                    CellType.WALL :
+                    CellType.FREE);
+        
+        previousTargetCellX = x;
+        previousTargetCellY = y;
         
         setCellType(x, 
                     y,
                     CellType.TARGET);
+        
+        targetCell = getCell(x, y);
     }
     
     public boolean isValidCellLocation(int x, int y) {

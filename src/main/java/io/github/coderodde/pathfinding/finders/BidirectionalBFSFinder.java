@@ -6,6 +6,7 @@ import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
+import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -68,7 +69,12 @@ public final class BidirectionalBFSFinder implements Finder {
             
             if (distf < distb) {
                 Cell current = queuef.removeFirst();
-                System.out.println(current);
+                
+                if (!current.getCellType().equals(CellType.SOURCE)) {
+                    model.setCellType(current, CellType.VISITED);
+                }
+                
+                System.out.println("fds " + current);
                 
                 if (distanceb.keySet().contains(current) &&
                         bestCost > distf + distb) {
@@ -94,16 +100,25 @@ public final class BidirectionalBFSFinder implements Finder {
 
                     searchSleep(pathfindingSettings);
                     
+                    if (!neighbour.equals(source)) {
+                        model.setCellType(neighbour, CellType.OPENED);
+                    }
+                    
                     distancef.put(neighbour, distancef.get(current) + 1);
                     parentsf.put(neighbour, current);
                     queuef.addLast(neighbour);
                 }
             } else {
                 Cell current = queueb.removeFirst();
-                System.out.println("fds " + current);
                 
-                if (distancef.keySet().contains(current) &&
-                        bestCost > distf + distb) {
+                if (!current.getCellType().equals(CellType.TARGET)) {
+                    model.setCellType(current, CellType.VISITED);
+                }
+                
+                System.out.println("back " + current);
+                
+                if (distancef.containsKey(current)
+                        && bestCost > distf + distb) {
                     bestCost = distf + distb;
                     touchCell = current;
                 }
@@ -120,11 +135,15 @@ public final class BidirectionalBFSFinder implements Finder {
                         continue;
                     }
 
-                    if (parentsf.containsKey(neighbour)) {
+                    if (parentsb.containsKey(neighbour)) {
                         continue;
                     }
 
                     searchSleep(pathfindingSettings);
+                    
+                    if (!neighbour.equals(target)) {
+                        model.setCellType(neighbour, CellType.OPENED);
+                    }
                     
                     distanceb.put(neighbour, distanceb.get(current) + 1);
                     parentsb.put(neighbour, current);
