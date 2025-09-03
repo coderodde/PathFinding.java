@@ -49,15 +49,6 @@ public final class BidirectionalBFSFinder implements Finder {
         Cell touchCell = null;
         
         while (!queuef.isEmpty() && !queueb.isEmpty()) {
-            if (searchState.haltRequested()) {
-                return List.of();
-            }
-            
-            if (searchState.pauseRequested()) {
-                searchSleep(pathfindingSettings);
-                continue;
-            }
-            
             int distf = distancef.get(queuef.getFirst());
             int distb = distanceb.get(queueb.getFirst());
             
@@ -65,6 +56,11 @@ public final class BidirectionalBFSFinder implements Finder {
                 return tracebackPath(touchCell, 
                                      parentsf,
                                      parentsb);
+            }
+
+            if (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
+                continue;
             }
             
             if (distf < distb) {
@@ -76,9 +72,10 @@ public final class BidirectionalBFSFinder implements Finder {
                 
                 System.out.println("fds " + current);
                 
-                if (distanceb.keySet().contains(current) &&
+                if (distanceb.containsKey(current) &&
                         bestCost > distf + distb) {
-                    bestCost = distf + distb;
+                    
+                    bestCost  = distf + distb;
                     touchCell = current;
                 }
                 
@@ -87,13 +84,8 @@ public final class BidirectionalBFSFinder implements Finder {
                 for (Cell neighbour : neighbourIterable) {
                     if (searchState.haltRequested()) {
                         return List.of();
-                    }                
-
-                    if (neighbour == null) {
-                        searchSleep(pathfindingSettings);
-                        continue;
-                    }
-
+                    }    
+                    
                     if (parentsf.containsKey(neighbour)) {
                         continue;
                     }
@@ -101,11 +93,16 @@ public final class BidirectionalBFSFinder implements Finder {
                     searchSleep(pathfindingSettings);
                     
                     if (!neighbour.equals(source)) {
-                        model.setCellType(neighbour, CellType.OPENED);
+                        model.setCellType(neighbour, 
+                                          CellType.OPENED);
                     }
                     
-                    distancef.put(neighbour, distancef.get(current) + 1);
-                    parentsf.put(neighbour, current);
+                    distancef.put(neighbour,
+                                  distancef.get(current) + 1);
+                    
+                    parentsf.put(neighbour, 
+                                 current);
+                    
                     queuef.addLast(neighbour);
                 }
             } else {
@@ -128,11 +125,6 @@ public final class BidirectionalBFSFinder implements Finder {
                 for (Cell neighbour : neighbourIterable) {
                     if (searchState.haltRequested()) {
                         return List.of();
-                    }                
-
-                    if (neighbour == null) {
-                        searchSleep(pathfindingSettings);
-                        continue;
                     }
 
                     if (parentsb.containsKey(neighbour)) {

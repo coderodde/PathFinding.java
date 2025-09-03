@@ -65,6 +65,7 @@ public final class BFSFinder implements Finder {
                 }                
                 
                 if (neighbour == null) {
+                    System.out.println("SHIT");
                     searchSleep(pathfindingSettings);
                     continue;
                 }

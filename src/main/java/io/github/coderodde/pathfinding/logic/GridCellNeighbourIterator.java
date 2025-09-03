@@ -1,7 +1,5 @@
 package io.github.coderodde.pathfinding.logic;
 
-import io.github.coderodde.pathfinding.finders.Finder;
-import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import java.util.Iterator;
