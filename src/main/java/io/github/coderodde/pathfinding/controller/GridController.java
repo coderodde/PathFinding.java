@@ -78,6 +78,8 @@ public final class GridController {
             return;
         }
         
+        model.clearStateCells();
+        view.clearPath(model.getPath());
         Cell cell = accessCellViaEvent(event);
         
         if (cell == null) {

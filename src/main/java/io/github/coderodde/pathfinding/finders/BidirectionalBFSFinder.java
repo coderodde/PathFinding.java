@@ -110,6 +110,8 @@ public final class BidirectionalBFSFinder implements Finder {
                     model.setCellType(current, CellType.VISITED);
                 }
                 
+                System.out.println(current);
+                
                 if (distancef.containsKey(current)
                         && bestCost > distf + distb) {
                     bestCost = distf + distb;

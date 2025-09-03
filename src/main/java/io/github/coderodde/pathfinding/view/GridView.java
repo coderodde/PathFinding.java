@@ -254,21 +254,8 @@ public final class GridView extends Canvas {
     }
     
     public void clearPath(List<Cell> path) {
-        if (path.isEmpty()) {
-            return;
-        }
-        
         for (int i = 0; i < path.size(); ++i) {
             Cell current = path.get(i);
-            
-            if (i == 0 && !current.equals(model.getSourceGridCell())) {
-                throw new IllegalArgumentException(
-                        "The first path cell is not the source cell");
-            } else if (i == path.size() - 1 && 
-                    !current.equals(model.getTargetGridCell())) {
-                throw new IllegalArgumentException
-                        ("The last path cell is not the target cell");
-            } 
                 
             switch (current.getCellType()) {
                 case VISITED, OPENED, TRACED -> {
