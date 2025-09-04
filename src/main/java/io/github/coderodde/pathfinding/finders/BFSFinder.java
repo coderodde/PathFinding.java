@@ -62,19 +62,15 @@ public final class BFSFinder implements Finder {
             for (Cell neighbour : neighbourIterable) {
                 if (searchState.haltRequested()) {
                     return List.of();
-                }                
+                }
                 
-                if (neighbour == null) {
-                    System.out.println("SHIT");
+                while (searchState.pauseRequested()) {
                     searchSleep(pathfindingSettings);
-                    continue;
                 }
                 
                 if (parentMap.containsKey(neighbour)) {
                     continue;
                 }
-                
-                searchSleep(pathfindingSettings);
                 
                 if (!neighbour.equals(target)) {
                     model.setCellType(neighbour, CellType.OPENED);

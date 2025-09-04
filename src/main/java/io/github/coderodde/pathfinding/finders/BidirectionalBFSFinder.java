@@ -57,11 +57,6 @@ public final class BidirectionalBFSFinder implements Finder {
                                      parentsf,
                                      parentsb);
             }
-
-            if (searchState.pauseRequested()) {
-                searchSleep(pathfindingSettings);
-                continue;
-            }
             
             if (distf <= distb) {
                 Cell current = queuef.removeFirst();
@@ -84,10 +79,14 @@ public final class BidirectionalBFSFinder implements Finder {
                         return List.of();
                     }    
                     
+                    while (searchState.pauseRequested()) {
+                        searchSleep(pathfindingSettings);
+                    }
+                    
                     if (parentsf.containsKey(neighbour)) {
                         continue;
                     }
-
+                    
                     searchSleep(pathfindingSettings);
                     
                     if (!neighbour.equals(source)) {
@@ -110,8 +109,6 @@ public final class BidirectionalBFSFinder implements Finder {
                     model.setCellType(current, CellType.VISITED);
                 }
                 
-                System.out.println(current);
-                
                 if (distancef.containsKey(current)
                         && bestCost > distf + distb) {
                     bestCost = distf + distb;
@@ -123,6 +120,10 @@ public final class BidirectionalBFSFinder implements Finder {
                 for (Cell neighbour : neighbourIterable) {
                     if (searchState.haltRequested()) {
                         return List.of();
+                    }
+                    
+                    while (searchState.pauseRequested()) {
+                        searchSleep(pathfindingSettings);
                     }
 
                     if (parentsb.containsKey(neighbour)) {

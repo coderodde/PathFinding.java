@@ -213,6 +213,10 @@ public final class SettingsPane extends Pane {
             pathfindingSettings.setDiagonalWeight(
                     PathfindingSettings.DiagonalWeight.SQRT2);
             
+            pathfindingSettings.setFrequency(
+                    Integer.parseInt(
+                            frequencyComboBox.getValue().split(" ")[0]));
+                    
              // Search finder should sleep on neighbours:
             pathfindingSettings.setDontSleep(false);
             
