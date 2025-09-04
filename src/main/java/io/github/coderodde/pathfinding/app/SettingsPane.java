@@ -38,6 +38,18 @@ import javafx.stage.Screen;
  */
 public final class SettingsPane extends Pane {
     
+    private static final String EUCLIDEAN = "Euclidean";
+    private static final String MANHATTAN = "Manhattan";
+    private static final String OCTILE    = "Octile";
+    private static final String CHEBYSHEV = "Chebyshev";
+    
+    private static final String[] HEURISTIC_NAMES = {
+        EUCLIDEAN,
+        MANHATTAN,
+        OCTILE,
+        CHEBYSHEV,
+    };
+    
     private static final int PIXELS_WIDTH  = 300;
     private static final int PIXELS_HEIGHT = 200;
     private static final int PIXELS_MARGIN = 20;
@@ -78,7 +90,7 @@ public final class SettingsPane extends Pane {
         
         Rectangle2D screenRectangle = Screen.getPrimary().getBounds();
         
-        setLayoutX(screenRectangle.getWidth()  - PIXELS_WIDTH - PIXELS_MARGIN);
+        setLayoutX(screenRectangle.getWidth() - PIXELS_WIDTH - PIXELS_MARGIN);
         setLayoutY(PIXELS_MARGIN);
         
         VBox mainVBox = new VBox();
@@ -91,6 +103,18 @@ public final class SettingsPane extends Pane {
         
         mainVBox.setMaxSize(PIXELS_WIDTH,
                             PIXELS_HEIGHT);   
+        
+        ComboBox<String> beamWidthComboBox = new ComboBox<>();
+        
+        for (int beamWidth = 1; beamWidth <= 8; ++beamWidth) {
+            beamWidthComboBox.getItems().add(String.format("%d", beamWidth));
+        }
+        
+        ComboBox<String> heuristicComboBox = new ComboBox<>();
+        
+        for (String heuristicName : HEURISTIC_NAMES) {
+            heuristicComboBox.getItems().add(heuristicName);
+        }
         
         ComboBox<String> frequencyComboBox = new ComboBox<>();
         frequencyComboBox.setPrefWidth(PIXELS_WIDTH);
@@ -107,6 +131,10 @@ public final class SettingsPane extends Pane {
         TitledPane frequencyTitledPane = new TitledPane("Frequency", 
                                                         frequencyComboBox);
         
+        TitledPane heuristicFunctionTitledPane = 
+                new TitledPane(
+                        "Heuristic function", 
+                        heuristicComboBox);
         
         ComboBox<String> diagonalWeightComboBox = new ComboBox<>();
         diagonalWeightComboBox.getItems().add("1");
@@ -138,9 +166,20 @@ public final class SettingsPane extends Pane {
         
         bfsFinderSettingsPane.setExpanded(true);
         
+        TitledPane beamFinderSettingsPane = 
+                new TitledPane("Beam width", beamWidthComboBox);
+        
+        beamWidthComboBox.setValue("1");
+        heuristicComboBox.setValue(MANHATTAN);
+        
+        beamWidthComboBox.setPrefWidth(PIXELS_WIDTH);
+        heuristicComboBox.setPrefWidth(PIXELS_WIDTH);
+        
         Accordion accordion = new Accordion();  
         accordion.setPrefWidth(PIXELS_WIDTH);
-        accordion.getPanes().addAll(frequencyTitledPane, 
+        accordion.getPanes().addAll(heuristicFunctionTitledPane,
+                                    beamFinderSettingsPane,
+                                    frequencyTitledPane, 
                                     diagonalWeightTitledPane,
                                     bfsFinderSettingsPane);
         
@@ -259,11 +298,6 @@ public final class SettingsPane extends Pane {
                                         clearWallsButton);
         
         mainVBox.getChildren().add(buttonVBox);
-        
-//        mainVBox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.3);"
-//                           + "-fx-background-radius: 8;"
-//                           + "-fx-border-color: gray;"
-//                           + "-fx-border-radius: 8;");
         
         setOnMousePressed(event -> {
             offset[0] = event.getSceneX() - getLayoutX();

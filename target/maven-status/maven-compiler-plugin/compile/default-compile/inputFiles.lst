@@ -2,9 +2,16 @@ C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\gith
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\app\PathFindingApp.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\app\SettingsPane.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\controller\GridController.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BeamSearchFindier.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BFSFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BidirectionalBFSFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\Finder.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\heuristics\ChebyshevHeuristicFunction.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\heuristics\EuclideanHeuristicFunction.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\heuristics\HeuristicFunction.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\heuristics\ManhattanHeuristicFunction.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\heuristics\OctileHeuristicFunction.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\heuristics\ZeroHeuristicFunction.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\logic\GridCellNeighbourIterable.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\logic\GridCellNeighbourIterator.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\logic\GridNodeExpander.java
