@@ -32,6 +32,7 @@ public final class PathfindingSettings {
     private boolean dontSleep = true;
     private int frequency = FREQUENCIES.getLast();
     private DiagonalWeight diagonalWeight = DiagonalWeight.SQRT2;
+    private int beamWidth;
 
     public boolean allowDiagonals() {
         return allowDiagonals;
@@ -82,6 +83,19 @@ public final class PathfindingSettings {
                 Objects.requireNonNull(
                         diagonalWeight, 
                         "The diagonal weight is null");
+    }
+    
+    public int getBeamWidth() {
+        return beamWidth;
+    }
+    
+    public void setBeamWidth(int beamWidth) {
+        if (beamWidth < 1) {
+            throw new IllegalArgumentException(
+                    String.format("beamWidth(%d) < 1", beamWidth));
+        }
+        
+        this.beamWidth = beamWidth;
     }
     
     public long getWaitTime() {
