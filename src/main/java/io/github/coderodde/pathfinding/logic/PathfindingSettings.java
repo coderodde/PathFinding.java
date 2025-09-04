@@ -1,6 +1,7 @@
 package io.github.coderodde.pathfinding.logic;
 
 import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
+import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import java.util.Objects;
 
 /**
@@ -33,6 +34,7 @@ public final class PathfindingSettings {
     private int frequency = FREQUENCIES.getLast();
     private DiagonalWeight diagonalWeight = DiagonalWeight.SQRT2;
     private int beamWidth;
+    private HeuristicFunction heuristicFunction;
 
     public boolean allowDiagonals() {
         return allowDiagonals;
@@ -96,6 +98,14 @@ public final class PathfindingSettings {
         }
         
         this.beamWidth = beamWidth;
+    }
+    
+    public HeuristicFunction getHeuristicFunction() {
+        return heuristicFunction;
+    }
+    
+    public void setHeuristicFunction(HeuristicFunction heuristicFunction) {
+        this.heuristicFunction = heuristicFunction;
     }
     
     public long getWaitTime() {
