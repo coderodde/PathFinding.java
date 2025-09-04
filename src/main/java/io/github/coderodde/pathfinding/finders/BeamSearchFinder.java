@@ -1,10 +1,12 @@
 package io.github.coderodde.pathfinding.finders;
 
+import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
+import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,7 +23,7 @@ import java.util.Set;
  * @version 1.0.0 (Sep 4, 2025)
  * @since 1.0.0 (Sep 4, 2025)
  */
-public final class BeamSearchFindier implements Finder {
+public final class BeamSearchFinder implements Finder {
     
     @Override
     public List<Cell> findPath(GridModel model, 
@@ -43,40 +45,63 @@ public final class BeamSearchFindier implements Finder {
         distances.put(source, 0.0);
         
         while (!open.isEmpty()) {
-            Cell currentCell = open.remove().cell;
-            
-            if (currentCell.equals(target)) {
-                return tracebackPath(target, parents);
+            if (searchState.haltRequested()) {
+                return List.of();
             }
             
-            if (closed.contains(currentCell)) {
+            if (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
                 continue;
             }
             
-            closed.add(currentCell);
+            Cell current = open.remove().cell;
+            
+            if (!current.equals(source) && !current.equals(target)) {
+                model.setCellType(current, CellType.VISITED);
+            }
+            
+            if (current.equals(target)) {
+                return tracebackPath(target, parents);
+            }
+            
+            if (closed.contains(current)) {
+                continue;
+            }
+            
+            closed.add(current);
         
             List<Cell> successors = 
                     getSuccessors(
-                            currentCell, 
+                            current, 
                             target, 
                             neighbourIterable, 
                             distances, 
                             pathfindingSettings);
             
             for (Cell child : successors) {
+                if (searchState.haltRequested()) {
+                    return List.of();
+                }
+                
                 if (closed.contains(child)) {
                     continue;
                 }
                 
+                while (searchState.pauseRequested()) {
+                    searchSleep(pathfindingSettings);
+                }
+               
+                model.setCellType(child, CellType.OPENED);
+                
                 double tentativeDistance =
-                        distances.get(currentCell) 
+                        distances.get(current) 
                         + pathfindingSettings.getDiagonalWeight()
                                              .getWeight();
                 
                 if (!distances.containsKey(child) ||
                      distances.get(child) > tentativeDistance) {
                     distances.put(child, tentativeDistance);
-                    parents.put(child, currentCell);
+                    parents.put(child, current);
                     open.add(
                             new HeapNode(
                                     child,

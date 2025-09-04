@@ -1,15 +1,15 @@
 io\github\coderodde\pathfinding\app\SettingsPane$1.class
 io\github\coderodde\pathfinding\heuristics\ChebyshevHeuristicFunction.class
 io\github\coderodde\pathfinding\finders\Finder.class
+io\github\coderodde\pathfinding\finders\BeamSearchFinder$HeapNode.class
+io\github\coderodde\pathfinding\finders\BeamSearchFinder.class
 io\github\coderodde\pathfinding\heuristics\ZeroHeuristicFunction.class
 io\github\coderodde\pathfinding\logic\SearchState.class
 io\github\coderodde\pathfinding\app\Configuration.class
-io\github\coderodde\pathfinding\finders\BeamSearchFindier$HeapNode.class
 io\github\coderodde\pathfinding\logic\SearchState$CurrentState.class
 io\github\coderodde\pathfinding\view\GridView.class
 io\github\coderodde\pathfinding\logic\GridCellNeighbourIterable.class
 io\github\coderodde\pathfinding\heuristics\EuclideanHeuristicFunction.class
-io\github\coderodde\pathfinding\finders\BeamSearchFindier.class
 io\github\coderodde\pathfinding\utils\GridBounds.class
 io\github\coderodde\pathfinding\finders\BidirectionalBFSFinder.class
 io\github\coderodde\pathfinding\controller\GridController$1.class

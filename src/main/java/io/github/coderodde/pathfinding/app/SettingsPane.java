@@ -3,8 +3,14 @@ package io.github.coderodde.pathfinding.app;
 import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
+import io.github.coderodde.pathfinding.finders.BeamSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
+import io.github.coderodde.pathfinding.heuristics.ChebyshevHeuristicFunction;
+import io.github.coderodde.pathfinding.heuristics.EuclideanHeuristicFunction;
+import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
+import io.github.coderodde.pathfinding.heuristics.ManhattanHeuristicFunction;
+import io.github.coderodde.pathfinding.heuristics.OctileHeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.GridNodeExpander;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
@@ -14,7 +20,9 @@ import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.view.GridView;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import javafx.application.Platform;
@@ -49,6 +57,16 @@ public final class SettingsPane extends Pane {
         OCTILE,
         CHEBYSHEV,
     };
+    
+    private static final Map<String, HeuristicFunction> HEURISTIC_MAP =
+            new HashMap<>();
+    
+    static {
+        HEURISTIC_MAP.put(EUCLIDEAN, new EuclideanHeuristicFunction());
+        HEURISTIC_MAP.put(MANHATTAN, new ManhattanHeuristicFunction());
+        HEURISTIC_MAP.put(OCTILE,    new OctileHeuristicFunction());
+        HEURISTIC_MAP.put(CHEBYSHEV, new ChebyshevHeuristicFunction());
+    }
     
     private static final int PIXELS_WIDTH  = 300;
     private static final int PIXELS_HEIGHT = 200;
@@ -217,8 +235,13 @@ public final class SettingsPane extends Pane {
                     Integer.parseInt(
                             frequencyComboBox.getValue().split(" ")[0]));
                     
+            pathfindingSettings.setBeamWidth(
+                    Integer.parseInt(beamWidthComboBox.getValue()));
+            
              // Search finder should sleep on neighbours:
             pathfindingSettings.setDontSleep(false);
+            pathfindingSettings.setHeuristicFunction(
+                    HEURISTIC_MAP.get(heuristicComboBox.getValue()));
             
             if (searchState.getCurrentState().equals(CurrentState.IDLE)) {
                 // Once here, start search:
@@ -233,7 +256,8 @@ public final class SettingsPane extends Pane {
                 if (pathfindingSettings.isBidirectional()) {
                     finder = new BidirectionalBFSFinder();
                 } else {
-                    finder = new BFSFinder();
+                    finder = new BeamSearchFinder();
+//                    finder = new BFSFinder();
                 }
                 
                 gridNodeExpander = new GridNodeExpander(gridModel,

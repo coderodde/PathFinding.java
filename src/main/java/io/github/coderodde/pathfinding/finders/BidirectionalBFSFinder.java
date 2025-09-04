@@ -26,6 +26,7 @@ public final class BidirectionalBFSFinder implements Finder {
                                GridCellNeighbourIterable neighbourIterable, 
                                PathfindingSettings pathfindingSettings, 
                                SearchState searchState) {
+        
         Deque<Cell> queuef = new ArrayDeque<>();
         Deque<Cell> queueb = new ArrayDeque<>();
         Map<Cell, Cell> parentsf = new HashMap<>();
