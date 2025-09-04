@@ -65,24 +65,24 @@ public final class GridNodeExpander {
         
         if (pathfindingSettings.dontCrossCorners()) {
             
-            if (canCrossNorthWest(x, y)) {
+            if (canCrossNorthWest(x, y) && isValidNeighbourCell(x - 1, y - 1)) {
                 neighbours.add(gridModel.getCell(x - 1,
-                                             y - 1));
+                                                 y - 1));
             }
             
-            if (canCrossNorthEast(x, y)) {
+            if (canCrossNorthEast(x, y) && isValidNeighbourCell(x + 1, y - 1)) {
                 neighbours.add(gridModel.getCell(x + 1,
-                                             y - 1));
+                                                 y - 1));
             }
             
-            if (canCrossSouthWest(x, y)) {
+            if (canCrossSouthWest(x, y) && isValidNeighbourCell(x - 1, y + 1)) {
                 neighbours.add(gridModel.getCell(x - 1,
-                                             y + 1));
+                                                 y + 1));
             }
             
-            if (canCrossSouthEast(x, y)) {
+            if (canCrossSouthEast(x, y) && isValidNeighbourCell(x + 1, y + 1)) {
                 neighbours.add(gridModel.getCell(x + 1,
-                                             y + 1));
+                                                 y + 1));
             }
         } else {
             if (isValidNeighbourCell(x - 1, y - 1)) {
