@@ -1,7 +1,6 @@
 io\github\coderodde\pathfinding\app\SettingsPane$1.class
 io\github\coderodde\pathfinding\heuristics\ChebyshevHeuristicFunction.class
 io\github\coderodde\pathfinding\finders\Finder.class
-io\github\coderodde\pathfinding\finders\BeamSearchFinder$HeapNode.class
 io\github\coderodde\pathfinding\finders\BeamSearchFinder.class
 io\github\coderodde\pathfinding\heuristics\ZeroHeuristicFunction.class
 io\github\coderodde\pathfinding\logic\SearchState.class
@@ -26,7 +25,9 @@ io\github\coderodde\pathfinding\model\GridModel.class
 io\github\coderodde\pathfinding\logic\GridNodeExpander.class
 io\github\coderodde\pathfinding\heuristics\OctileHeuristicFunction.class
 io\github\coderodde\pathfinding\logic\GridCellNeighbourIterator.class
+io\github\coderodde\pathfinding\finders\BestFirstSearchFinder.class
 io\github\coderodde\pathfinding\heuristics\HeuristicFunction.class
 io\github\coderodde\pathfinding\heuristics\ManhattanHeuristicFunction.class
 io\github\coderodde\pathfinding\utils\CellType.class
 io\github\coderodde\pathfinding\logic\PathfindingSettings$DiagonalWeight.class
+io\github\coderodde\pathfinding\finders\BestFirstSearchFinder$HeapNode.class

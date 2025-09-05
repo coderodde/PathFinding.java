@@ -28,13 +28,13 @@ public final class BFSFinder implements Finder {
                                SearchState searchState) {
         
         
-        Map<Cell, Cell> parentMap = new HashMap<>();
+        Map<Cell, Cell> parents = new HashMap<>();
         Deque<Cell> queue = new ArrayDeque<>();
         
         Cell source = model.getSourceGridCell();
         Cell target = model.getTargetGridCell();
         
-        parentMap.put(source, null);
+        parents.put(source, null);
         queue.addLast(source);
         
         while (!queue.isEmpty()) {
@@ -54,7 +54,7 @@ public final class BFSFinder implements Finder {
             }
             
             if (current.equals(target)) {
-                return tracebackPath(target, parentMap);
+                return tracebackPath(target, parents);
             }
             
             neighbourIterable.setStartingCell(current);
@@ -68,7 +68,9 @@ public final class BFSFinder implements Finder {
                     searchSleep(pathfindingSettings);
                 }
                 
-                if (parentMap.containsKey(neighbour)) {
+                searchSleep(pathfindingSettings);
+                
+                if (parents.containsKey(neighbour)) {
                     continue;
                 }
                 
@@ -76,7 +78,7 @@ public final class BFSFinder implements Finder {
                     model.setCellType(neighbour, CellType.OPENED);
                 }
                     
-                parentMap.put(neighbour, current);
+                parents.put(neighbour, current);
                 queue.addLast(neighbour);
             }
         }

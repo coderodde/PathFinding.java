@@ -4,6 +4,7 @@ import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
 import io.github.coderodde.pathfinding.finders.BeamSearchFinder;
+import io.github.coderodde.pathfinding.finders.BestFirstSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.heuristics.ChebyshevHeuristicFunction;
@@ -256,8 +257,9 @@ public final class SettingsPane extends Pane {
                 if (pathfindingSettings.isBidirectional()) {
                     finder = new BidirectionalBFSFinder();
                 } else {
+                    finder = new BFSFinder();
                     finder = new BeamSearchFinder();
-//                    finder = new BFSFinder();
+                    finder = new BestFirstSearchFinder();
                 }
                 
                 gridNodeExpander = new GridNodeExpander(gridModel,
