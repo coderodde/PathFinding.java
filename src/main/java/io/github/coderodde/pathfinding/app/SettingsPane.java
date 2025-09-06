@@ -15,6 +15,7 @@ import io.github.coderodde.pathfinding.heuristics.OctileHeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.GridNodeExpander;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
+import io.github.coderodde.pathfinding.logic.PathfindingSettings.DiagonalWeight;
 import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.logic.SearchState.CurrentState;
 import io.github.coderodde.pathfinding.model.GridModel;
@@ -52,14 +53,29 @@ public final class SettingsPane extends Pane {
     private static final String OCTILE    = "Octile";
     private static final String CHEBYSHEV = "Chebyshev";
     
+    private static final String BFS               = "BFS";
+    private static final String BI_BFS            = "Bidirectional BFS";
+    private static final String BEST_FIRST_SEARCH = "Best First search";
+    private static final String BEAM_SEARCH       = "Beam search";
+    
     private static final String[] HEURISTIC_NAMES = {
-        EUCLIDEAN,
         MANHATTAN,
+        EUCLIDEAN,
         OCTILE,
         CHEBYSHEV,
     };
     
+    private static final String[] FINDER_NAMES = {
+        BFS,
+        BI_BFS,
+        BEST_FIRST_SEARCH,
+        BEAM_SEARCH,
+    };
+    
     private static final Map<String, HeuristicFunction> HEURISTIC_MAP =
+            new HashMap<>();
+    
+    private static final Map<String, Finder> FINDER_MAP = 
             new HashMap<>();
     
     static {
@@ -67,6 +83,11 @@ public final class SettingsPane extends Pane {
         HEURISTIC_MAP.put(MANHATTAN, new ManhattanHeuristicFunction());
         HEURISTIC_MAP.put(OCTILE,    new OctileHeuristicFunction());
         HEURISTIC_MAP.put(CHEBYSHEV, new ChebyshevHeuristicFunction());
+        
+        FINDER_MAP.put(BFS,               new BFSFinder());
+        FINDER_MAP.put(BI_BFS,            new BidirectionalBFSFinder());
+        FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());
+        FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());
     }
     
     private static final int PIXELS_WIDTH  = 300;
@@ -80,6 +101,33 @@ public final class SettingsPane extends Pane {
     private final SearchState searchState;
     private Finder finder;
     private List<Cell> path = new ArrayList<>();
+    
+    private final ComboBox<String> comboBoxFrequency        = new ComboBox<>();
+    private final ComboBox<String> comboBoxDiagonalWeight   = new ComboBox<>();
+    private final ComboBox<String> comboBoxFinder           = new ComboBox<>();
+    private final ComboBox<String> comboBoxHeuristic        = new ComboBox<>();
+    private final ComboBox<String> comboBoxBeamWidth        = new ComboBox<>();
+    
+    private final CheckBox checkBoxAllowDiagonals = 
+              new CheckBox("Allow diagonals");
+    
+    private final CheckBox checkBoxDontCrossCorners = 
+              new CheckBox("Don't cross corners");
+    
+    private final TitledPane titledPaneFrequency = 
+            new TitledPane("Frequency", comboBoxFrequency);
+    
+    private final TitledPane titledPaneDiagonalWeight = 
+            new TitledPane("Diagonal weight", comboBoxDiagonalWeight);
+    
+    private final TitledPane titledPaneFinder = 
+            new TitledPane("Finder", comboBoxFinder);
+    
+    private final TitledPane titledPaneHeuristic = 
+            new TitledPane("Heuristic", comboBoxHeuristic);
+    
+    private final TitledPane titledPaneBeamWidth = 
+            new TitledPane("Beam width", comboBoxBeamWidth);
     
     public SettingsPane(GridModel gridModel,
                         GridView gridView,
@@ -123,86 +171,64 @@ public final class SettingsPane extends Pane {
         mainVBox.setMaxSize(PIXELS_WIDTH,
                             PIXELS_HEIGHT);   
         
-        ComboBox<String> beamWidthComboBox = new ComboBox<>();
-        
         for (int beamWidth = 1; beamWidth <= 8; ++beamWidth) {
-            beamWidthComboBox.getItems().add(String.format("%d", beamWidth));
+            comboBoxBeamWidth.getItems()
+                             .add(String.format("%d", beamWidth));
         }
         
-        ComboBox<String> heuristicComboBox = new ComboBox<>();
+        comboBoxBeamWidth.setValue("8");
         
         for (String heuristicName : HEURISTIC_NAMES) {
-            heuristicComboBox.getItems().add(heuristicName);
+            comboBoxHeuristic.getItems().add(heuristicName);
         }
         
-        ComboBox<String> frequencyComboBox = new ComboBox<>();
-        frequencyComboBox.setPrefWidth(PIXELS_WIDTH);
+        comboBoxFrequency.setPrefWidth(PIXELS_WIDTH);
         
         for (Integer frequency : FREQUENCIES) {
-            
-            frequencyComboBox.getItems()
+            comboBoxFrequency.getItems()
                              .add(String.format("%d Hz", frequency));
         }
         
-        frequencyComboBox.setValue(
+        for (String finder : FINDER_NAMES) {
+            comboBoxFinder.getItems().add(finder);
+        }
+        
+        comboBoxFinder.setValue(FINDER_NAMES[0]);
+        comboBoxFinder.setPrefWidth(PIXELS_WIDTH);
+        
+        comboBoxFrequency.setValue(
                 String.format("%d Hz", FREQUENCIES.getLast()));
         
-        TitledPane frequencyTitledPane = new TitledPane("Frequency", 
-                                                        frequencyComboBox);
-        
-        TitledPane heuristicFunctionTitledPane = 
-                new TitledPane(
-                        "Heuristic function", 
-                        heuristicComboBox);
-        
-        ComboBox<String> diagonalWeightComboBox = new ComboBox<>();
-        diagonalWeightComboBox.getItems().add("1");
-        diagonalWeightComboBox.getItems().add("SQRT2");
-        diagonalWeightComboBox.setPrefWidth(PIXELS_WIDTH);
-        diagonalWeightComboBox.setValue("SQRT2");
-        
-        TitledPane diagonalWeightTitledPane = 
-                new TitledPane(
-                        "Diagonal weight", 
-                        diagonalWeightComboBox);
+        comboBoxDiagonalWeight  .getItems().add("1");
+        comboBoxDiagonalWeight  .getItems().add("SQRT2");
+        comboBoxDiagonalWeight  .setPrefWidth(PIXELS_WIDTH);
+        comboBoxDiagonalWeight  .setValue("SQRT2");
         
         VBox bfsVBox = new VBox();
         
-        CheckBox bfsCheckBoxAllowDiagonal    = new CheckBox("Allow diagonal");
-        CheckBox bfsCheckBoxBidirectional    = new CheckBox("Bidirectinal");
-        CheckBox bfsCehckBoxDontCrossCorners = 
-                new CheckBox("Don't cross corenrs");
+        bfsVBox.getChildren().addAll(checkBoxAllowDiagonals,
+                                     checkBoxDontCrossCorners);
         
-        bfsVBox.getChildren().addAll(bfsCheckBoxAllowDiagonal,
-                                     bfsCehckBoxDontCrossCorners,
-                                     bfsCheckBoxBidirectional);
+        checkBoxAllowDiagonals.setSelected(true);
+        checkBoxDontCrossCorners.setSelected(true);
         
         mainVBox.setPrefWidth(bfsVBox.getWidth());
         
-        bfsCheckBoxAllowDiagonal.setSelected(true);
+        comboBoxBeamWidth.setValue("3");
+        comboBoxHeuristic.setValue(MANHATTAN);
         
-        TitledPane bfsFinderSettingsPane = new TitledPane("BFS", bfsVBox);
-        
-        bfsFinderSettingsPane.setExpanded(true);
-        
-        TitledPane beamFinderSettingsPane = 
-                new TitledPane("Beam width", beamWidthComboBox);
-        
-        beamWidthComboBox.setValue("1");
-        heuristicComboBox.setValue(MANHATTAN);
-        
-        beamWidthComboBox.setPrefWidth(PIXELS_WIDTH);
-        heuristicComboBox.setPrefWidth(PIXELS_WIDTH);
+        comboBoxBeamWidth.setPrefWidth(PIXELS_WIDTH);
+        comboBoxHeuristic.setPrefWidth(PIXELS_WIDTH);
         
         Accordion accordion = new Accordion();  
         accordion.setPrefWidth(PIXELS_WIDTH);
-        accordion.getPanes().addAll(heuristicFunctionTitledPane,
-                                    beamFinderSettingsPane,
-                                    frequencyTitledPane, 
-                                    diagonalWeightTitledPane,
-                                    bfsFinderSettingsPane);
+        accordion.getPanes().addAll(titledPaneFrequency,
+                                    titledPaneDiagonalWeight,
+                                    titledPaneFinder,
+                                    titledPaneHeuristic,
+                                    titledPaneBeamWidth);
         
-        accordion.setExpandedPane(bfsFinderSettingsPane);
+        accordion.setExpandedPane(titledPaneFinder);
         
         mainVBox.getChildren().add(accordion);
         
@@ -218,32 +244,9 @@ public final class SettingsPane extends Pane {
         
         startPauseButton.setOnAction(event -> {
             
-            PathfindingSettings pathfindingSettings = new PathfindingSettings();
-            
-            pathfindingSettings.setAllowDiagonals(
-                    bfsCheckBoxAllowDiagonal.isSelected());
-            
-            pathfindingSettings.setBidirectional(
-                    bfsCheckBoxBidirectional.isSelected());
-            
-            pathfindingSettings.setDontCrossCorners(
-                    bfsCehckBoxDontCrossCorners.isSelected());
-            
-            pathfindingSettings.setDiagonalWeight(
-                    PathfindingSettings.DiagonalWeight.SQRT2);
-            
-            pathfindingSettings.setFrequency(
-                    Integer.parseInt(
-                            frequencyComboBox.getValue().split(" ")[0]));
+            PathfindingSettings pathfindingSettings = 
+                    computePathfindingSettings();
                     
-            pathfindingSettings.setBeamWidth(
-                    Integer.parseInt(beamWidthComboBox.getValue()));
-            
-             // Search finder should sleep on neighbours:
-            pathfindingSettings.setDontSleep(false);
-            pathfindingSettings.setHeuristicFunction(
-                    HEURISTIC_MAP.get(heuristicComboBox.getValue()));
-            
             if (searchState.getCurrentState().equals(CurrentState.IDLE)) {
                 // Once here, start search:
                 gridView.clearPath(path); // Clear the possible previous path!
@@ -258,8 +261,8 @@ public final class SettingsPane extends Pane {
                     finder = new BidirectionalBFSFinder();
                 } else {
                     finder = new BFSFinder();
-                    finder = new BeamSearchFinder();
                     finder = new BestFirstSearchFinder();
+                    finder = new BeamSearchFinder();
                 }
                 
                 gridNodeExpander = new GridNodeExpander(gridModel,
@@ -350,9 +353,6 @@ public final class SettingsPane extends Pane {
 
         // Make children take full width of the VBox:
         accordion.setMaxWidth(Double.MAX_VALUE);
-        frequencyTitledPane.setMaxWidth(Double.MAX_VALUE);
-        diagonalWeightTitledPane.setMaxWidth(Double.MAX_VALUE);
-        bfsFinderSettingsPane.setMaxWidth(Double.MAX_VALUE);
         startPauseButton.setMaxWidth(Double.MAX_VALUE);
         clearWallsButton.setMaxWidth(Double.MAX_VALUE);
 
@@ -367,6 +367,23 @@ public final class SettingsPane extends Pane {
     @Override
     public boolean isResizable() {
         return false;
+    }
+    
+    private PathfindingSettings computePathfindingSettings() {
+        PathfindingSettings ps = new PathfindingSettings();
+        
+        ps.setAllowDiagonals(checkBoxAllowDiagonals.isSelected());
+        ps.setDontCrossCorners(checkBoxDontCrossCorners.isSelected());
+        ps.setBeamWidth(Integer.parseInt(comboBoxBeamWidth.getValue()));
+        ps.setDiagonalWeight(
+                DiagonalWeight.convert(comboBoxDiagonalWeight.getValue()));
+        
+        ps.setHeuristicFunction(
+                HEURISTIC_MAP.get(comboBoxHeuristic.getValue()));
+        
+        ps.setFinder(FINDER_MAP.get(comboBoxFinder.getValue()));
+        
+        return ps;
     }
 }
     

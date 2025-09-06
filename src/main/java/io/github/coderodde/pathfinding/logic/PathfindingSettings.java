@@ -1,6 +1,7 @@
 package io.github.coderodde.pathfinding.logic;
 
 import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
+import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import java.util.Objects;
 
@@ -25,6 +26,21 @@ public final class PathfindingSettings {
         public double getWeight() {
             return weight;
         }
+        
+        public static DiagonalWeight convert(String txt) {
+            switch (txt) {
+                case "1" -> { 
+                    return DiagonalWeight.UNIFORM;
+                }
+                    
+                case "SQRT2" -> {
+                    return DiagonalWeight.SQRT2;
+                }
+                    
+                default -> throw new IllegalArgumentException(
+                            String.format("%s not recognized", txt));
+            }
+        }
     }
     
     private boolean allowDiagonals;
@@ -34,6 +50,8 @@ public final class PathfindingSettings {
     private int frequency = FREQUENCIES.getLast();
     private DiagonalWeight diagonalWeight = DiagonalWeight.SQRT2;
     private int beamWidth;
+    private Finder finder;
+
     private HeuristicFunction heuristicFunction;
 
     public boolean allowDiagonals() {
@@ -110,5 +128,13 @@ public final class PathfindingSettings {
     
     public long getWaitTime() {
         return 1000L / frequency;
+    }
+    
+    public Finder getFinder() {
+        return finder;
+    }
+
+    public void setFinder(Finder finder) {
+        this.finder = finder;
     }
 }
