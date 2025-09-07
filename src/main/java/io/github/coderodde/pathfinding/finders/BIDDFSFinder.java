@@ -79,8 +79,7 @@ public final class BIDDFSFinder implements Finder {
                             searchState);
             
             if (meetingCell != null) {
-                return buildPath(source,
-                                 meetingCell,
+                return buildPath(meetingCell,
                                  backwardSearchStack,
                                  model,
                                  neighbourIterable,
@@ -104,8 +103,7 @@ public final class BIDDFSFinder implements Finder {
                             searchState);
             
             if (meetingCell != null) {
-                return buildPath(source,
-                                 meetingCell,
+                return buildPath(meetingCell,
                                  backwardSearchStack,
                                  model,
                                  neighbourIterable,
@@ -121,14 +119,16 @@ public final class BIDDFSFinder implements Finder {
         }
     }
     
-    private static List<Cell> buildPath(Cell source,
-                                        Cell meetingCell,
+    private static List<Cell> buildPath(Cell meetingCell,
                                         Deque<Cell> backwardSearhStack,
                                         GridModel model,
                                         GridCellNeighbourIterable iterable,
                                         PathfindingSettings pathfindingSettings,
                                         SearchState searchState) {
         List<Cell> path = new ArrayList<>();
+        model.moveTarget(meetingCell.getx(),
+                         meetingCell.gety());
+        
         List<Cell> prefixPath = 
                 new BIDDFSFinder()
                         .findPath(model, 
@@ -168,14 +168,14 @@ public final class BIDDFSFinder implements Finder {
         }
         
         visitedForward.add(node);
-        model.setCellType(node, CellType.VISITED);
         
         if (depth == 0) {
             frontier.add(node);
-            model.setCellType(node, CellType.TRACED);
+            model.setCellType(node, CellType.FREE);
             return;
         }
         
+        model.setCellType(node, CellType.TRACED);
         iterable.setStartingCell(node);
         
         for (Cell child : iterable) {
@@ -188,6 +188,8 @@ public final class BIDDFSFinder implements Finder {
                                       ps,
                                       searchState);
         }
+        
+        model.setCellType(node, CellType.FREE);
     }
     
     private static Cell depthLimitedSearchBackward(
@@ -209,6 +211,7 @@ public final class BIDDFSFinder implements Finder {
             searchSleep(ps);
         }
         
+        model.setCellType(cell, CellType.TRACED);
         searchSleep(ps);
         
         if (visited.contains(cell)) {
@@ -219,9 +222,11 @@ public final class BIDDFSFinder implements Finder {
         
         if (depth == 0) {
             if (frontier.contains(cell)) {
+                model.setCellType(cell, CellType.FREE);
                 return cell;
             }
             
+            model.setCellType(cell, CellType.FREE);
             backwardsStack.removeFirst();
             return null;
         }
@@ -256,7 +261,7 @@ public final class BIDDFSFinder implements Finder {
     private static void clearFrontier(Set<Cell> frontier, GridModel model) {
         for (Cell cell : frontier) {
             if (!cell.getCellType().equals(CellType.SOURCE)) {
-                model.setCellType(cell, CellType.WALL);
+                model.setCellType(cell, CellType.FREE);
             }
         }
         
@@ -265,8 +270,9 @@ public final class BIDDFSFinder implements Finder {
     
     private static void clearVisited(Set<Cell> visited, GridModel model) {
         for (Cell cell : visited) {
-            if (!cell.getCellType().equals(CellType.TARGET)) {
-                model.setCellType(cell, CellType.WALL);
+            if (!cell.getCellType().equals(CellType.SOURCE) &&
+                !cell.getCellType().equals(CellType.TARGET)) {
+                model.setCellType(cell, CellType.FREE);
             }
         }
         

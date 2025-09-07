@@ -137,7 +137,7 @@ public final class SettingsPane extends Pane {
                         GridView gridView,
                         GridController gridController,
                         SearchState searchState) {
-            this.gridModel = 
+        this.gridModel = 
                 Objects.requireNonNull(
                         gridModel, 
                         "The input grid model is null");
