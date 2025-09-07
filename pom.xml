@@ -61,8 +61,29 @@
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>io.github.coderodde.pathfinding.app.PathFindingApp</mainClass>
+                    <options>
+                        <option>${exec.vmArgs}</option>
+                        <option>--add-modules=javafx.controls,javafx.fxml</option>
+                    </options>
                 </configuration>
+                <executions>
+                    <!-- normal run: mvn javafx:run -->
+                    <execution>
+                        <id>default-cli</id>
+                    </execution>
+
+                    <!-- IDE debug run: mvn javafx:run@ide-debug -->
+                    <execution>
+                        <id>ide-debug</id>
+                        <configuration>
+                            <options>
+                                <!-- Make the CHILD JavaFX JVM connect to NetBeans’ JPDA listener -->
+                                <option>-agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=${jpda.address}</option>
+                            </options>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-        </plugins>
+        </plugins>  
     </build>
 </project>
