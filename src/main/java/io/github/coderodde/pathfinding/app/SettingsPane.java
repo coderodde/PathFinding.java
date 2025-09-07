@@ -2,11 +2,13 @@ package io.github.coderodde.pathfinding.app;
 
 import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
 import io.github.coderodde.pathfinding.controller.GridController;
+import io.github.coderodde.pathfinding.finders.AStarFinder;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
 import io.github.coderodde.pathfinding.finders.BIDDFSFinder;
 import io.github.coderodde.pathfinding.finders.BeamSearchFinder;
 import io.github.coderodde.pathfinding.finders.BestFirstSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
+import io.github.coderodde.pathfinding.finders.DijkstraFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.heuristics.ChebyshevHeuristicFunction;
 import io.github.coderodde.pathfinding.heuristics.EuclideanHeuristicFunction;
@@ -54,6 +56,8 @@ public final class SettingsPane extends Pane {
     private static final String OCTILE    = "Octile";
     private static final String CHEBYSHEV = "Chebyshev";
     
+    private static final String ASTAR             = "A* search";
+    private static final String DIJKSTRA          = "Dijkstra";
     private static final String BFS               = "BFS";
     private static final String BI_BFS            = "Bidirectional BFS";
     private static final String BEST_FIRST_SEARCH = "Best First search";
@@ -68,6 +72,8 @@ public final class SettingsPane extends Pane {
     };
     
     private static final String[] FINDER_NAMES = {
+        ASTAR,
+        DIJKSTRA,
         BFS,
         BI_BFS,
         BEST_FIRST_SEARCH,
@@ -87,6 +93,8 @@ public final class SettingsPane extends Pane {
         HEURISTIC_MAP.put(OCTILE,    new OctileHeuristicFunction());
         HEURISTIC_MAP.put(CHEBYSHEV, new ChebyshevHeuristicFunction());
         
+        FINDER_MAP.put(ASTAR,             new AStarFinder());
+        FINDER_MAP.put(DIJKSTRA,          new DijkstraFinder());
         FINDER_MAP.put(BFS,               new BFSFinder());
         FINDER_MAP.put(BI_BFS,            new BidirectionalBFSFinder());
         FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());

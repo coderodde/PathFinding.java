@@ -6,6 +6,7 @@ io\github\coderodde\pathfinding\heuristics\ZeroHeuristicFunction.class
 io\github\coderodde\pathfinding\logic\SearchState.class
 io\github\coderodde\pathfinding\app\Configuration.class
 io\github\coderodde\pathfinding\logic\SearchState$CurrentState.class
+io\github\coderodde\pathfinding\finders\HeapNode.class
 io\github\coderodde\pathfinding\view\GridView.class
 io\github\coderodde\pathfinding\logic\GridCellNeighbourIterable.class
 io\github\coderodde\pathfinding\heuristics\EuclideanHeuristicFunction.class
@@ -16,6 +17,8 @@ io\github\coderodde\pathfinding\logic\PathfindingSettings.class
 io\github\coderodde\pathfinding\utils\Cell.class
 io\github\coderodde\pathfinding\finders\BIDDFSFinder.class
 io\github\coderodde\pathfinding\model\GridModel$1.class
+io\github\coderodde\pathfinding\finders\AStarFinder.class
+io\github\coderodde\pathfinding\finders\DijkstraFinder.class
 io\github\coderodde\pathfinding\view\GridView$1.class
 io\github\coderodde\pathfinding\finders\BFSFinder.class
 io\github\coderodde\pathfinding\app\PathFindingApp.class
@@ -31,4 +34,3 @@ io\github\coderodde\pathfinding\heuristics\HeuristicFunction.class
 io\github\coderodde\pathfinding\heuristics\ManhattanHeuristicFunction.class
 io\github\coderodde\pathfinding\utils\CellType.class
 io\github\coderodde\pathfinding\logic\PathfindingSettings$DiagonalWeight.class
-io\github\coderodde\pathfinding\finders\BestFirstSearchFinder$HeapNode.class

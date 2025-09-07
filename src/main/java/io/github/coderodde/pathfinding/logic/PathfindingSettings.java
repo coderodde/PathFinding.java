@@ -3,6 +3,7 @@ package io.github.coderodde.pathfinding.logic;
 import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
 import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
+import io.github.coderodde.pathfinding.utils.Cell;
 import java.util.Objects;
 
 /**
@@ -136,5 +137,24 @@ public final class PathfindingSettings {
 
     public void setFinder(Finder finder) {
         this.finder = finder;
+    }
+    
+    public double getWeight(Cell cell1, Cell cell2) {
+        int dx = Math.abs(cell1.getx() - cell2.getx());
+        int dy = Math.abs(cell1.gety() - cell2.gety());
+        
+        if (dx == 1 && dy == 0) {
+            return 1.0;
+        }
+        
+        if (dx == 0 && dy == 1) {
+            return 1.0;
+        }
+        
+        if (dx == 1 && dy == 1) {
+            return diagonalWeight.getWeight();
+        }
+        
+        throw new IllegalStateException("Should not get here");
     }
 }
