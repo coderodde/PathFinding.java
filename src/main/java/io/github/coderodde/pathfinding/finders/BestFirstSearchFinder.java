@@ -8,10 +8,12 @@ import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  *
@@ -28,12 +30,16 @@ public final class BestFirstSearchFinder implements Finder {
                                SearchState searchState) {
         
         Queue<HeapNode> open    = new PriorityQueue<>();
+        Set<Cell> openSet       = new HashSet<>(); // Caches all the cells in 
+                                                   // the open queue.
+        Set<Cell> closed        = new HashSet<>();
         Map<Cell, Cell> parents = new HashMap<>();
         
         Cell source = model.getSourceGridCell();
         Cell target = model.getTargetGridCell();
         
         open.add(new HeapNode(source, 0.0));
+        openSet.add(source);
         parents.put(source, null);
         
         while (!open.isEmpty()) {
@@ -48,15 +54,18 @@ public final class BestFirstSearchFinder implements Finder {
             
             Cell current = open.remove().cell;
             
+            if (current.equals(target)) {
+                return tracebackPath(target, parents);
+            }
+            
+            openSet.remove(current);
+            
             if (!current.equals(source) &&
                 !current.equals(target)) {
                 model.setCellType(current, CellType.VISITED);
             }
             
-            if (current.equals(target)) {
-                return tracebackPath(target, parents);
-            }
-            
+            closed.add(current);
             neighbourIterable.setStartingCell(current);
             
             for (Cell child : neighbourIterable) {
@@ -68,17 +77,15 @@ public final class BestFirstSearchFinder implements Finder {
                     searchSleep(pathfindingSettings);
                 }
                 
-                searchSleep(pathfindingSettings);
+                if (closed.contains(child)) {
+                    continue;
+                }
                 
-                if (!parents.containsKey(child)) {
-                    parents.put(child, current);
-                    
-                    if (child.equals(target)) {
-                        return tracebackPath(child, parents);
-                    }
-                    
+                if (!openSet.contains(child)) {
+                    searchSleep(pathfindingSettings);
                     model.setCellType(child, CellType.OPENED);
                     parents.put(child, current);
+                    openSet.add(child);
                     open.add(
                             new HeapNode(
                                     child,
