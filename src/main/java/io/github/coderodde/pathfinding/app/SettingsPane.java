@@ -3,6 +3,7 @@ package io.github.coderodde.pathfinding.app;
 import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
+import io.github.coderodde.pathfinding.finders.BIDDFSFinder;
 import io.github.coderodde.pathfinding.finders.BeamSearchFinder;
 import io.github.coderodde.pathfinding.finders.BestFirstSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
@@ -57,6 +58,7 @@ public final class SettingsPane extends Pane {
     private static final String BI_BFS            = "Bidirectional BFS";
     private static final String BEST_FIRST_SEARCH = "Best First search";
     private static final String BEAM_SEARCH       = "Beam search";
+    private static final String BIDDFS            = "Bidirectional IDDFS";
     
     private static final String[] HEURISTIC_NAMES = {
         MANHATTAN,
@@ -70,6 +72,7 @@ public final class SettingsPane extends Pane {
         BI_BFS,
         BEST_FIRST_SEARCH,
         BEAM_SEARCH,
+        BIDDFS,
     };
     
     private static final Map<String, HeuristicFunction> HEURISTIC_MAP =
@@ -88,6 +91,7 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(BI_BFS,            new BidirectionalBFSFinder());
         FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());
         FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());
+        FINDER_MAP.put(BIDDFS,            new BIDDFSFinder());
     }
     
     private static final int PIXELS_WIDTH  = 300;
@@ -133,7 +137,7 @@ public final class SettingsPane extends Pane {
                         GridView gridView,
                         GridController gridController,
                         SearchState searchState) {
-        this.gridModel = 
+            this.gridModel = 
                 Objects.requireNonNull(
                         gridModel, 
                         "The input grid model is null");
@@ -255,15 +259,15 @@ public final class SettingsPane extends Pane {
                 gridModel.clearStateCells();
                 startPauseButton.setText("Pause");
                 
-                finder = null;
-                
-                if (pathfindingSettings.isBidirectional()) {
-                    finder = new BidirectionalBFSFinder();
-                } else {
-                    finder = new BFSFinder();
-                    finder = new BestFirstSearchFinder();
-                    finder = new BeamSearchFinder();
-                }
+                finder = pathfindingSettings.getFinder();
+//                
+//                if (pathfindingSettings.isBidirectional()) {
+//                    finder = new BidirectionalBFSFinder();
+//                } else {
+//                    finder = new BFSFinder();
+//                    finder = new BestFirstSearchFinder();
+//                    finder = new BeamSearchFinder();
+//                }
                 
                 gridNodeExpander = new GridNodeExpander(gridModel,
                                                         pathfindingSettings);

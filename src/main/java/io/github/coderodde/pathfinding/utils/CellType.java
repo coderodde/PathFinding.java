@@ -12,7 +12,6 @@ public enum CellType {
     
     FREE    (Color.WHITE),
     WALL    (Color.web("#444444")),
-    PATH    (Color.DARKBLUE),
     SOURCE  (Color.web("#22dd22")),
     TARGET  (Color.web("#dd2222")),
     VISITED (Color.web("#b3b2b1")),

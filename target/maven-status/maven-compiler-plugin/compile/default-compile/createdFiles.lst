@@ -14,6 +14,7 @@ io\github\coderodde\pathfinding\finders\BidirectionalBFSFinder.class
 io\github\coderodde\pathfinding\controller\GridController$1.class
 io\github\coderodde\pathfinding\logic\PathfindingSettings.class
 io\github\coderodde\pathfinding\utils\Cell.class
+io\github\coderodde\pathfinding\finders\BIDDFSFinder.class
 io\github\coderodde\pathfinding\model\GridModel$1.class
 io\github\coderodde\pathfinding\view\GridView$1.class
 io\github\coderodde\pathfinding\finders\BFSFinder.class
