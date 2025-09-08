@@ -146,7 +146,11 @@ public final class SettingsPane extends Pane {
     private final TitledPane titledPaneBeamWidth = 
             new TitledPane("Beam width", comboBoxBeamWidth);
     
+    private final TitledPane titledPaneDiagonalSettings;
+    
     private final Label resultLabel = new Label();
+    
+    private final VBox vboxDiagonalSettings = new VBox();
     
     public SettingsPane(GridModel gridModel,
                         GridView gridView,
@@ -168,6 +172,16 @@ public final class SettingsPane extends Pane {
         this.resultLabel.setStyle("-fx-background-color: white;" +                          
                                   "-fx-font-size: 13px;");
         this.resultLabel.setPrefWidth(PIXELS_WIDTH);
+        
+        this.vboxDiagonalSettings
+            .getChildren()
+            .addAll(checkBoxAllowDiagonals,
+                    checkBoxDontCrossCorners);
+        
+        this.titledPaneDiagonalSettings =
+                new TitledPane(
+                        "Diagonal settings",
+                        this.vboxDiagonalSettings);
         
         setPrefSize(PIXELS_WIDTH,
                     PIXELS_HEIGHT);
@@ -227,15 +241,8 @@ public final class SettingsPane extends Pane {
         comboBoxDiagonalWeight  .setPrefWidth(PIXELS_WIDTH);
         comboBoxDiagonalWeight  .setValue("SQRT2");
         
-        VBox bfsVBox = new VBox();
-        
-        bfsVBox.getChildren().addAll(checkBoxAllowDiagonals,
-                                     checkBoxDontCrossCorners);
-        
         checkBoxAllowDiagonals.setSelected(true);
         checkBoxDontCrossCorners.setSelected(true);
-        
-        mainVBox.setPrefWidth(bfsVBox.getWidth());
         
         comboBoxBeamWidth.setValue("3");
         comboBoxHeuristic.setValue(MANHATTAN);
@@ -246,6 +253,7 @@ public final class SettingsPane extends Pane {
         Accordion accordion = new Accordion();  
         accordion.setPrefWidth(PIXELS_WIDTH);
         accordion.getPanes().addAll(titledPaneFrequency,
+                                    titledPaneDiagonalSettings,
                                     titledPaneDiagonalWeight,
                                     titledPaneFinder,
                                     titledPaneHeuristic,
