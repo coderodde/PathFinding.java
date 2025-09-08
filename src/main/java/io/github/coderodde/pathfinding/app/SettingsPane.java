@@ -12,6 +12,7 @@ import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalDijkstra;
 import io.github.coderodde.pathfinding.finders.DijkstraFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
+import io.github.coderodde.pathfinding.finders.NBAStarFinder;
 import io.github.coderodde.pathfinding.heuristics.ChebyshevHeuristicFunction;
 import io.github.coderodde.pathfinding.heuristics.EuclideanHeuristicFunction;
 import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
@@ -66,6 +67,7 @@ public final class SettingsPane extends Pane {
     private static final String BEST_FIRST_SEARCH = "Best First search";
     private static final String BEAM_SEARCH       = "Beam search";
     private static final String BIDDFS            = "Bidirectional IDDFS";
+    private static final String NBASTAR           = "NBA* search";
     
     private static final String[] HEURISTIC_NAMES = {
         MANHATTAN,
@@ -83,6 +85,7 @@ public final class SettingsPane extends Pane {
         BEST_FIRST_SEARCH,
         BEAM_SEARCH,
         BIDDFS,
+        NBASTAR,
     };
     
     private static final Map<String, HeuristicFunction> HEURISTIC_MAP =
@@ -105,6 +108,7 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());
         FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());  
         FINDER_MAP.put(BIDDFS,            new BIDDFSFinder());
+        FINDER_MAP.put(NBASTAR,           new NBAStarFinder());
     }
     
     private static final int PIXELS_WIDTH  = 300;
