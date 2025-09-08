@@ -1,11 +1,13 @@
 package io.github.coderodde.pathfinding.finders;
 
+import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import static io.github.coderodde.pathfinding.finders.Finder.tracebackPathBiDijkstra;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
+import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -57,11 +59,27 @@ public final class BidirectionalDijkstra implements Finder {
         Cell touchb = null;
         
         while (!queuef.isEmpty() && !queueb.isEmpty()) {
+            if (searchState.haltRequested()) {
+                return List.of();
+            }
+            
+            if (searchState.pauseRequested()) {
+                continue;
+            }
+            
             Cell currentf = queuef.remove().cell;
             Cell currentb = queueb.remove().cell;
             
             closedf.add(currentf);
             closedb.add(currentb);
+            
+            if (!currentf.getCellType().equals(CellType.SOURCE)) {
+                model.setCellType(currentf, CellType.VISITED);
+            }
+            
+            if (!currentb.getCellType().equals(CellType.TARGET)) {
+                model.setCellType(currentb, CellType.VISITED);
+            }
             
             neighbourIterable.setStartingCell(currentf);
             
@@ -83,6 +101,12 @@ public final class BidirectionalDijkstra implements Finder {
                     
                     queuef.add(new HeapNode(child, 
                                             tentativeDistance));
+                    
+                    if (!child.getCellType().equals(CellType.TARGET)) {
+                        model.setCellType(child, CellType.OPENED);
+                    }
+                    
+                    searchSleep(pathfindingSettings);
                 }
                 
                 if (closedb.contains(child)) {
@@ -118,6 +142,10 @@ public final class BidirectionalDijkstra implements Finder {
                     
                     queueb.add(new HeapNode(parent,
                                             tentativeDistance));
+                    
+                    if (!parent.getCellType().equals(CellType.SOURCE)) {
+                        model.setCellType(parent, CellType.OPENED);
+                    }
                 }
                 
                 if (closedf.contains(parent)) {
