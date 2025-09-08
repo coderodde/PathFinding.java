@@ -1,11 +1,13 @@
 package io.github.coderodde.pathfinding.finders;
 
+import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
+import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -62,6 +64,16 @@ public final class NBAStarFinder implements Finder {
         parentsb.put(target, null);
         
         while (!opena.isEmpty() && !openb.isEmpty()) {
+            if (searchState.haltRequested()) {
+                return List.of();
+            }
+            
+            if (searchState.pauseRequested()) {
+                continue;
+            }
+            
+            searchSleep(pathfindingSettings);
+            
             if (opena.size() <= openb.size()) {
                 expandInForwardDirection(opena, 
                                          closed,
@@ -73,8 +85,10 @@ public final class NBAStarFinder implements Finder {
                                          parentsa,
                                          bestPathCost, 
                                          touchCell, 
+                                         model,
                                          neighbourIterable, 
-                                         pathfindingSettings);
+                                         pathfindingSettings,
+                                         searchState);
             } else {
                 expandInBackwardDirection(openb,
                                           closed,
@@ -86,8 +100,10 @@ public final class NBAStarFinder implements Finder {
                                           parentsb, 
                                           bestPathCost, 
                                           touchCell, 
+                                          model,
                                           neighbourIterable, 
-                                          pathfindingSettings);
+                                          pathfindingSettings,
+                                          searchState);
             }
         }
         
@@ -110,8 +126,10 @@ public final class NBAStarFinder implements Finder {
             Map<Cell, Cell> parents,
             BestPathCost bestPathCost,
             TouchCell touchCell,
+            GridModel model,
             GridCellNeighbourIterable iterable,
-            PathfindingSettings pathfindingSettings) {
+            PathfindingSettings pathfindingSettings,
+            SearchState searchState) {
         
         Cell current = open.remove().cell;
         
@@ -120,6 +138,10 @@ public final class NBAStarFinder implements Finder {
         }
         
         closed.add(current);
+        
+        if (!current.getCellType().equals(CellType.SOURCE)) {
+            model.setCellType(current, CellType.VISITED);
+        }
         
         HeuristicFunction h = pathfindingSettings.getHeuristicFunction();
         
@@ -131,6 +153,14 @@ public final class NBAStarFinder implements Finder {
             iterable.setStartingCell(current);
             
             for (Cell child : iterable) {
+                if (searchState.haltRequested()) {
+                    return;
+                }
+                
+                while (searchState.pauseRequested()) {
+                    searchSleep(pathfindingSettings);
+                }
+                
                 if (closed.contains(child)) {
                     continue;
                 }
@@ -141,6 +171,10 @@ public final class NBAStarFinder implements Finder {
                 
                 if (!distancea.containsKey(child) || 
                     distancea.get(child) > tentativeDistance) {
+                    
+                    searchSleep(pathfindingSettings);
+                    
+                    model.setCellType(child, CellType.OPENED);
                     
                     distancea.put(child, tentativeDistance);
                     parents.put(child, current);
@@ -177,8 +211,10 @@ public final class NBAStarFinder implements Finder {
             Map<Cell, Cell> parents,
             BestPathCost bestPathCost,
             TouchCell touchCell,
+            GridModel model,
             GridCellNeighbourIterable iterable,
-            PathfindingSettings pathfindingSettings) {
+            PathfindingSettings pathfindingSettings,
+            SearchState searchState) {
         
         Cell current = open.remove().cell;
         
@@ -187,6 +223,10 @@ public final class NBAStarFinder implements Finder {
         }
         
         closed.add(current);
+        
+        if (!current.getCellType().equals(CellType.TARGET)) {
+            model.setCellType(current, CellType.VISITED);
+        }
         
         HeuristicFunction h = pathfindingSettings.getHeuristicFunction();
         
@@ -198,6 +238,14 @@ public final class NBAStarFinder implements Finder {
             iterable.setStartingCell(current);
             
             for (Cell parent : iterable) {
+                if (searchState.haltRequested()) {
+                    return;
+                }
+                
+                while (searchState.pauseRequested()) {
+                    searchSleep(pathfindingSettings);
+                }
+                
                 if (closed.contains(parent)) {
                     continue;
                 }
@@ -208,6 +256,10 @@ public final class NBAStarFinder implements Finder {
                 
                 if (!distanceb.containsKey(parent) || 
                     distanceb.get(parent) > tentativeDistance) {
+                    
+                    searchSleep(pathfindingSettings);
+                    
+                    model.setCellType(parent, CellType.OPENED);
                     
                     distanceb.put(parent, tentativeDistance);
                     parents.put(parent, current);
