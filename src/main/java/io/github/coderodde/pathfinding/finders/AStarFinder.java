@@ -62,8 +62,8 @@ public final class AStarFinder implements Finder {
                 return tracebackPath(target, parents);
             }
 
-            if (!current.equals(source)
-                    && !current.equals(target)) {
+            if (!current.equals(source) &&
+                !current.equals(target)) {
                 model.setCellType(current, CellType.VISITED);
             }
 
@@ -94,7 +94,10 @@ public final class AStarFinder implements Finder {
                      distances.get(child) > tentativeDistance) {
                     parents.put(child, current);
                     distances.put(child, tentativeDistance);
-                    model.setCellType(child, CellType.OPENED);
+                    
+                    if (!child.getCellType().equals(CellType.TARGET)) {
+                        model.setCellType(child, CellType.OPENED);
+                    }
                     
                     open.add(
                             new HeapNode(

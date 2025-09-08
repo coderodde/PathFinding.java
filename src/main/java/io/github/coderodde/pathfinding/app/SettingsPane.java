@@ -1,6 +1,7 @@
 package io.github.coderodde.pathfinding.app;
 
 import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
+import static io.github.coderodde.pathfinding.finders.Finder.computePathCost;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.AStarFinder;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
@@ -41,6 +42,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Screen;
 
 /**
@@ -98,7 +100,7 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(BFS,               new BFSFinder());
         FINDER_MAP.put(BI_BFS,            new BidirectionalBFSFinder());
         FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());
-        FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());
+        FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());  
         FINDER_MAP.put(BIDDFS,            new BIDDFSFinder());
     }
     
@@ -141,6 +143,8 @@ public final class SettingsPane extends Pane {
     private final TitledPane titledPaneBeamWidth = 
             new TitledPane("Beam width", comboBoxBeamWidth);
     
+    private final Label resultLabel = new Label();
+    
     public SettingsPane(GridModel gridModel,
                         GridView gridView,
                         GridController gridController,
@@ -157,6 +161,10 @@ public final class SettingsPane extends Pane {
         
         this.searchState = searchState;
         this.searchState.setCurrentState(CurrentState.IDLE);
+        this.resultLabel.setText("Path cost: N/A");
+        this.resultLabel.setStyle("-fx-background-color: white;" +                          
+                                  "-fx-font-size: 13px;");
+        this.resultLabel.setPrefWidth(PIXELS_WIDTH);
         
         setPrefSize(PIXELS_WIDTH,
                     PIXELS_HEIGHT);
@@ -242,7 +250,7 @@ public final class SettingsPane extends Pane {
         
         accordion.setExpandedPane(titledPaneFinder);
         
-        mainVBox.getChildren().add(accordion);
+        mainVBox.getChildren().addAll(accordion, resultLabel);
         
         getChildren().add(mainVBox);
         
@@ -268,15 +276,6 @@ public final class SettingsPane extends Pane {
                 startPauseButton.setText("Pause");
                 
                 finder = pathfindingSettings.getFinder();
-//                
-//                if (pathfindingSettings.isBidirectional()) {
-//                    finder = new BidirectionalBFSFinder();
-//                } else {
-//                    finder = new BFSFinder();
-//                    finder = new BestFirstSearchFinder();
-//                    finder = new BeamSearchFinder();
-//                }
-                
                 gridNodeExpander = new GridNodeExpander(gridModel,
                                                         pathfindingSettings);
                 
@@ -313,6 +312,9 @@ public final class SettingsPane extends Pane {
                     searchState.setCurrentState(CurrentState.IDLE);
                     startPauseButton.setText("Search");
                     searchState.resetState();
+                    resultLabel.setText(
+                            "Path cost: " + 
+                                    computePathCost(path, pathfindingSettings));
                 });
                 
                 new Thread(task).start();
