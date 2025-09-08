@@ -20,6 +20,7 @@ io\github\coderodde\pathfinding\model\GridModel$1.class
 io\github\coderodde\pathfinding\finders\AStarFinder.class
 io\github\coderodde\pathfinding\finders\DijkstraFinder.class
 io\github\coderodde\pathfinding\view\GridView$1.class
+io\github\coderodde\pathfinding\finders\BidirectionalDijkstra.class
 io\github\coderodde\pathfinding\finders\BFSFinder.class
 io\github\coderodde\pathfinding\app\PathFindingApp.class
 io\github\coderodde\pathfinding\controller\GridController$DrawMode.class

@@ -9,6 +9,7 @@ import io.github.coderodde.pathfinding.finders.BIDDFSFinder;
 import io.github.coderodde.pathfinding.finders.BeamSearchFinder;
 import io.github.coderodde.pathfinding.finders.BestFirstSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
+import io.github.coderodde.pathfinding.finders.BidirectionalDijkstra;
 import io.github.coderodde.pathfinding.finders.DijkstraFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.heuristics.ChebyshevHeuristicFunction;
@@ -42,7 +43,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Screen;
 
 /**
@@ -60,6 +60,7 @@ public final class SettingsPane extends Pane {
     
     private static final String ASTAR             = "A* search";
     private static final String DIJKSTRA          = "Dijkstra";
+    private static final String BI_DIJKSTRA       = "Bidirectional Dijkstra";
     private static final String BFS               = "BFS";
     private static final String BI_BFS            = "Bidirectional BFS";
     private static final String BEST_FIRST_SEARCH = "Best First search";
@@ -76,6 +77,7 @@ public final class SettingsPane extends Pane {
     private static final String[] FINDER_NAMES = {
         ASTAR,
         DIJKSTRA,
+        BI_DIJKSTRA,
         BFS,
         BI_BFS,
         BEST_FIRST_SEARCH,
@@ -97,6 +99,7 @@ public final class SettingsPane extends Pane {
         
         FINDER_MAP.put(ASTAR,             new AStarFinder());
         FINDER_MAP.put(DIJKSTRA,          new DijkstraFinder());
+        FINDER_MAP.put(BI_DIJKSTRA,       new BidirectionalDijkstra());
         FINDER_MAP.put(BFS,               new BFSFinder());
         FINDER_MAP.put(BI_BFS,            new BidirectionalBFSFinder());
         FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());

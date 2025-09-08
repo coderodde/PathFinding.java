@@ -72,6 +72,30 @@ public interface Finder {
         return path;
     }
         
+    public static List<Cell> tracebackPathBiDijkstra(Cell touchf,
+                                                     Cell touchb,
+                                                     Map<Cell, Cell> parentsf,
+                                                     Map<Cell, Cell> parentsB) {
+        List<Cell> path = new ArrayList<>();
+        
+        Cell node = touchf;
+        
+        while (node != null) {
+            path.add(node);
+            node = parentsf.get(node);
+        }
+        
+        Collections.reverse(path);
+        node = touchb;
+        
+        while (node != null) {
+            path.add(node);
+            node = parentsB.get(node);
+        }
+        
+        return path;
+    }
+        
     public static void searchSleep(PathfindingSettings pathfindingSettings) {
         try {
             Thread.sleep(pathfindingSettings.getWaitTime());
