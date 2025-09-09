@@ -159,6 +159,12 @@ public final class SettingsPane extends Pane {
     
     private final VBox vboxDiagonalSettings = new VBox();
     
+    private final Button buttonStartPause = new Button("Start");
+    private final Button buttonReset      = new Button("Reset");
+    private final Button buttonClearWalls = new Button("Clear walls");
+    
+    private volatile boolean searchIsRunning = false;
+    
     public SettingsPane(GridModel gridModel,
                         GridView gridView,
                         GridController gridController,
@@ -288,13 +294,10 @@ public final class SettingsPane extends Pane {
         
         VBox buttonVBox = new VBox();
         
-        Button startPauseButton = new Button("Start");
-        Button clearWallsButton = new Button("Clear walls");
+        buttonStartPause.setPrefWidth(PIXELS_WIDTH);
+        buttonClearWalls.setPrefWidth(PIXELS_WIDTH);
         
-        startPauseButton.setPrefWidth(PIXELS_WIDTH);
-        clearWallsButton.setPrefWidth(PIXELS_WIDTH);
-        
-        startPauseButton.setOnAction(event -> {
+        buttonStartPause.setOnAction(event -> {
             
             PathfindingSettings pathfindingSettings = 
                     computePathfindingSettings();
@@ -305,7 +308,9 @@ public final class SettingsPane extends Pane {
                 searchState.setCurrentState(CurrentState.SEARCHING);
                 gridController.disableUserInteraction();
                 gridModel.clearStateCells();
-                startPauseButton.setText("Pause");
+                buttonStartPause.setText("Pause");
+                buttonClearWalls.setDisable(true);
+                buttonReset.setDisable(false);
                 
                 finder = pathfindingSettings.getFinder();
                 gridNodeExpander = new GridNodeExpander(gridModel,
@@ -317,7 +322,9 @@ public final class SettingsPane extends Pane {
                     
                     @Override
                     protected List<Cell> call() throws Exception {
-                        return finder.findPath(
+                        searchIsRunning = true;
+                        
+                        List<Cell> path = finder.findPath(
                                     gridModel,
                                     new GridCellNeighbourIterable(
                                             gridModel,
@@ -326,6 +333,14 @@ public final class SettingsPane extends Pane {
                                     pathfindingSettings,
                                     searchState,
                                     searchStatistics);
+                        
+                        searchIsRunning = false;
+                        
+                        searchState.setCurrentState(CurrentState.IDLE);
+                        buttonReset.setDisable(false);
+                        buttonClearWalls.setDisable(true);
+                        
+                        return path;
                     }
                 };
                 
@@ -358,7 +373,7 @@ public final class SettingsPane extends Pane {
                     gridView.drawPath(this.path);
                     gridController.enableUserInteraction();
                     searchState.setCurrentState(CurrentState.IDLE);
-                    startPauseButton.setText("Search");
+                    buttonStartPause.setText("Search");
                     searchState.resetState();
                     labelPathLength.setText(
                             "Path cost: " + 
@@ -374,23 +389,42 @@ public final class SettingsPane extends Pane {
                 // Once here, we need to pause the search:
                 searchState.requestPause();
                 searchState.setCurrentState(CurrentState.PAUSED);
-                startPauseButton.setText("Continue");
+                buttonStartPause.setText("Continue");
             } else if (searchState.getCurrentState()
                                   .equals(CurrentState.PAUSED)) {
                 
                 searchState.resetState();
                 searchState.setCurrentState(CurrentState.SEARCHING);
-                startPauseButton.setText("Pause");
+                buttonStartPause.setText("Pause");
             }
         });
         
-        clearWallsButton.setOnAction(event -> {
-           searchState.requestHalt();
+        buttonClearWalls.setOnAction(event -> {
            gridModel.clearWalls();
         });    
         
-        buttonVBox.getChildren().addAll(startPauseButton,
-                                        clearWallsButton);
+        buttonReset.setOnAction(event -> {
+            searchState.requestHalt();
+            
+            while (searchIsRunning) {
+                try {
+                    Thread.sleep(10L);
+                } catch (InterruptedException ex) {
+                    
+                }
+            }
+            
+            buttonReset.setDisable(true);
+            buttonStartPause.setText("Search");
+            buttonClearWalls.setDisable(false);
+            gridModel.clearStateCells();
+            gridView.drawBorders();
+            gridView.drawAllCels();
+        });
+        
+        buttonVBox.getChildren().addAll(buttonStartPause,
+                                        buttonReset,
+                                        buttonClearWalls);
         
         mainVBox.getChildren().add(buttonVBox);
         
@@ -415,8 +449,8 @@ public final class SettingsPane extends Pane {
 
         // Make children take full width of the VBox:
         accordion.setMaxWidth(Double.MAX_VALUE);
-        startPauseButton.setMaxWidth(Double.MAX_VALUE);
-        clearWallsButton.setMaxWidth(Double.MAX_VALUE);
+        buttonStartPause.setMaxWidth(Double.MAX_VALUE);
+        buttonClearWalls.setMaxWidth(Double.MAX_VALUE);
 
         // If you keep Pane as the root, explicitly place the VBox at (0,0):
         mainVBox.relocate(0, 0);
