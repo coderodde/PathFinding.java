@@ -153,7 +153,9 @@ public final class SettingsPane extends Pane {
     
     private final TitledPane titledPaneDiagonalSettings;
     
-    private final Label resultLabel = new Label();
+    private final Label labelPathLength   = new Label("Path cost: N/A");
+    private final Label labelVisitedCount = new Label("Visited cells: N/A");
+    private final Label labelOpenedCount  = new Label("Opened cells: N/A");
     
     private final VBox vboxDiagonalSettings = new VBox();
     
@@ -173,10 +175,10 @@ public final class SettingsPane extends Pane {
         
         this.searchState = searchState;
         this.searchState.setCurrentState(CurrentState.IDLE);
-        this.resultLabel.setText("Path cost: N/A");
-        this.resultLabel.setStyle("-fx-background-color: white;" +                          
+        this.labelPathLength.setText("Path cost: N/A");
+        this.labelPathLength.setStyle("-fx-background-color: white;" +                          
                                   "-fx-font-size: 13px;");
-        this.resultLabel.setPrefWidth(PIXELS_WIDTH);
+        this.labelPathLength.setPrefWidth(PIXELS_WIDTH);
         
         this.vboxDiagonalSettings
             .getChildren()
@@ -266,7 +268,10 @@ public final class SettingsPane extends Pane {
         
         accordion.setExpandedPane(titledPaneFinder);
         
-        mainVBox.getChildren().addAll(accordion, resultLabel);
+        mainVBox.getChildren().addAll(accordion, 
+                                      labelPathLength,
+                                      labelVisitedCount,
+                                      labelOpenedCount);
         
         getChildren().add(mainVBox);
         
@@ -318,7 +323,18 @@ public final class SettingsPane extends Pane {
                         this.path.clear();
                         this.path.addAll(task.get());
                         System.out.println(this.path);
-                        System.out.println(searchStatistics.getVisited() + " and " + searchStatistics.getOpened());
+                        
+                        labelPathLength.setText(
+                                "Path cost: " + computePathCost(
+                                                    this.path,
+                                                    pathfindingSettings));
+                        
+                        labelVisitedCount.setText(
+                                "Visited: " + searchStatistics.getVisited());
+                        
+                        labelOpenedCount.setText(
+                                "Opened: " + searchStatistics.getOpened());
+                        
                     } catch (InterruptedException | ExecutionException ex) {
                         System.getLogger(
                                 SettingsPane.class.getName()).log(
@@ -333,7 +349,7 @@ public final class SettingsPane extends Pane {
                     searchState.setCurrentState(CurrentState.IDLE);
                     startPauseButton.setText("Search");
                     searchState.resetState();
-                    resultLabel.setText(
+                    labelPathLength.setText(
                             "Path cost: " + 
                                     computePathCost(path, pathfindingSettings));
                 });
