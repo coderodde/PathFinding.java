@@ -24,6 +24,7 @@ io\github\coderodde\pathfinding\finders\NBAStarFinder$TouchCell.class
 io\github\coderodde\pathfinding\view\GridView$1.class
 io\github\coderodde\pathfinding\finders\BidirectionalDijkstra.class
 io\github\coderodde\pathfinding\finders\BFSFinder.class
+io\github\coderodde\pathfinding\logic\SearchStatistics.class
 io\github\coderodde\pathfinding\app\PathFindingApp.class
 io\github\coderodde\pathfinding\controller\GridController$DrawMode.class
 io\github\coderodde\pathfinding\controller\GridController.class

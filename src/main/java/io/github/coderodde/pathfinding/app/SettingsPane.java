@@ -24,6 +24,7 @@ import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings.DiagonalWeight;
 import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.logic.SearchState.CurrentState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.view.GridView;
@@ -294,7 +295,10 @@ public final class SettingsPane extends Pane {
                 gridNodeExpander = new GridNodeExpander(gridModel,
                                                         pathfindingSettings);
                 
+                SearchStatistics searchStatistics = new SearchStatistics();
+                
                 Task<List<Cell>> task = new Task<>() {
+                    
                     @Override
                     protected List<Cell> call() throws Exception {
                         return finder.findPath(
@@ -304,7 +308,8 @@ public final class SettingsPane extends Pane {
                                             gridNodeExpander, 
                                             pathfindingSettings),
                                     pathfindingSettings,
-                                    searchState);
+                                    searchState,
+                                    searchStatistics);
                     }
                 };
                 
@@ -313,6 +318,7 @@ public final class SettingsPane extends Pane {
                         this.path.clear();
                         this.path.addAll(task.get());
                         System.out.println(this.path);
+                        System.out.println(searchStatistics.getVisited() + " and " + searchStatistics.getOpened());
                     } catch (InterruptedException | ExecutionException ex) {
                         System.getLogger(
                                 SettingsPane.class.getName()).log(
