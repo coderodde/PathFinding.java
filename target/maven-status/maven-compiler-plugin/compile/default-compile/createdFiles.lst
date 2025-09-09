@@ -32,6 +32,7 @@ io\github\coderodde\pathfinding\app\SettingsPane.class
 io\github\coderodde\pathfinding\model\GridModel.class
 io\github\coderodde\pathfinding\logic\GridNodeExpander.class
 io\github\coderodde\pathfinding\heuristics\OctileHeuristicFunction.class
+io\github\coderodde\pathfinding\finders\NBAStarFinder$F.class
 io\github\coderodde\pathfinding\logic\GridCellNeighbourIterator.class
 io\github\coderodde\pathfinding\finders\BestFirstSearchFinder.class
 io\github\coderodde\pathfinding\heuristics\HeuristicFunction.class

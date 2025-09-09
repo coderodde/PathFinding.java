@@ -49,13 +49,12 @@ public final class NBAStarFinder implements Finder {
                         .getHeuristicFunction()
                         .estimate(source, target);
         
-        double fa = totalDistance;
-        double fb = totalDistance;
         TouchCell touchCell = new TouchCell();
         BestPathCost bestPathCost = new BestPathCost(Double.POSITIVE_INFINITY);
-    
-        opena.add(new HeapNode(source, fa));
-        openb.add(new HeapNode(target, fb));
+        F fa = new F(totalDistance);
+        F fb = new F(totalDistance);
+        opena.add(new HeapNode(source, totalDistance));
+        openb.add(new HeapNode(target, totalDistance));
         
         distancea.put(source, 0.0);
         distanceb.put(target, 0.0);
@@ -120,7 +119,7 @@ public final class NBAStarFinder implements Finder {
             Set<Cell> closed,
             Cell source,
             Cell target,
-            double fb,
+            F f,
             Map<Cell, Double> distancea,
             Map<Cell, Double> distanceb,
             Map<Cell, Cell> parents,
@@ -147,7 +146,7 @@ public final class NBAStarFinder implements Finder {
         
         if (distancea.get(current) + h.estimate(current, target)
                                    >= bestPathCost.value ||
-            fb - h.estimate(current, source) >= bestPathCost.value) {
+            f.value - h.estimate(current, source) >= bestPathCost.value) {
             // Reject current.
         } else {
             iterable.setStartingCell(current);
@@ -172,7 +171,7 @@ public final class NBAStarFinder implements Finder {
                 if (!distancea.containsKey(child) || 
                     distancea.get(child) > tentativeDistance) {
                     
-                    searchSleep(pathfindingSettings);
+                    searchSleep(pathfindingSettings);   
                     
                     model.setCellType(child, CellType.OPENED);
                     
@@ -199,13 +198,18 @@ public final class NBAStarFinder implements Finder {
                 }
             }               
         }
+        
+        if (!open.isEmpty()) {
+            f.value = open.peek().f;
+        }
     }
+    
     private static void expandInBackwardDirection(
             Queue<HeapNode> open,
             Set<Cell> closed,
             Cell source,
             Cell target,
-            double fa,
+            F f,
             Map<Cell, Double> distancea,
             Map<Cell, Double> distanceb,
             Map<Cell, Cell> parents,
@@ -232,8 +236,9 @@ public final class NBAStarFinder implements Finder {
         
         if (distanceb.get(current) + h.estimate(current, source)
                                    >= bestPathCost.value ||
-            fa - h.estimate(current, target) >= bestPathCost.value) {
+            f.value - h.estimate(current, target) >= bestPathCost.value) {
             // Reject current.
+            model.setCellType(current, CellType.OPENED);
         } else {
             iterable.setStartingCell(current);
             
@@ -252,7 +257,7 @@ public final class NBAStarFinder implements Finder {
                 
                 double tentativeDistance = distanceb.get(current) 
                                          + pathfindingSettings
-                                                 .getWeight(current, parent);
+                                                 .getWeight(parent, current);
                 
                 if (!distanceb.containsKey(parent) || 
                     distanceb.get(parent) > tentativeDistance) {
@@ -284,6 +289,10 @@ public final class NBAStarFinder implements Finder {
                 }
             }               
         }
+        
+        if (!open.isEmpty()) {
+            f.value = open.peek().f;
+        }
     }
     
     static final class BestPathCost {
@@ -297,4 +306,13 @@ public final class NBAStarFinder implements Finder {
     static final class TouchCell {
         Cell value;
     }
+    
+    static final class F {
+        double value;
+        
+        F(double value) {
+            this.value = value;
+        }
+    }
 }
+
