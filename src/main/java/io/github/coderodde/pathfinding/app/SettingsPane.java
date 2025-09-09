@@ -175,10 +175,21 @@ public final class SettingsPane extends Pane {
         
         this.searchState = searchState;
         this.searchState.setCurrentState(CurrentState.IDLE);
-        this.labelPathLength.setText("Path cost: N/A");
+        
         this.labelPathLength.setStyle("-fx-background-color: white;" +                          
-                                  "-fx-font-size: 13px;");
+                                      "-fx-font-size: 13px;");
+        
         this.labelPathLength.setPrefWidth(PIXELS_WIDTH);
+        
+        this.labelVisitedCount.setStyle("-fx-background-color: white;" +                          
+                                        "-fx-font-size: 13px;");
+        
+        this.labelVisitedCount.setPrefWidth(PIXELS_WIDTH);
+        
+        this.labelOpenedCount.setStyle("-fx-background-color: white;" +                          
+                                       "-fx-font-size: 13px;");
+        
+        this.labelOpenedCount.setPrefWidth(PIXELS_WIDTH);
         
         this.vboxDiagonalSettings
             .getChildren()
