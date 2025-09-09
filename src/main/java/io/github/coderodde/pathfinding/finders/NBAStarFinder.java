@@ -5,6 +5,7 @@ import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -28,7 +29,8 @@ public final class NBAStarFinder implements Finder {
     public List<Cell> findPath(GridModel model,
                                GridCellNeighbourIterable neighbourIterable, 
                                PathfindingSettings pathfindingSettings, 
-                               SearchState searchState) {
+                               SearchState searchState,
+                               SearchStatistics searchStatistics) {
         
         Queue<HeapNode> opena = new PriorityQueue<>();
         Queue<HeapNode> openb = new PriorityQueue<>();
@@ -62,6 +64,9 @@ public final class NBAStarFinder implements Finder {
         parentsa.put(source, null);
         parentsb.put(target, null);
         
+        searchStatistics.incrementOpened();
+        searchStatistics.incrementOpened();
+        
         while (!opena.isEmpty() && !openb.isEmpty()) {
             if (searchState.haltRequested()) {
                 return List.of();
@@ -87,7 +92,8 @@ public final class NBAStarFinder implements Finder {
                                          model,
                                          neighbourIterable, 
                                          pathfindingSettings,
-                                         searchState);
+                                         searchState,
+                                         searchStatistics);
             } else {
                 expandInBackwardDirection(openb,
                                           closed,
@@ -102,7 +108,8 @@ public final class NBAStarFinder implements Finder {
                                           model,
                                           neighbourIterable, 
                                           pathfindingSettings,
-                                          searchState);
+                                          searchState,
+                                          searchStatistics);
             }
         }
         
@@ -128,7 +135,8 @@ public final class NBAStarFinder implements Finder {
             GridModel model,
             GridCellNeighbourIterable iterable,
             PathfindingSettings pathfindingSettings,
-            SearchState searchState) {
+            SearchState searchState,
+            SearchStatistics searchStatistics) {
         
         Cell current = open.remove().cell;
         
@@ -137,6 +145,7 @@ public final class NBAStarFinder implements Finder {
         }
         
         closed.add(current);
+        searchStatistics.incrementVisited();
         
         if (!current.getCellType().equals(CellType.SOURCE)) {
             model.setCellType(current, CellType.VISITED);
@@ -186,6 +195,8 @@ public final class NBAStarFinder implements Finder {
                     
                     open.add(hn);
                     
+                    searchStatistics.incrementOpened();
+                    
                     if (distanceb.containsKey(child)) {
                         double pathCost = tentativeDistance 
                                         + distanceb.get(child);
@@ -218,7 +229,8 @@ public final class NBAStarFinder implements Finder {
             GridModel model,
             GridCellNeighbourIterable iterable,
             PathfindingSettings pathfindingSettings,
-            SearchState searchState) {
+            SearchState searchState,
+            SearchStatistics searchStatistics) {
         
         Cell current = open.remove().cell;
         
@@ -227,6 +239,7 @@ public final class NBAStarFinder implements Finder {
         }
         
         closed.add(current);
+        searchStatistics.incrementVisited();
         
         if (!current.getCellType().equals(CellType.TARGET)) {
             model.setCellType(current, CellType.VISITED);
@@ -276,6 +289,8 @@ public final class NBAStarFinder implements Finder {
                                                                    source));
                     
                     open.add(hn);
+                    
+                    searchStatistics.incrementOpened();
                     
                     if (distancea.containsKey(parent)) {
                         double pathCost = tentativeDistance 

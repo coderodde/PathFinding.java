@@ -5,6 +5,7 @@ import static io.github.coderodde.pathfinding.finders.Finder.tracebackPathBiDijk
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -28,7 +29,8 @@ public final class BidirectionalDijkstra implements Finder {
     public List<Cell> findPath(GridModel model,
                                GridCellNeighbourIterable neighbourIterable, 
                                PathfindingSettings pathfindingSettings, 
-                               SearchState searchState) {
+                               SearchState searchState,
+                               SearchStatistics searchStatistics) {
     
         Queue<HeapNode> queuef = new PriorityQueue<>();
         Queue<HeapNode> queueb = new PriorityQueue<>();
@@ -54,6 +56,9 @@ public final class BidirectionalDijkstra implements Finder {
         parentsf.put(source, null);
         parentsb.put(target, null);
         
+        searchStatistics.incrementOpened();
+        searchStatistics.incrementOpened();
+        
         double mu = Double.POSITIVE_INFINITY;
         Cell touchf = null;
         Cell touchb = null;
@@ -72,6 +77,9 @@ public final class BidirectionalDijkstra implements Finder {
             
             closedf.add(currentf);
             closedb.add(currentb);
+            
+            searchStatistics.incrementVisited();
+            searchStatistics.incrementVisited();
             
             if (!currentf.getCellType().equals(CellType.SOURCE)) {
                 model.setCellType(currentf, CellType.VISITED);
@@ -107,6 +115,7 @@ public final class BidirectionalDijkstra implements Finder {
                     }
                     
                     searchSleep(pathfindingSettings);
+                    searchStatistics.incrementOpened();
                 }
                 
                 if (closedb.contains(child)) {
@@ -146,6 +155,9 @@ public final class BidirectionalDijkstra implements Finder {
                     if (!parent.getCellType().equals(CellType.SOURCE)) {
                         model.setCellType(parent, CellType.OPENED);
                     }
+                    
+                    searchSleep(pathfindingSettings);
+                    searchStatistics.incrementOpened();
                 }
                 
                 if (closedf.contains(parent)) {

@@ -4,6 +4,7 @@ import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -26,7 +27,8 @@ public final class BIDDFSFinder implements Finder {
     public List<Cell> findPath(GridModel model, 
                                GridCellNeighbourIterable neighbourIterable,
                                PathfindingSettings pathfindingSettings, 
-                               SearchState searchState) {
+                               SearchState searchState,
+                               SearchStatistics searchStatistics) {
         
         Cell source = model.getSourceGridCell();
         Cell target = model.getTargetGridCell();
@@ -57,7 +59,8 @@ public final class BIDDFSFinder implements Finder {
                                       model,
                                       neighbourIterable, 
                                       pathfindingSettings,
-                                      searchState);
+                                      searchState,
+                                      searchStatistics);
             
             if (visitedForward.size() == previousVisitedSizeForward) {
                 return List.of();
@@ -76,7 +79,8 @@ public final class BIDDFSFinder implements Finder {
                             model, 
                             neighbourIterable,
                             pathfindingSettings, 
-                            searchState);
+                            searchState,
+                            searchStatistics);
             
             if (meetingCell != null) {
                 return buildPath(meetingCell,
@@ -84,7 +88,8 @@ public final class BIDDFSFinder implements Finder {
                                  model,
                                  neighbourIterable,
                                  pathfindingSettings, 
-                                 searchState);
+                                 searchState,
+                                 searchStatistics);
             }
             
             clearVisited(visitedBackward, 
@@ -100,7 +105,8 @@ public final class BIDDFSFinder implements Finder {
                             model, 
                             neighbourIterable,
                             pathfindingSettings, 
-                            searchState);
+                            searchState,
+                            searchStatistics);
             
             if (meetingCell != null) {
                 return buildPath(meetingCell,
@@ -108,7 +114,8 @@ public final class BIDDFSFinder implements Finder {
                                  model,
                                  neighbourIterable,
                                  pathfindingSettings, 
-                                 searchState);
+                                 searchState,
+                                 searchStatistics);
             }
             
             if (visitedBackward.size() == previousVisitedSizeBackward) {
@@ -124,7 +131,8 @@ public final class BIDDFSFinder implements Finder {
                                         GridModel model,
                                         GridCellNeighbourIterable iterable,
                                         PathfindingSettings pathfindingSettings,
-                                        SearchState searchState) {
+                                        SearchState searchState,
+                                        SearchStatistics searchStatistics) {
         List<Cell> path = new ArrayList<>();
         model.moveTarget(meetingCell.getx(),
                          meetingCell.gety());
@@ -134,7 +142,8 @@ public final class BIDDFSFinder implements Finder {
                         .findPath(model, 
                                   iterable, 
                                   pathfindingSettings, 
-                                  searchState);
+                                  searchState,
+                                  searchStatistics);
         
         path.addAll(prefixPath);
         path.remove(path.size() - 1);
@@ -151,7 +160,10 @@ public final class BIDDFSFinder implements Finder {
             GridModel model,
             GridCellNeighbourIterable iterable,
             PathfindingSettings ps,
-            SearchState searchState) {
+            SearchState searchState,
+            SearchStatistics searchStatistics) {
+        
+        searchStatistics.incrementTraced();
         
         if (searchState.haltRequested()) {
             return;
@@ -168,6 +180,7 @@ public final class BIDDFSFinder implements Finder {
         }
         
         visitedForward.add(node);
+        searchStatistics.incrementVisited();
         
         if (depth == 0) {
             frontier.add(node);
@@ -186,7 +199,8 @@ public final class BIDDFSFinder implements Finder {
                                       model,
                                       iterable, 
                                       ps,
-                                      searchState);
+                                      searchState,
+                                      searchStatistics);
         }
         
         model.setCellType(node, CellType.FREE);
@@ -201,7 +215,10 @@ public final class BIDDFSFinder implements Finder {
             GridModel model,
             GridCellNeighbourIterable iterable,
             PathfindingSettings ps,
-            SearchState searchState) {
+            SearchState searchState,
+            SearchStatistics searchStatistics) {
+        
+        searchStatistics.incrementTraced();
         
         if (searchState.haltRequested()) {
             return null;
@@ -233,6 +250,7 @@ public final class BIDDFSFinder implements Finder {
         
         visited.add(cell);
         model.setCellType(cell, CellType.VISITED);
+        searchStatistics.incrementVisited();
         
         iterable.setStartingCell(cell);
         
@@ -247,7 +265,8 @@ public final class BIDDFSFinder implements Finder {
                             model,
                             iterable,
                             ps,
-                            searchState);
+                            searchState,
+                            searchStatistics);
             
             if (meetingCell != null) {
                 return meetingCell;

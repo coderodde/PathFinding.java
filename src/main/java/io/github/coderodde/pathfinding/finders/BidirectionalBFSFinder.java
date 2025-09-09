@@ -4,6 +4,7 @@ import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -25,7 +26,8 @@ public final class BidirectionalBFSFinder implements Finder {
     public List<Cell> findPath(GridModel model, 
                                GridCellNeighbourIterable neighbourIterable, 
                                PathfindingSettings pathfindingSettings, 
-                               SearchState searchState) {
+                               SearchState searchState,
+                               SearchStatistics searchStatistics) {
         
         Deque<Cell> queuef = new ArrayDeque<>();
         Deque<Cell> queueb = new ArrayDeque<>();
@@ -49,6 +51,9 @@ public final class BidirectionalBFSFinder implements Finder {
         int bestCost = Integer.MAX_VALUE;
         Cell touchCell = null;
         
+        searchStatistics.incrementOpened(); // Inc for forward search.
+        searchStatistics.incrementOpened(); // Inc for backward search.
+        
         while (!queuef.isEmpty() && !queueb.isEmpty()) {
             int distf = distancef.get(queuef.getFirst());
             int distb = distanceb.get(queueb.getFirst());
@@ -71,6 +76,7 @@ public final class BidirectionalBFSFinder implements Finder {
                     
                     bestCost  = distf + distb;
                     touchCell = current;
+                    searchStatistics.incrementVisited();
                 }
                 
                 neighbourIterable.setStartingCell(current);
@@ -102,6 +108,8 @@ public final class BidirectionalBFSFinder implements Finder {
                                  current);
                     
                     queuef.addLast(neighbour);
+                    
+                    searchStatistics.incrementOpened();
                 }
             } else {
                 Cell current = queueb.removeFirst();
@@ -114,6 +122,7 @@ public final class BidirectionalBFSFinder implements Finder {
                         && bestCost > distf + distb) {
                     bestCost = distf + distb;
                     touchCell = current;
+                    searchStatistics.incrementVisited();
                 }
                 
                 neighbourIterable.setStartingCell(current);
@@ -140,6 +149,8 @@ public final class BidirectionalBFSFinder implements Finder {
                     distanceb.put(neighbour, distanceb.get(current) + 1);
                     parentsb.put(neighbour, current);
                     queueb.addLast(neighbour);
+                    
+                    searchStatistics.incrementOpened();
                 }
             }
         }

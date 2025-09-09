@@ -4,6 +4,7 @@ import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -27,7 +28,8 @@ public final class BestFirstSearchFinder implements Finder {
     public List<Cell> findPath(GridModel model, 
                                GridCellNeighbourIterable neighbourIterable,
                                PathfindingSettings pathfindingSettings, 
-                               SearchState searchState) {
+                               SearchState searchState,
+                               SearchStatistics searchStatistics) {
         
         Queue<HeapNode> open    = new PriorityQueue<>();
         Set<Cell> openSet       = new HashSet<>(); // Caches all the cells in 
@@ -41,6 +43,7 @@ public final class BestFirstSearchFinder implements Finder {
         open.add(new HeapNode(source, 0.0));
         openSet.add(source);
         parents.put(source, null);
+        searchStatistics.incrementOpened();
         
         while (!open.isEmpty()) {
             if (searchState.haltRequested()) {
@@ -64,9 +67,10 @@ public final class BestFirstSearchFinder implements Finder {
                 !current.equals(target)) {
                 model.setCellType(current, CellType.VISITED);
             }
-            
+           
             closed.add(current);
             neighbourIterable.setStartingCell(current);
+            searchStatistics.incrementVisited();
             
             for (Cell child : neighbourIterable) {
                 if (searchState.haltRequested()) {
@@ -92,6 +96,8 @@ public final class BestFirstSearchFinder implements Finder {
                                     pathfindingSettings.getHeuristicFunction()
                                                        .estimate(child, 
                                                                  target)));
+                    
+                    searchStatistics.incrementOpened();
                 }
             }
         }

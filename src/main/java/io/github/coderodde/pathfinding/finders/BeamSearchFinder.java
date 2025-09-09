@@ -5,6 +5,7 @@ import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -27,7 +28,9 @@ public final class BeamSearchFinder implements Finder {
     public List<Cell> findPath(GridModel model,
                                GridCellNeighbourIterable neighbourIterable, 
                                PathfindingSettings pathfindingSettings, 
-                               SearchState searchState) {
+                               SearchState searchState,
+                               SearchStatistics searchStatistics) {
+        
         Map<Cell, Cell> parents = new HashMap<>();
         Deque<Cell> queue = new ArrayDeque<>();
         
@@ -36,6 +39,7 @@ public final class BeamSearchFinder implements Finder {
         
         parents.put(source, null);
         queue.addLast(source);
+        searchStatistics.incrementOpened();
         
         while (!queue.isEmpty()) {
             if (searchState.haltRequested()) {
@@ -75,6 +79,8 @@ public final class BeamSearchFinder implements Finder {
             
             Cell current = queue.removeFirst();
             
+            searchStatistics.incrementVisited();
+            
             if (current.equals(target)) {
                 return tracebackPath(target, parents);
             }
@@ -104,6 +110,7 @@ public final class BeamSearchFinder implements Finder {
                     model.setCellType(neighbour, CellType.OPENED);
                 }
                     
+                searchStatistics.incrementOpened();
                 parents.put(neighbour, current);
                 queue.addLast(neighbour);
             }

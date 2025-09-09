@@ -4,6 +4,7 @@ import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -25,7 +26,8 @@ public final class BFSFinder implements Finder {
     public List<Cell> findPath(GridModel model,
                                GridCellNeighbourIterable neighbourIterable,
                                PathfindingSettings pathfindingSettings,
-                               SearchState searchState) {
+                               SearchState searchState,
+                               SearchStatistics searchStatistics) {
         
         
         Map<Cell, Cell> parents = new HashMap<>();
@@ -36,6 +38,7 @@ public final class BFSFinder implements Finder {
         
         parents.put(source, null);
         queue.addLast(source);
+        searchStatistics.incrementOpened();
         
         while (!queue.isEmpty()) {
             if (searchState.haltRequested()) {
@@ -52,6 +55,8 @@ public final class BFSFinder implements Finder {
             if (!current.equals(source)) {
                 model.setCellType(current, CellType.VISITED);
             }
+            
+            searchStatistics.incrementVisited();
             
             if (current.equals(target)) {
                 return tracebackPath(target, parents);
@@ -80,6 +85,7 @@ public final class BFSFinder implements Finder {
                     
                 parents.put(neighbour, current);
                 queue.addLast(neighbour);
+                searchStatistics.incrementOpened();
             }
         }
         

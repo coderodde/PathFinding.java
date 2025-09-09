@@ -3,6 +3,7 @@ package io.github.coderodde.pathfinding.finders;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import java.util.ArrayList;
@@ -33,7 +34,8 @@ public interface Finder {
     public List<Cell> findPath(GridModel model,
                                GridCellNeighbourIterable neighbourIterable,
                                PathfindingSettings pathfindingSettings,
-                               SearchState searchState);
+                               SearchState searchState,
+                               SearchStatistics searchStatistics);
     
     public default List<Cell> 
         tracebackPath(Cell target, Map<Cell, Cell> parentMap) {

@@ -5,6 +5,7 @@ import io.github.coderodde.pathfinding.heuristics.ZeroHeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import java.util.List;
@@ -21,7 +22,8 @@ public final class DijkstraFinder implements Finder {
     public List<Cell> findPath(GridModel model,
                                GridCellNeighbourIterable neighbourIterable, 
                                PathfindingSettings pathfindingSettings,
-                               SearchState searchState) {
+                               SearchState searchState,
+                               SearchStatistics searchStatistics) {
         
         HeuristicFunction oldHeuristicFunction = 
                 pathfindingSettings.getHeuristicFunction();
@@ -34,7 +36,8 @@ public final class DijkstraFinder implements Finder {
                                 model, 
                                 neighbourIterable, 
                                 pathfindingSettings,
-                                searchState);
+                                searchState,
+                                searchStatistics);
         
         pathfindingSettings.setHeuristicFunction(oldHeuristicFunction);
         return path;
