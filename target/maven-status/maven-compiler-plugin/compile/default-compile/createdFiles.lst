@@ -8,6 +8,7 @@ io\github\coderodde\pathfinding\heuristics\ZeroHeuristicFunction.class
 io\github\coderodde\pathfinding\logic\SearchState.class
 io\github\coderodde\pathfinding\app\Configuration.class
 io\github\coderodde\pathfinding\logic\SearchState$CurrentState.class
+io\github\coderodde\pathfinding\finders\BidirectionalBestFirstSearchFinder.class
 io\github\coderodde\pathfinding\finders\HeapNode.class
 io\github\coderodde\pathfinding\finders\NBAStarFinder$BestPathCost.class
 io\github\coderodde\pathfinding\view\GridView.class

@@ -1,0 +1,122 @@
+package io.github.coderodde.pathfinding.finders;
+
+import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
+import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
+import io.github.coderodde.pathfinding.logic.PathfindingSettings;
+import io.github.coderodde.pathfinding.logic.SearchState;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
+import io.github.coderodde.pathfinding.model.GridModel;
+import io.github.coderodde.pathfinding.utils.Cell;
+import io.github.coderodde.pathfinding.utils.CellType;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.Set;
+
+/**
+ *
+ * @author Rodion "rodde" Efremov
+ * @version 1.0.0 (Sep 10, 2025)
+ * @since 1.0.0 (Sep 10, 2025)
+ */
+public final class BidirectionalBestFirstSearchFinder implements Finder {
+
+    @Override
+    public List<Cell> findPath(GridModel model, 
+                               GridCellNeighbourIterable neighbourIterable, 
+                               PathfindingSettings pathfindingSettings, 
+                               SearchState searchState, 
+                               SearchStatistics searchStatistics) {
+        
+        Queue<HeapNode> openf = new PriorityQueue<>();
+        Queue<HeapNode> openb = new PriorityQueue<>();
+        
+        Set<Cell> openSetf = new HashSet<>();
+        Set<Cell> openSetb = new HashSet<>();
+        
+        Set<Cell> closedf = new HashSet<>();
+        Set<Cell> closedb = new HashSet<>();
+        
+        Map<Cell, Cell> parentsf = new HashMap<>();
+        Map<Cell, Cell> parentsb = new HashMap<>();
+        
+        Cell source = model.getSourceGridCell();
+        Cell target = model.getTargetGridCell();
+        
+        HeuristicFunction h = pathfindingSettings.getHeuristicFunction();
+        
+        openf.add(new HeapNode(source, 0.0));
+        openb.add(new HeapNode(target, 0.0));
+        
+        openSetf.add(source);
+        openSetb.add(target);
+        
+        parentsf.put(source, null);
+        parentsb.put(target, null);
+        
+        while (!openf.isEmpty() && !openb.isEmpty()) {
+            if (openf.size() <= openb.size()) {
+                Cell current = openf.remove().cell;
+                
+                if (closedb.contains(current)) {
+                    return tracebackPath(current, 
+                                         parentsf, 
+                                         parentsb);
+                }
+                
+                openSetf.remove(current);
+                closedf.add(current);
+                neighbourIterable.setStartingCell(current);
+                
+                for (Cell child : neighbourIterable) {
+                    if (closedf.contains(child)) {
+                        continue;
+                    }
+                    
+                    if (!openSetf.contains(child)) {
+                        model.setCellType(child, CellType.OPENED);
+                        parentsf.put(child, current);
+                        openSetf.add(child);
+                        openf.add(
+                                new HeapNode(
+                                        child,
+                                        h.estimate(child, target)));
+                    }
+                }
+            } else {
+                Cell current = openb.remove().cell;
+                
+                if (closedf.contains(current)) {
+                    return tracebackPath(current,
+                                         parentsf, 
+                                         parentsb);
+                }
+                
+                openSetb.remove(current);
+                closedb.add(current);
+                neighbourIterable.setStartingCell(current);
+                
+                for (Cell parent : neighbourIterable) {
+                    if (closedb.contains(parent)) {
+                        continue;
+                    }
+                    
+                    if (!openSetb.contains(parent)) {
+                        model.setCellType(parent, CellType.OPENED);
+                        parentsb.put(parent, current);
+                        openSetb.add(parent);
+                        openb.add(
+                                new HeapNode(
+                                        parent,
+                                        h.estimate(parent, source)));
+                    }
+                }
+            }
+        }
+    
+        return List.of();
+    }
+}
