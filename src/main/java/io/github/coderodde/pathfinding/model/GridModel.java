@@ -369,4 +369,8 @@ public final class GridModel {
     public List<Cell> getPath() {
         return new ArrayList<>(path);
     }
+    
+    public GridModel copyModel() {
+        return null;
+    }
 }

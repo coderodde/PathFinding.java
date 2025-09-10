@@ -9,6 +9,7 @@ import io.github.coderodde.pathfinding.finders.BIDDFSFinder;
 import io.github.coderodde.pathfinding.finders.BeamSearchFinder;
 import io.github.coderodde.pathfinding.finders.BestFirstSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
+import io.github.coderodde.pathfinding.finders.BidirectionalBeamSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalDijkstra;
 import io.github.coderodde.pathfinding.finders.DijkstraFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
@@ -66,6 +67,7 @@ public final class SettingsPane extends Pane {
     private static final String BEAM_SEARCH       = "Beam search";
     private static final String BEST_FIRST_SEARCH = "Best First search";
     private static final String BI_BFS            = "Bidirectional BFS";
+    private static final String BI_BEAM_SEARCH    = "Bidirectional beam search";
     private static final String BI_DIJKSTRA       = "Bidirectional Dijkstra";
     private static final String BIDDFS            = "Bidirectional IDDFS";
     private static final String DIJKSTRA          = "Dijkstra";
@@ -85,6 +87,7 @@ public final class SettingsPane extends Pane {
         BEAM_SEARCH,
         BEST_FIRST_SEARCH,
         BI_BFS,
+        BI_BEAM_SEARCH,
         BI_DIJKSTRA,
         BIDDFS,
         DIJKSTRA,
@@ -110,6 +113,7 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(BFS,               new BFSFinder());
         FINDER_MAP.put(BI_BFS,            new BidirectionalBFSFinder());
         FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());
+        FINDER_MAP.put(BI_BEAM_SEARCH,    new BidirectionalBeamSearchFinder());  
         FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());  
         FINDER_MAP.put(BIDDFS,            new BIDDFSFinder());
         FINDER_MAP.put(IDASTAR,           new IDAStarFinder());

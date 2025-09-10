@@ -1,4 +1,5 @@
 io\github\coderodde\pathfinding\app\SettingsPane$1.class
+io\github\coderodde\pathfinding\finders\BidirectionalBeamSearchFinder.class
 io\github\coderodde\pathfinding\heuristics\ChebyshevHeuristicFunction.class
 io\github\coderodde\pathfinding\finders\Finder.class
 io\github\coderodde\pathfinding\finders\IDAStarFinder.class
