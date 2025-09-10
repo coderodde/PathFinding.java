@@ -12,6 +12,7 @@ import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalDijkstra;
 import io.github.coderodde.pathfinding.finders.DijkstraFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
+import io.github.coderodde.pathfinding.finders.IDAStarFinder;
 import io.github.coderodde.pathfinding.finders.NBAStarFinder;
 import io.github.coderodde.pathfinding.heuristics.ChebyshevHeuristicFunction;
 import io.github.coderodde.pathfinding.heuristics.EuclideanHeuristicFunction;
@@ -61,13 +62,14 @@ public final class SettingsPane extends Pane {
     private static final String CHEBYSHEV = "Chebyshev";
     
     private static final String ASTAR             = "A* search";
-    private static final String DIJKSTRA          = "Dijkstra";
-    private static final String BI_DIJKSTRA       = "Bidirectional Dijkstra";
     private static final String BFS               = "BFS";
-    private static final String BI_BFS            = "Bidirectional BFS";
-    private static final String BEST_FIRST_SEARCH = "Best First search";
     private static final String BEAM_SEARCH       = "Beam search";
+    private static final String BEST_FIRST_SEARCH = "Best First search";
+    private static final String BI_BFS            = "Bidirectional BFS";
+    private static final String BI_DIJKSTRA       = "Bidirectional Dijkstra";
     private static final String BIDDFS            = "Bidirectional IDDFS";
+    private static final String DIJKSTRA          = "Dijkstra";
+    private static final String IDASTAR           = "IDA* search";
     private static final String NBASTAR           = "NBA* search";
     
     private static final String[] HEURISTIC_NAMES = {
@@ -79,13 +81,14 @@ public final class SettingsPane extends Pane {
     
     private static final String[] FINDER_NAMES = {
         ASTAR,
-        DIJKSTRA,
-        BI_DIJKSTRA,
         BFS,
-        BI_BFS,
-        BEST_FIRST_SEARCH,
         BEAM_SEARCH,
+        BEST_FIRST_SEARCH,
+        BI_BFS,
+        BI_DIJKSTRA,
         BIDDFS,
+        DIJKSTRA,
+        IDASTAR,
         NBASTAR,
     };
     
@@ -109,6 +112,7 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());
         FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());  
         FINDER_MAP.put(BIDDFS,            new BIDDFSFinder());
+        FINDER_MAP.put(IDASTAR,           new IDAStarFinder());
         FINDER_MAP.put(NBASTAR,           new NBAStarFinder());
     }
     
@@ -156,6 +160,7 @@ public final class SettingsPane extends Pane {
     private final Label labelPathLength   = new Label("Path cost: N/A");
     private final Label labelVisitedCount = new Label("Visited cells: N/A");
     private final Label labelOpenedCount  = new Label("Opened cells: N/A");
+    private final Label labelTracedCount  = new Label("Traced cells: N/A");
     
     private final VBox vboxDiagonalSettings = new VBox();
     
@@ -196,6 +201,11 @@ public final class SettingsPane extends Pane {
                                        "-fx-font-size: 13px;");
         
         this.labelOpenedCount.setPrefWidth(PIXELS_WIDTH);
+        
+        this.labelTracedCount.setStyle("-fx-background-color: white;" +                          
+                                       "-fx-font-size: 13px;");
+        
+        this.labelTracedCount.setPrefWidth(PIXELS_WIDTH);
         
         this.vboxDiagonalSettings
             .getChildren()
@@ -288,13 +298,15 @@ public final class SettingsPane extends Pane {
         mainVBox.getChildren().addAll(accordion, 
                                       labelPathLength,
                                       labelVisitedCount,
-                                      labelOpenedCount);
+                                      labelOpenedCount,
+                                      labelTracedCount);
         
         getChildren().add(mainVBox);
         
         VBox buttonVBox = new VBox();
         
         buttonStartPause.setPrefWidth(PIXELS_WIDTH);
+        buttonReset     .setPrefWidth(PIXELS_WIDTH);
         buttonClearWalls.setPrefWidth(PIXELS_WIDTH);
         
         buttonStartPause.setOnAction(event -> {
@@ -360,6 +372,9 @@ public final class SettingsPane extends Pane {
                         
                         labelOpenedCount.setText(
                                 "Opened: " + searchStatistics.getOpened());
+                        
+                        labelTracedCount.setText(
+                                "Traced: " + searchStatistics.getTraced());
                         
                     } catch (InterruptedException | ExecutionException ex) {
                         System.getLogger(
