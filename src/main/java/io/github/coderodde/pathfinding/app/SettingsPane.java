@@ -15,6 +15,7 @@ import io.github.coderodde.pathfinding.finders.BidirectionalDijkstra;
 import io.github.coderodde.pathfinding.finders.DijkstraFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.finders.IDAStarFinder;
+import io.github.coderodde.pathfinding.finders.IDDFSFinder;
 import io.github.coderodde.pathfinding.finders.NBAStarFinder;
 import io.github.coderodde.pathfinding.heuristics.ChebyshevHeuristicFunction;
 import io.github.coderodde.pathfinding.heuristics.EuclideanHeuristicFunction;
@@ -74,6 +75,7 @@ public final class SettingsPane extends Pane {
     private static final String BIDDFS            = "Bidirectional IDDFS";
     private static final String DIJKSTRA          = "Dijkstra";
     private static final String IDASTAR           = "IDA* search";
+    private static final String IDDFS             = "IDDFS";
     private static final String NBASTAR           = "NBA* search";
     
     private static final String[] HEURISTIC_NAMES = {
@@ -95,6 +97,7 @@ public final class SettingsPane extends Pane {
         BIDDFS,
         DIJKSTRA,
         IDASTAR,
+        IDDFS,
         NBASTAR,
     };
     
@@ -120,6 +123,7 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());  
         FINDER_MAP.put(BIDDFS,            new BIDDFSFinder());
         FINDER_MAP.put(IDASTAR,           new IDAStarFinder());
+        FINDER_MAP.put(IDDFS,             new IDDFSFinder());
         FINDER_MAP.put(NBASTAR,           new NBAStarFinder());
         FINDER_MAP.put(BI_BEST_FS,        
                        new BidirectionalBestFirstSearchFinder());
