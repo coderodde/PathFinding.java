@@ -1,5 +1,6 @@
 package io.github.coderodde.pathfinding.finders;
 
+import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
@@ -67,6 +68,10 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                                          parentsb);
                 }
                 
+                if (!current.getCellType().equals(CellType.SOURCE)) {
+                    model.setCellType(current, CellType.VISITED);
+                }
+                
                 openSetf.remove(current);
                 closedf.add(current);
                 neighbourIterable.setStartingCell(current);
@@ -77,7 +82,9 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                     }
                     
                     if (!openSetf.contains(child)) {
+                        searchSleep(pathfindingSettings);
                         model.setCellType(child, CellType.OPENED);
+                        
                         parentsf.put(child, current);
                         openSetf.add(child);
                         openf.add(
@@ -95,6 +102,10 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                                          parentsb);
                 }
                 
+                if (!current.getCellType().equals(CellType.TARGET)) {
+                    model.setCellType(current, CellType.VISITED);
+                }
+                
                 openSetb.remove(current);
                 closedb.add(current);
                 neighbourIterable.setStartingCell(current);
@@ -105,7 +116,9 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                     }
                     
                     if (!openSetb.contains(parent)) {
+                        searchSleep(pathfindingSettings);
                         model.setCellType(parent, CellType.OPENED);
+                        
                         parentsb.put(parent, current);
                         openSetb.add(parent);
                         openb.add(
