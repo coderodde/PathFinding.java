@@ -118,7 +118,8 @@ public final class NBAStarFinder implements Finder {
         }
         
         return tracebackPath(touchCell.value, 
-                             parentsa, parentsb);
+                             parentsa, 
+                             parentsb);
     }
     
     private static void expandInForwardDirection(
@@ -157,6 +158,7 @@ public final class NBAStarFinder implements Finder {
                                    >= bestPathCost.value ||
             f.value - h.estimate(current, source) >= bestPathCost.value) {
             // Reject current.
+            model.setCellType(current, CellType.OPENED);
         } else {
             iterable.setStartingCell(current);
             

@@ -192,17 +192,9 @@ public final class BidirectionalBeamSearchFinder implements Finder {
                                   h.estimate(b, target));
         });
         
-        for (Cell cell : queue) {
-            model.setCellType(cell, CellType.FREE);
-        }
-        
         queue.clear();
         queue.addAll(
                 layer.subList(0, Math.min(layer.size(), ps.getBeamWidth())));
-        
-        for (Cell cell : queue) {
-            model.setCellType(cell, CellType.OPENED);
-        }
     }
     
     private static void pruneQueueBackward(Deque<Cell> queue,
@@ -218,16 +210,8 @@ public final class BidirectionalBeamSearchFinder implements Finder {
                                   h.estimate(b, source));
         });
         
-        for (Cell cell : queue) {
-            model.setCellType(cell, CellType.FREE);
-        }
-        
         queue.clear();
         queue.addAll(
                 layer.subList(0, Math.min(layer.size(), ps.getBeamWidth())));
-        
-        for (Cell cell : queue) {
-            model.setCellType(cell, CellType.OPENED);
-        }
     }
 }
