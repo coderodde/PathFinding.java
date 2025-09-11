@@ -57,8 +57,6 @@ public final class AStarFinder implements Finder {
                 continue;
             }
 
-            searchSleep(pathfindingSettings);
-
             Cell current = open.remove().cell;
             searchStatistics.decrementOpened();
             
@@ -89,7 +87,6 @@ public final class AStarFinder implements Finder {
                     continue;
                 }
                 
-                searchSleep(pathfindingSettings);
 
                 double tentativeDistance 
                         = distances.get(current)
@@ -111,6 +108,7 @@ public final class AStarFinder implements Finder {
                                                                    target)));
                     
                     searchStatistics.incrementOpened();
+                    searchSleep(pathfindingSettings);
                 }
             }
         }

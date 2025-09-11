@@ -34,7 +34,8 @@ public final class IDDFSFinder implements Finder {
         
         SolutionFound solutionFound = new SolutionFound();
         Set<Cell> visited = new HashSet<>();
-        Path path = new Path();
+        List<Cell> tentativePath = new ArrayList<>();
+        List<Cell> optimalPath = new ArrayList<>();
         int previousVisitedSize = 0;
         
         for (int depth = 0;; ++depth) {
@@ -42,7 +43,8 @@ public final class IDDFSFinder implements Finder {
                                target,
                                depth, 
                                solutionFound, 
-                               path, 
+                               tentativePath,
+                               optimalPath, 
                                visited,
                                model,
                                neighbourIterable, 
@@ -51,8 +53,8 @@ public final class IDDFSFinder implements Finder {
                                searchStatistics);
             
             if (solutionFound.found) {
-                Collections.reverse(path.path);
-                return path.path;
+                Collections.reverse(optimalPath);
+                return optimalPath;
             }
             
             if (previousVisitedSize == visited.size()) {
@@ -61,7 +63,6 @@ public final class IDDFSFinder implements Finder {
             
             previousVisitedSize = visited.size();
             visited.clear();
-            path.path.clear();
         }
     }
     
@@ -70,7 +71,8 @@ public final class IDDFSFinder implements Finder {
             Cell target,
             int depth,
             SolutionFound solutionFound,
-            Path path,
+            List<Cell> tentativePath,
+            List<Cell> optimalPath,
             Set<Cell> visited,
             GridModel model,
             GridCellNeighbourIterable iterable,
@@ -84,7 +86,8 @@ public final class IDDFSFinder implements Finder {
         
         if (depth == 0 && cell.equals(target)) {
             solutionFound.found = true;
-            path.path.add(cell);
+            optimalPath.addAll(tentativePath);
+            optimalPath.add(target);
             return;
         }
         
@@ -92,8 +95,13 @@ public final class IDDFSFinder implements Finder {
             return;
         }
         
+        tentativePath.add(cell);
         visited.add(cell);
-        path.path.add(cell);
+        
+        if (!cell.getCellType().equals(CellType.SOURCE) &&
+            !cell.getCellType().equals(CellType.TARGET)) {
+            model.setCellType(cell, CellType.VISITED);
+        }
         
         if (depth > 0) {
             iterable.setStartingCell(cell);
@@ -114,7 +122,8 @@ public final class IDDFSFinder implements Finder {
                                    target,
                                    depth - 1,
                                    solutionFound, 
-                                   path, 
+                                   tentativePath,
+                                   optimalPath, 
                                    visited, 
                                    model,
                                    iterable, 
@@ -132,7 +141,7 @@ public final class IDDFSFinder implements Finder {
             }
         }
         
-        path.path.removeLast();
+        tentativePath.removeLast();
     }
     
     private static final class SolutionFound {
