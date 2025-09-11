@@ -490,19 +490,26 @@ public final class GridModel {
         }
     }
     
-    private void carveCell(int rr, int cc) {
-        int r = 2 * rr + 1;
-        int c = 2 * cc + 1;
-        setCellType(c, r, CellType.FREE);
+    private void carveCell(int roomY, int roomX) {
+        int x = 2 * roomX + 1;
+        int y = 2 * roomY + 1;
+        
+        setCellType(x, y, CellType.FREE);
     }
     
-    private void carveBetween(int r0, int c0, int r1, int c1) {
-        int mr0 = 2 * r0 + 1;
-        int mc0 = 2 * c0 + 1;
-        int mr1 = 2 * r1 + 1;
-        int mc1 = 2 * c1 + 1;
-        int mrw = (mr0 + mr1) / 2;
-        int mcw = (mc0 + mc1) / 2;
-        setCellType(mcw, mrw, CellType.FREE);
+    private void carveBetween(int roomRow0,
+                              int roomCol0,
+                              int roomRow1,
+                              int roomCol1) {
+        
+        int cellX0 = 2 * roomCol0 + 1;
+        int cellY0 = 2 * roomRow0 + 1;
+        int cellX1 = 2 * roomCol1 + 1;
+        int cellY1 = 2 * roomRow1 + 1;
+        
+        int x = (cellX0 + cellX1) / 2;
+        int y = (cellY0 + cellY1) / 2;
+        
+        setCellType(x, y, CellType.FREE);
     }
 }
