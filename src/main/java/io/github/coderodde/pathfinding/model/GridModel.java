@@ -422,54 +422,54 @@ public final class GridModel {
             cols--;
         }
         
-        int roomRows = (rows - 1) / 2; // number of “rooms” vertically
-        int roomCols = (cols - 1) / 2; // number of “rooms” horizontally
+        int roomRows = (rows - 1) / 2; // Number of “rooms” vertically.
+        int roomCols = (cols - 1) / 2; // Number of “rooms” horizontally.
 
         boolean[][] visited = new boolean[roomRows]
                                          [roomCols];
 
-        // pick a random room (mapped to grid coords: rr->2*rr+1)
+        // Pick a random room (mapped to grid coords: rr -> 2 * rr + 1):
         int rr = rnd.nextInt(roomRows); 
         int cc = rnd.nextInt(roomCols);
         
+        // Carve the inital room from its wall:
         carveCell(rr, cc);
 
+        // Initialize DFS stack:
         Deque<int[]> stack = new ArrayDeque<>();
         visited[rr][cc] = true;
         stack.push(new int[]{ rr, cc });
 
         // 4-neighbor moves in room space
-        final int[] DR = { -1, 0, 1, 0 };
-        final int[] DC = { 0, 1, 0, -1 };
+        int[] DR = { -1, 0, 1, 0 };
+        int[] DC = { 0, 1, 0, -1 };
+        int[] directionIndices = { 0, 1, 2, 3 };
 
         while (!stack.isEmpty()) {
             int[] cur = stack.peek();
             int r0 = cur[0];
             int c0 = cur[1];
-
-            int[] dirs = {0, 1, 2, 3};
             
-            // Fisher–Yates shuffle
+            // Fisher–Yates shuffle:
             for (int i = 3; i > 0; i--) {
                 int j = rnd.nextInt(i + 1);
-                int t = dirs[i];
-                dirs[i] = dirs[j];
-                dirs[j] = t;
+                int t = directionIndices[i];
+                directionIndices[i] = directionIndices[j];
+                directionIndices[j] = t;
             }
 
             boolean moved = false;
             
-            for (int d : dirs) {
-                int r1 = r0 + DR[d]; 
-                int c1 = c0 + DC[d];
+            for (int directionIndex : directionIndices) {
+                int r1 = r0 + DR[directionIndex]; 
+                int c1 = c0 + DC[directionIndex];
                 
                 if (0 <= r1 
                         && r1 < roomRows 
                         && 0 <= c1 
                         && c1 < roomCols 
                         && !visited[r1][c1]) {
-                    // carve passage between rooms (r0,c0) and (r1,c1)
-                    
+                    // Carve passage between rooms (r0, c0) and (r1, c1):
                     carveBetween(r0, 
                                  c0,
                                  r1,
@@ -478,7 +478,7 @@ public final class GridModel {
                     carveCell(r1, c1);
                     
                     visited[r1][c1] = true;
-                    stack.push(new int[]{r1, c1});
+                    stack.push(new int[]{ r1, c1 });
                     moved = true;
                     break;
                 }
