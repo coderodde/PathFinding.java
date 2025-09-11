@@ -8,9 +8,13 @@ import static io.github.coderodde.pathfinding.utils.CellType.SOURCE;
 import static io.github.coderodde.pathfinding.utils.CellType.TARGET;
 import static io.github.coderodde.pathfinding.utils.CellType.TRACED;
 import static io.github.coderodde.pathfinding.utils.CellType.VISITED;
+import static io.github.coderodde.pathfinding.utils.CellType.WALL;
 import io.github.coderodde.pathfinding.view.GridView;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
+import java.util.Random;
 
 /**
  * This class implements the grid model representing the cell configurations.
@@ -372,5 +376,133 @@ public final class GridModel {
     
     public GridModel copyModel() {
         return null;
+    }
+    
+    public void drawRandomMaze() {
+        Random rnd = new Random();
+        drawAllAsWalls();
+        drawViaDFS(rnd);
+        setSourceTargetCells(rnd);
+    }
+    
+    private void drawAllAsWalls() {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {   
+                setCellType(x, y, WALL);
+            }
+        }
+    }
+    
+    private void setSourceTargetCells(Random random) {
+        int sourceX = random.nextInt(width);
+        int sourceY = random.nextInt(height);
+        
+        moveSource(sourceX, sourceY);
+        
+        while (true) {
+            int targetX = random.nextInt(width);
+            int targetY = random.nextInt(height);
+            
+            if (targetX != sourceX || targetY != sourceY) {
+                moveTarget(targetX, targetY);
+                return;
+            }
+        }
+    }
+    
+    private void drawViaDFS(Random rnd) {
+        int rows = height;
+        int cols = width;
+        
+        if (height % 2 == 0) {
+            rows--;
+        }
+        
+        if (width % 2 == 0) {
+            cols--;
+        }
+        
+        int roomRows = (rows - 1) / 2; // number of “rooms” vertically
+        int roomCols = (cols - 1) / 2; // number of “rooms” horizontally
+
+        boolean[][] visited = new boolean[roomRows]
+                                         [roomCols];
+
+        // pick a random room (mapped to grid coords: rr->2*rr+1)
+        int rr = rnd.nextInt(roomRows); 
+        int cc = rnd.nextInt(roomCols);
+        
+        carveCell(rr, cc);
+
+        Deque<int[]> stack = new ArrayDeque<>();
+        visited[rr][cc] = true;
+        stack.push(new int[]{ rr, cc });
+
+        // 4-neighbor moves in room space
+        final int[] DR = { -1, 0, 1, 0 };
+        final int[] DC = { 0, 1, 0, -1 };
+
+        while (!stack.isEmpty()) {
+            int[] cur = stack.peek();
+            int r0 = cur[0];
+            int c0 = cur[1];
+
+            int[] dirs = {0, 1, 2, 3};
+            
+            // Fisher–Yates shuffle
+            for (int i = 3; i > 0; i--) {
+                int j = rnd.nextInt(i + 1);
+                int t = dirs[i];
+                dirs[i] = dirs[j];
+                dirs[j] = t;
+            }
+
+            boolean moved = false;
+            
+            for (int d : dirs) {
+                int r1 = r0 + DR[d]; 
+                int c1 = c0 + DC[d];
+                
+                if (0 <= r1 
+                        && r1 < roomRows 
+                        && 0 <= c1 
+                        && c1 < roomCols 
+                        && !visited[r1][c1]) {
+                    // carve passage between rooms (r0,c0) and (r1,c1)
+                    
+                    carveBetween(r0, 
+                                 c0,
+                                 r1,
+                                 c1);
+                    
+                    carveCell(r1, c1);
+                    
+                    visited[r1][c1] = true;
+                    stack.push(new int[]{r1, c1});
+                    moved = true;
+                    break;
+                }
+            }
+            
+            if (!moved) {
+                stack.pop();
+            }
+        }
+    }
+    
+    private void carveCell(int rr, int cc) {
+        int r = 2 * rr + 1;
+        int c = 2 * cc + 1;
+        setCellType(c, r, CellType.FREE);
+    }
+    
+    private void carveBetween(int r0, int c0, int r1, int c1) {
+        int mr0 = 2 * r0 + 1;
+        int mc0 = 2 * c0 + 1;
+        int mr1 = 2 * r1 + 1;
+        int mc1 = 2 * c1 + 1;
+        int mrw = (mr0 + mr1) / 2;
+        int mcw = (mc0 + mc1) / 2;
+        setCellType(mcw, mrw, CellType.FREE);
     }
 }

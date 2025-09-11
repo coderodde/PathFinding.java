@@ -35,9 +35,6 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
         Queue<HeapNode> openf = new PriorityQueue<>();
         Queue<HeapNode> openb = new PriorityQueue<>();
         
-        Set<Cell> openSetf = new HashSet<>();
-        Set<Cell> openSetb = new HashSet<>();
-        
         Set<Cell> closedf = new HashSet<>();
         Set<Cell> closedb = new HashSet<>();
         
@@ -51,9 +48,6 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
         
         openf.add(new HeapNode(source, 0.0));
         openb.add(new HeapNode(target, 0.0));
-        
-        openSetf.add(source);
-        openSetb.add(target);
         
         parentsf.put(source, null);
         parentsb.put(target, null);
@@ -72,7 +66,6 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                     model.setCellType(current, CellType.VISITED);
                 }
                 
-                openSetf.remove(current);
                 closedf.add(current);
                 neighbourIterable.setStartingCell(current);
                 
@@ -81,12 +74,11 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                         continue;
                     }
                     
-                    if (!openSetf.contains(child)) {
+                    if (!parentsf.containsKey(child)) {
                         searchSleep(pathfindingSettings);
                         model.setCellType(child, CellType.OPENED);
                         
                         parentsf.put(child, current);
-                        openSetf.add(child);
                         openf.add(
                                 new HeapNode(
                                         child,
@@ -106,7 +98,6 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                     model.setCellType(current, CellType.VISITED);
                 }
                 
-                openSetb.remove(current);
                 closedb.add(current);
                 neighbourIterable.setStartingCell(current);
                 
@@ -115,12 +106,11 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                         continue;
                     }
                     
-                    if (!openSetb.contains(parent)) {
+                    if (!parentsb.containsKey(parent)) {
                         searchSleep(pathfindingSettings);
                         model.setCellType(parent, CellType.OPENED);
                         
                         parentsb.put(parent, current);
-                        openSetb.add(parent);
                         openb.add(
                                 new HeapNode(
                                         parent,

@@ -180,6 +180,7 @@ public final class SettingsPane extends Pane {
     private final Button buttonStartPause = new Button("Start");
     private final Button buttonReset      = new Button("Reset");
     private final Button buttonClearWalls = new Button("Clear walls");
+    private final Button buttonDrawMaze   = new Button("Draw random maze");
     
     private volatile boolean searchIsRunning = false;
     
@@ -321,6 +322,15 @@ public final class SettingsPane extends Pane {
         buttonStartPause.setPrefWidth(PIXELS_WIDTH);
         buttonReset     .setPrefWidth(PIXELS_WIDTH);
         buttonClearWalls.setPrefWidth(PIXELS_WIDTH);
+        buttonDrawMaze  .setPrefWidth(PIXELS_WIDTH);
+        
+        buttonDrawMaze.setOnAction(event -> {
+            if (!searchState.getCurrentState().equals(CurrentState.IDLE)) {
+                return;
+            }
+            
+            gridModel.drawRandomMaze();
+        });
         
         buttonStartPause.setOnAction(event -> {
             
@@ -452,7 +462,8 @@ public final class SettingsPane extends Pane {
         
         buttonVBox.getChildren().addAll(buttonStartPause,
                                         buttonReset,
-                                        buttonClearWalls);
+                                        buttonClearWalls,
+                                        buttonDrawMaze);
         
         mainVBox.getChildren().add(buttonVBox);
         

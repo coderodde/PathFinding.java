@@ -71,7 +71,6 @@ public final class BidirectionalBeamSearchFinder implements Finder {
                 if (queuef.size() > pathfindingSettings.getBeamWidth()) {
                     pruneQueueForward(queuef,
                                       target,
-                                      model, 
                                       pathfindingSettings);
                 }
                 
@@ -127,7 +126,6 @@ public final class BidirectionalBeamSearchFinder implements Finder {
                 if (queueb.size() > pathfindingSettings.getBeamWidth()) {
                     pruneQueueBackward(queueb,
                                        source,
-                                       model, 
                                        pathfindingSettings);
                 }
                 
@@ -181,7 +179,6 @@ public final class BidirectionalBeamSearchFinder implements Finder {
     
     private static void pruneQueueForward(Deque<Cell> queue,
                                           Cell target,
-                                          GridModel model,
                                           PathfindingSettings ps) {
         
         List<Cell> layer = new ArrayList<>(queue);
@@ -194,16 +191,16 @@ public final class BidirectionalBeamSearchFinder implements Finder {
         
         queue.clear();
         queue.addAll(
-                layer.subList(0, Math.min(layer.size(), ps.getBeamWidth())));
+                layer.subList(0, ps.getBeamWidth()));
     }
     
-    private static void pruneQueueBackward(Deque<Cell> queue,
-                                           Cell source,
-                                           GridModel model,
-                                           PathfindingSettings ps) {
+    private static void pruneQueueBackward(
+            Deque<Cell> queue,
+            Cell source,
+            PathfindingSettings pathfindingSettings) {
         
         List<Cell> layer = new ArrayList<>(queue);
-        HeuristicFunction h = ps.getHeuristicFunction();
+        HeuristicFunction h = pathfindingSettings.getHeuristicFunction();
         
         layer.sort((a, b) -> {
             return Double.compare(h.estimate(a, source),
@@ -212,6 +209,6 @@ public final class BidirectionalBeamSearchFinder implements Finder {
         
         queue.clear();
         queue.addAll(
-                layer.subList(0, Math.min(layer.size(), ps.getBeamWidth())));
+                layer.subList(0, pathfindingSettings.getBeamWidth()));
     }
 }
