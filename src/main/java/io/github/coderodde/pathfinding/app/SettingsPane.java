@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -133,9 +132,6 @@ public final class SettingsPane extends Pane {
     private static final int PIXELS_HEIGHT = 200;
     private static final int PIXELS_MARGIN = 20;
     private final double[] offset = new double[2];
-    private GridModel gridModel;
-    private GridView gridView;
-    private GridController gridController;
     private GridNodeExpander gridNodeExpander;
     private final SearchState searchState;
     private Finder finder;
@@ -188,15 +184,6 @@ public final class SettingsPane extends Pane {
                         GridView gridView,
                         GridController gridController,
                         SearchState searchState) {
-        this.gridModel = 
-                Objects.requireNonNull(
-                        gridModel, 
-                        "The input grid model is null");
-        
-        this.gridView = 
-                Objects.requireNonNull(
-                        gridView, 
-                        "The input grid view is null");
         
         this.searchState = searchState;
         this.searchState.setCurrentState(CurrentState.IDLE);
@@ -383,7 +370,6 @@ public final class SettingsPane extends Pane {
                     try {
                         this.path.clear();
                         this.path.addAll(task.get());
-                        System.out.println(this.path);
                         
                         labelPathLength.setText(
                                 "Path cost: " + computePathCost(

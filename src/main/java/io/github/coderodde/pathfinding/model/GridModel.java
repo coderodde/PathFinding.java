@@ -422,8 +422,8 @@ public final class GridModel {
             cols--;
         }
         
-        int roomRows = (rows - 1) / 2; // Number of “rooms” vertically.
         int roomCols = (cols - 1) / 2; // Number of “rooms” horizontally.
+        int roomRows = (rows - 1) / 2; // Number of “rooms” vertically.
 
         boolean[][] visited = new boolean[roomRows]
                                          [roomCols];
@@ -433,22 +433,22 @@ public final class GridModel {
         int cc = rnd.nextInt(roomCols);
         
         // Carve the inital room from its wall:
-        carveCell(rr, cc);
+        carveCell(cc, rr);
 
         // Initialize DFS stack:
         Deque<int[]> stack = new ArrayDeque<>();
         visited[rr][cc] = true;
-        stack.push(new int[]{ rr, cc });
+        stack.push(new int[]{ cc, rr });
 
         // 4-neighbor moves in room space
-        int[] DR = { -1, 0, 1, 0 };
-        int[] DC = { 0, 1, 0, -1 };
+        int[] deltaRowOffsets = { -1, 0, 1, 0 };
+        int[] deltaColOffsets = { 0, 1, 0, -1 };
         int[] directionIndices = { 0, 1, 2, 3 };
 
         while (!stack.isEmpty()) {
             int[] cur = stack.peek();
-            int r0 = cur[0];
-            int c0 = cur[1];
+            int c0 = cur[0];
+            int r0 = cur[1];
             
             // Fisher–Yates shuffle:
             for (int i = 3; i > 0; i--) {
@@ -461,24 +461,25 @@ public final class GridModel {
             boolean moved = false;
             
             for (int directionIndex : directionIndices) {
-                int r1 = r0 + DR[directionIndex]; 
-                int c1 = c0 + DC[directionIndex];
+                int r1 = r0 + deltaRowOffsets[directionIndex]; 
+                int c1 = c0 + deltaColOffsets[directionIndex];
                 
                 if (0 <= r1 
                         && r1 < roomRows 
                         && 0 <= c1 
                         && c1 < roomCols 
                         && !visited[r1][c1]) {
-                    // Carve passage between rooms (r0, c0) and (r1, c1):
-                    carveBetween(r0, 
-                                 c0,
-                                 r1,
-                                 c1);
                     
-                    carveCell(r1, c1);
+                    // Carve passage between rooms (r0, c0) and (r1, c1):
+                    carveBetween(c0, 
+                                 r0,
+                                 c1,
+                                 r1);
+                    
+                    carveCell(c1, r1);
                     
                     visited[r1][c1] = true;
-                    stack.push(new int[]{ r1, c1 });
+                    stack.push(new int[]{ c1, r1 });
                     moved = true;
                     break;
                 }
@@ -490,22 +491,22 @@ public final class GridModel {
         }
     }
     
-    private void carveCell(int roomY, int roomX) {
+    private void carveCell(int roomX, int roomY) {
         int x = 2 * roomX + 1;
         int y = 2 * roomY + 1;
         
         setCellType(x, y, CellType.FREE);
     }
     
-    private void carveBetween(int roomRow0,
-                              int roomCol0,
-                              int roomRow1,
-                              int roomCol1) {
+    private void carveBetween(int roomX0,
+                              int roomY0,
+                              int roomX1,
+                              int roomY1) {
         
-        int cellX0 = 2 * roomCol0 + 1;
-        int cellY0 = 2 * roomRow0 + 1;
-        int cellX1 = 2 * roomCol1 + 1;
-        int cellY1 = 2 * roomRow1 + 1;
+        int cellX0 = 2 * roomX0 + 1;
+        int cellY0 = 2 * roomY0 + 1;
+        int cellX1 = 2 * roomX1 + 1;
+        int cellY1 = 2 * roomY1 + 1;
         
         int x = (cellX0 + cellX1) / 2;
         int y = (cellY0 + cellY1) / 2;
