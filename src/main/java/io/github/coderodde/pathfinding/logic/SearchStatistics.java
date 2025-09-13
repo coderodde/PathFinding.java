@@ -51,39 +51,15 @@ public final class SearchStatistics {
     }
     
     public void incrementVisited() {
-        visited++;
-        
-        Platform.runLater(() -> {
-            if (labelSelectors.contains(LabelSelector.VISITED)) {
-                labelVisited.setText(String.format("Visited: %d", visited));
-            } else {
-                labelVisited.setText("Visited: N/A");
-            }
-        });
+        addToVisited(1);
     }
     
     public void incrementOpened() {
-        opened++;
-        
-        Platform.runLater(() -> {
-            if (labelSelectors.contains(LabelSelector.OPENED)) {
-                labelOpened.setText(String.format("Opened: %d", opened));
-            } else {
-                labelOpened.setText("Opened: N/A");
-            }
-        });
+        addToOpened(1);
     }
     
     public void decrementOpened() {
-        opened--;
-        
-        Platform.runLater(() -> {
-            if (labelSelectors.contains(LabelSelector.OPENED)) {
-                labelOpened.setText(String.format("Opened: %d", opened));
-            } else {
-                labelOpened.setText("Opened: N/A");
-            }
-        });
+        addToOpened(-1);
     }
     
     public void incrementTraced() {
@@ -115,9 +91,9 @@ public final class SearchStatistics {
         
         Platform.runLater(() -> {
             if (labelSelectors.contains(LabelSelector.OPENED)) {
-                labelVisited.setText(String.format("Opened: %d", visited));
+                labelOpened.setText(String.format("Opened: %d", opened));
             } else {
-                labelVisited.setText("Opened: N/A");
+                labelOpened.setText("Opened: N/A");
             }
         });
     }
@@ -126,27 +102,11 @@ public final class SearchStatistics {
         visited += delta;
         
         Platform.runLater(() -> {
-            if (labelSelectors.contains(LabelSelector.OPENED)) {
+            if (labelSelectors.contains(LabelSelector.VISITED)) {
                 labelVisited.setText(String.format("Visited: %d", visited));
             } else {
                 labelVisited.setText("Visited: N/A");
             }
         });
-    }
-
-    public int getVisited() {
-        return visited;
-    }
-
-    public int getOpened() {
-        return opened;
-    }
-
-    public int getTraced() {
-        return traced;
-    }
-    
-    public int getRejected() {
-        return rejected;
     }
 }

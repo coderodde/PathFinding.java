@@ -349,7 +349,10 @@ public final class SettingsPane extends Pane {
                     
                     @Override
                     protected List<Cell> call() throws Exception {
-                        labelPathCost.setText("Path cost: N/A");
+                        Platform.runLater(() -> {
+                            labelPathCost.setText("Path cost: N/A");
+                        });
+                        
                         searchIsRunning = true;
                         
                         List<Cell> path = finder.findPath(
@@ -430,6 +433,7 @@ public final class SettingsPane extends Pane {
                 return;
             }
             
+            searchState.resetState(); // Undo pause, will halt anyway.
             searchState.requestHalt();
             
             while (searchIsRunning) {
@@ -511,7 +515,7 @@ public final class SettingsPane extends Pane {
     private SearchStatistics computeSearchStatistics() {
         switch (finder.getClass().getSimpleName()) {
             case "AStarFinder":
-            case "BFS":
+            case "BFSFinder":
             case "BeamSearchFinder":
             case "BestFirstSearchFinder":
             case "BidirectionalBFSFinder":
