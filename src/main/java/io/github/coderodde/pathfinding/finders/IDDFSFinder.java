@@ -17,11 +17,17 @@ import java.util.Set;
 /**
  *
  * @author Rodion "rodde" Efremov
- * @version 1.0.0
- * @since 1.0.0
+ * @version 1.0.0 (Sep 13, 2025)
+ * @since 1.0.0 (Sep 13, 2025)
  */
 public final class IDDFSFinder implements Finder {
 
+    private enum Result {
+        FOUND,
+        CUTOFF,
+        FAIL,
+    }
+    
     @Override
     public List<Cell> findPath(GridModel model, 
                                GridCellNeighbourIterable neighbourIterable, 
@@ -32,123 +38,116 @@ public final class IDDFSFinder implements Finder {
         Cell source = model.getSourceGridCell();
         Cell target = model.getTargetGridCell();
         
-        SolutionFound solutionFound = new SolutionFound();
-        Set<Cell> visited = new HashSet<>();
-        List<Cell> tentativePath = new ArrayList<>();
-        List<Cell> optimalPath = new ArrayList<>();
-        int previousVisitedSize = 0;
+        Set<Cell> onPath = new HashSet<>();
+        List<Cell> path = new ArrayList<>();
         
         for (int depth = 0;; ++depth) {
-            depthLimitedSearch(source,
+            if (searchState.haltRequested()) {
+                return List.of();
+            }
+            
+            while (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
+                
+                if (searchState.haltRequested()) {
+                    return List.of();
+                }
+            }
+            
+            path.clear();
+            onPath.clear();
+            
+            Result result = depthLimitedSearch(
+                               source,
                                target,
                                depth, 
-                               solutionFound, 
-                               tentativePath,
-                               optimalPath, 
-                               visited,
+                               path,
+                               onPath,
                                model,
                                neighbourIterable, 
                                pathfindingSettings, 
                                searchState, 
                                searchStatistics);
             
-            if (solutionFound.found) {
-                Collections.reverse(optimalPath);
-                return optimalPath;
+            if (result == Result.FOUND) {
+                Collections.reverse(path);
+                return path;
             }
             
-            if (previousVisitedSize == visited.size()) {
+            if (result == Result.FAIL) {
                 return List.of();
             }
-            
-            previousVisitedSize = visited.size();
-            visited.clear();
         }
     }
     
-    private static void depthLimitedSearch(
+    private static Result depthLimitedSearch(
             Cell cell, 
             Cell target,
             int depth,
-            SolutionFound solutionFound,
-            List<Cell> tentativePath,
-            List<Cell> optimalPath,
-            Set<Cell> visited,
+            List<Cell> path,
+            Set<Cell> onPath,
             GridModel model,
             GridCellNeighbourIterable iterable,
             PathfindingSettings pathfindingSettings,
             SearchState searchState,
             SearchStatistics searchStatistics) {
         
-        if (solutionFound.found) {
-            return;
+        if (cell.equals(target)) {
+            path.add(target);
+            return Result.FOUND;
         }
         
-        if (depth == 0 && cell.equals(target)) {
-            solutionFound.found = true;
-            optimalPath.addAll(tentativePath);
-            optimalPath.add(target);
-            return;
+        if (depth == 0) {
+            return Result.CUTOFF;
         }
         
-        if (visited.contains(cell)) {
-            return;
+        if (!onPath.add(cell)) {
+            return Result.FAIL;
         }
+
+        boolean anyCutoff = false;
+        iterable.setStartingCell(cell);
+        searchStatistics.incrementTraced();
         
-        tentativePath.add(cell);
-        visited.add(cell);
-        
-        if (!cell.getCellType().equals(CellType.SOURCE) &&
-            !cell.getCellType().equals(CellType.TARGET)) {
-            model.setCellType(cell, CellType.VISITED);
-        }
-        
-        if (depth > 0) {
-            iterable.setStartingCell(cell);
+        for (Cell child : iterable) {
+            if (onPath.contains(child)) {
+                continue;
+            }
             
-            for (Cell child : iterable) {
-                if (visited.contains(child)) {
-                    continue;
-                }
-                
-                if (!child.getCellType().equals(CellType.SOURCE)) {
-                    model.setCellType(child, CellType.TRACED);
-                }
-                
-                searchStatistics.incrementTraced();
+            if (searchState.haltRequested()) {
+                return Result.FAIL;
+            }
+
+            while (searchState.pauseRequested()) {
                 searchSleep(pathfindingSettings);
-                
-                depthLimitedSearch(child, 
-                                   target,
-                                   depth - 1,
-                                   solutionFound, 
-                                   tentativePath,
-                                   optimalPath, 
-                                   visited, 
-                                   model,
-                                   iterable, 
-                                   pathfindingSettings,
-                                   searchState, 
-                                   searchStatistics);
-                
-                if (!child.getCellType().equals(CellType.SOURCE)) {
-                    model.setCellType(child, CellType.FREE);
+
+                if (searchState.haltRequested()) {
+                    return Result.FAIL;
                 }
-                
-                if (solutionFound.found) {
-                    return;
-                }
+            }
+            
+            Result result = 
+                    depthLimitedSearch(child,
+                                       target, 
+                                       depth - 1, 
+                                       path, 
+                                       onPath,
+                                       model,
+                                       iterable, 
+                                       pathfindingSettings, 
+                                       searchState, 
+                                       searchStatistics);
+            
+            if (result == Result.FOUND) {
+                path.add(cell);
+                onPath.remove(cell);
+                return Result.FOUND;
+            } else if (result == Result.CUTOFF) {
+                anyCutoff = true;
             }
         }
         
-        tentativePath.removeLast();
-    }
-    
-    private static final class SolutionFound {
-        boolean found = false;
-    }
-    
-    private static final class Path {
-        List<Cell> path = new ArrayList<>();
+        onPath.remove(cell);
+        return anyCutoff ? Result.CUTOFF : Result.FAIL;
     }
 }

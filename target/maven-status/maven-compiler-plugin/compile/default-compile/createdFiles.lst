@@ -1,7 +1,6 @@
 io\github\coderodde\pathfinding\finders\BidirectionalBeamSearchFinder.class
 io\github\coderodde\pathfinding\heuristics\ChebyshevHeuristicFunction.class
 io\github\coderodde\pathfinding\finders\Finder.class
-io\github\coderodde\pathfinding\finders\IDDFSFinder$SolutionFound.class
 io\github\coderodde\pathfinding\finders\IDAStarFinder.class
 io\github\coderodde\pathfinding\heuristics\ZeroHeuristicFunction.class
 io\github\coderodde\pathfinding\app\Configuration.class
@@ -28,7 +27,6 @@ io\github\coderodde\pathfinding\app\SettingsPane$1.class
 io\github\coderodde\pathfinding\finders\BeamSearchFinder.class
 io\github\coderodde\pathfinding\logic\SearchState.class
 io\github\coderodde\pathfinding\logic\SearchState$CurrentState.class
-io\github\coderodde\pathfinding\finders\IDDFSFinder$Path.class
 io\github\coderodde\pathfinding\finders\BidirectionalBestFirstSearchFinder.class
 io\github\coderodde\pathfinding\finders\HeapNode.class
 io\github\coderodde\pathfinding\view\GridView.class
@@ -40,6 +38,7 @@ io\github\coderodde\pathfinding\finders\IDDFSFinder.class
 io\github\coderodde\pathfinding\model\GridModel$1.class
 io\github\coderodde\pathfinding\finders\AStarFinder.class
 io\github\coderodde\pathfinding\finders\DijkstraFinder.class
+io\github\coderodde\pathfinding\finders\IDDFSFinder$Result.class
 io\github\coderodde\pathfinding\finders\NBAStarFinder$TouchCell.class
 io\github\coderodde\pathfinding\finders\IDAStarFinder$SolutionFound.class
 io\github\coderodde\pathfinding\controller\GridController.class

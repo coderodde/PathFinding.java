@@ -549,6 +549,15 @@ public final class SettingsPane extends Pane {
                         SearchStatistics.LabelSelector.VISITED,
                         SearchStatistics.LabelSelector.REJECTED);
                 
+            case "IDDFSFinder":
+                return new SearchStatistics(
+                        labelVisitedCount,
+                        labelOpenedCount,
+                        labelTracedCount,
+                        labelRejectedCount,
+                        SearchStatistics.LabelSelector.VISITED,
+                        SearchStatistics.LabelSelector.TRACED);
+                
             default:
                 throw new IllegalStateException("Should not get here ever");
         } 
