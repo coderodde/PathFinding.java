@@ -9,6 +9,7 @@ import io.github.coderodde.pathfinding.view.GridView;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
@@ -69,7 +70,7 @@ public final class PathFindingApp extends Application {
         
         scene.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ESCAPE) {
-                Platform.exit();
+                Platform.exit();    
             }
         });
 
@@ -82,6 +83,12 @@ public final class PathFindingApp extends Application {
         stage.setOnCloseRequest(event -> {
             settingsPane.getSearchState().requestHalt();
         });
+        
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setHeaderText("");
+        alert.setTitle("");
+        alert.setContentText("Press Esc to exit");
+        alert.showAndWait();
     }
     
     public static void main(String[] args) {
