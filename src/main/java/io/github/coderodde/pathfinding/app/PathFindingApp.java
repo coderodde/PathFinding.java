@@ -7,7 +7,9 @@ import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.GridBounds;
 import io.github.coderodde.pathfinding.view.GridView;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -64,6 +66,12 @@ public final class PathFindingApp extends Application {
         Scene scene = new Scene(root,
                                 view.getWidth(),
                                 view.getHeight());
+        
+        scene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE) {
+                Platform.exit();
+            }
+        });
 
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setMaximized(true);
