@@ -72,41 +72,50 @@ public final class NBAStarFinder implements Finder {
             }
             
             if (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
                 continue;
             }
             
             if (opena.size() <= openb.size()) {
-                expandInForwardDirection(opena, 
-                                         closed,
-                                         source, 
-                                         target,
-                                         fb,
-                                         distancea,
-                                         distanceb,
-                                         parentsa,
-                                         bestPathCost, 
-                                         touchCell, 
-                                         model,
-                                         neighbourIterable, 
-                                         pathfindingSettings,
-                                         searchState,
-                                         searchStatistics);
+                try {
+                    expandInForwardDirection(opena, 
+                                             closed,
+                                             source, 
+                                             target,
+                                             fb,
+                                             distancea,
+                                             distanceb,
+                                             parentsa,
+                                             bestPathCost, 
+                                             touchCell, 
+                                             model,
+                                             neighbourIterable, 
+                                             pathfindingSettings,
+                                             searchState,
+                                             searchStatistics);
+                } catch (HaltRequestedException ex) {
+                    return List.of();
+                }
             } else {
-                expandInBackwardDirection(openb,
-                                          closed,
-                                          source,
-                                          target, 
-                                          fa, 
-                                          distancea,
-                                          distanceb, 
-                                          parentsb, 
-                                          bestPathCost, 
-                                          touchCell, 
-                                          model,
-                                          neighbourIterable, 
-                                          pathfindingSettings,
-                                          searchState,
-                                          searchStatistics);
+                try {
+                    expandInBackwardDirection(openb,
+                                              closed,
+                                              source,
+                                              target, 
+                                              fa, 
+                                              distancea,
+                                              distanceb, 
+                                              parentsb, 
+                                              bestPathCost, 
+                                              touchCell, 
+                                              model,
+                                              neighbourIterable, 
+                                              pathfindingSettings,
+                                              searchState,
+                                              searchStatistics);
+                } catch (HaltRequestedException ex) {
+                    return List.of();
+                }
             }
         }
         
@@ -163,11 +172,15 @@ public final class NBAStarFinder implements Finder {
             
             for (Cell child : iterable) {
                 if (searchState.haltRequested()) {
-                    return;
+                    throw new HaltRequestedException();
                 }
                 
                 while (searchState.pauseRequested()) {
                     searchSleep(pathfindingSettings);
+                    
+                    if (searchState.haltRequested()) {
+                        throw new HaltRequestedException();
+                    }
                 }
                 
                 if (closed.contains(child)) {
@@ -260,11 +273,15 @@ public final class NBAStarFinder implements Finder {
             
             for (Cell parent : iterable) {
                 if (searchState.haltRequested()) {
-                    return;
+                    throw new HaltRequestedException();
                 }
                 
                 while (searchState.pauseRequested()) {
                     searchSleep(pathfindingSettings);
+                    
+                    if (searchState.haltRequested()) {
+                        throw new HaltRequestedException();
+                    }
                 }
                 
                 if (closed.contains(parent)) {

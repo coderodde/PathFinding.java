@@ -433,8 +433,8 @@ public final class SettingsPane extends Pane {
                 return;
             }
             
-            searchState.resetState(); // Undo pause, will halt anyway.
-            searchState.requestHalt();
+            searchState.requestHalt(); // Ask the current finder to halt 
+                                       // immediately.
             
             while (searchIsRunning) {
                 try {

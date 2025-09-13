@@ -55,6 +55,15 @@ public final class BidirectionalBFSFinder implements Finder {
         searchStatistics.incrementOpened(); // Inc for backward search.
         
         while (!queuef.isEmpty() && !queueb.isEmpty()) {
+            if (searchState.haltRequested()) {
+                return List.of();
+            }
+            
+            if (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
+                continue;
+            }
+            
             int distf = distancef.get(queuef.getFirst());
             int distb = distanceb.get(queueb.getFirst());
             
@@ -90,6 +99,11 @@ public final class BidirectionalBFSFinder implements Finder {
                     
                     while (searchState.pauseRequested()) {
                         searchSleep(pathfindingSettings);
+                        
+                        if (searchState.haltRequested()) {
+                            // Requested halt while on pause:
+                            return List.of();
+                        }
                     }
                     
                     if (parentsf.containsKey(neighbour)) {
@@ -139,6 +153,11 @@ public final class BidirectionalBFSFinder implements Finder {
                     
                     while (searchState.pauseRequested()) {
                         searchSleep(pathfindingSettings);
+                        
+                        if (searchState.haltRequested()) {
+                            // Requested halt while on pause:
+                            return List.of();
+                        }
                     }
 
                     if (parentsb.containsKey(neighbour)) {

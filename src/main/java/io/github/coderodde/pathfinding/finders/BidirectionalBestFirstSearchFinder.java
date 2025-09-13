@@ -55,6 +55,15 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
         parentsb.put(target, null);
         
         while (!openf.isEmpty() && !openb.isEmpty()) {
+            if (searchState.haltRequested()) {
+                return List.of();
+            }
+            
+            if (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
+                continue;
+            }
+            
             if (openf.size() <= openb.size()) {
                 Cell current = openf.remove().cell;
                 
@@ -74,6 +83,19 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                 neighbourIterable.setStartingCell(current);
                 
                 for (Cell child : neighbourIterable) {
+                    if (searchState.haltRequested()) {
+                        return List.of();
+                    }
+                    
+                    while (searchState.pauseRequested()) {
+                        searchSleep(pathfindingSettings);
+                        
+                        if (searchState.haltRequested()) {
+                            // Requested halt while on pause:
+                            return List.of();
+                        }
+                    }
+                    
                     if (closedf.contains(child)) {
                         continue;
                     }
@@ -110,6 +132,19 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                 neighbourIterable.setStartingCell(current);
                 
                 for (Cell parent : neighbourIterable) {
+                    if (searchState.haltRequested()) {
+                        return List.of();
+                    }
+                    
+                    while (searchState.pauseRequested()) {
+                        searchSleep(pathfindingSettings);
+                        
+                        if (searchState.haltRequested()) {
+                            // Requested halt while on pause:
+                            return List.of();
+                        }
+                    }
+                    
                     if (closedb.contains(parent)) {
                         continue;
                     }

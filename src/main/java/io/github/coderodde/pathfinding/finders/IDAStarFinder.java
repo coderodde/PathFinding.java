@@ -84,6 +84,10 @@ public final class IDAStarFinder implements Finder {
         
         while (searchState.pauseRequested()) {
             searchSleep(pathfindingSettings);
+            
+            if (searchState.haltRequested()) {
+                return Double.NaN;
+            }
         }
         
         searchSleep(pathfindingSettings);

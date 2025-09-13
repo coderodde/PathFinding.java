@@ -80,6 +80,11 @@ public final class AStarFinder implements Finder {
 
                 while (searchState.pauseRequested()) {
                     searchSleep(pathfindingSettings);
+                    
+                    if (searchState.haltRequested()) {
+                        // Requested halt while in pause:
+                        return List.of();
+                    }
                 }
                 
                 if (closed.contains(child)) {

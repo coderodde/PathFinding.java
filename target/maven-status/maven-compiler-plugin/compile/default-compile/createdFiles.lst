@@ -20,6 +20,7 @@ io\github\coderodde\pathfinding\controller\GridController$DrawMode.class
 io\github\coderodde\pathfinding\finders\NBAStarFinder.class
 io\github\coderodde\pathfinding\app\SettingsPane.class
 io\github\coderodde\pathfinding\logic\GridNodeExpander.class
+io\github\coderodde\pathfinding\finders\HaltRequestedException.class
 io\github\coderodde\pathfinding\heuristics\OctileHeuristicFunction.class
 io\github\coderodde\pathfinding\heuristics\HeuristicFunction.class
 io\github\coderodde\pathfinding\utils\CellType.class

@@ -75,6 +75,11 @@ public final class BestFirstSearchFinder implements Finder {
                 
                 while (searchState.pauseRequested()) {
                     searchSleep(pathfindingSettings);
+                    
+                    if (searchState.haltRequested()) {
+                        // Requested halt while on pause:
+                        return List.of();
+                    }
                 }
                 
                 if (closed.contains(child)) {

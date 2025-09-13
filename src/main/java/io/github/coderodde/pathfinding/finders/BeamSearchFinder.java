@@ -94,6 +94,11 @@ public final class BeamSearchFinder implements Finder {
                 
                 while (searchState.pauseRequested()) {
                     searchSleep(pathfindingSettings);
+                    
+                    if (searchState.haltRequested()) {
+                        // Requested halt while on pause:
+                        return List.of();
+                    }
                 }
                 
                 searchSleep(pathfindingSettings);

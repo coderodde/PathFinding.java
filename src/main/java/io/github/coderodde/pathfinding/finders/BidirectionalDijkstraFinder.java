@@ -68,6 +68,7 @@ public final class BidirectionalDijkstraFinder implements Finder {
             }
             
             if (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
                 continue;
             }
             
@@ -91,6 +92,19 @@ public final class BidirectionalDijkstraFinder implements Finder {
             neighbourIterable.setStartingCell(currentf);
             
             for (Cell child : neighbourIterable) {
+                if (searchState.haltRequested()) {
+                    return List.of();
+                }
+
+                while (searchState.pauseRequested()) {
+                    searchSleep(pathfindingSettings);
+
+                    if (searchState.haltRequested()) {
+                        // Requested halt while on pause:
+                        return List.of();
+                    }
+                }
+                
                 if (closedf.contains(child)) {
                     continue;
                 }
@@ -134,6 +148,19 @@ public final class BidirectionalDijkstraFinder implements Finder {
             neighbourIterable.setStartingCell(currentb);
             
             for (Cell parent : neighbourIterable) {
+                if (searchState.haltRequested()) {
+                    return List.of();
+                }
+
+                while (searchState.pauseRequested()) {
+                    searchSleep(pathfindingSettings);
+
+                    if (searchState.haltRequested()) {
+                        // Requested halt while on pause:
+                        return List.of();
+                    }
+                }
+                    
                 if (closedb.contains(parent)) {
                     continue;
                 }
