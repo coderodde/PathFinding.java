@@ -49,6 +49,8 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
         openf.add(new HeapNode(source, 0.0));
         openb.add(new HeapNode(target, 0.0));
         
+        searchStatistics.addToOpened(2); // Count source and target.
+        
         parentsf.put(source, null);
         parentsb.put(target, null);
         
@@ -67,6 +69,8 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                 }
                 
                 closedf.add(current);
+                searchStatistics.decrementOpened();
+                searchStatistics.incrementVisited();
                 neighbourIterable.setStartingCell(current);
                 
                 for (Cell child : neighbourIterable) {
@@ -83,6 +87,8 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                                 new HeapNode(
                                         child,
                                         h.estimate(child, target)));
+                        
+                        searchStatistics.incrementOpened();
                     }
                 }
             } else {
@@ -99,6 +105,8 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                 }
                 
                 closedb.add(current);
+                searchStatistics.decrementOpened();
+                searchStatistics.incrementVisited();
                 neighbourIterable.setStartingCell(current);
                 
                 for (Cell parent : neighbourIterable) {
@@ -115,6 +123,8 @@ public final class BidirectionalBestFirstSearchFinder implements Finder {
                                 new HeapNode(
                                         parent,
                                         h.estimate(parent, source)));
+                        
+                        searchStatistics.incrementOpened();
                     }
                 }
             }

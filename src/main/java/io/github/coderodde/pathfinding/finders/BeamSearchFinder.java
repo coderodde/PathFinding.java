@@ -53,6 +53,7 @@ public final class BeamSearchFinder implements Finder {
             
             if (queue.size() > pathfindingSettings.getBeamWidth()) {
                 List<Cell> layer = new ArrayList<>(queue);
+                
                 HeuristicFunction H = 
                         pathfindingSettings.getHeuristicFunction();
                 
@@ -61,23 +62,20 @@ public final class BeamSearchFinder implements Finder {
                                           H.estimate(b, target));
                 });
                 
-//                for (Cell cell : queue) {
-//                    model.setCellType(cell, CellType.FREE);
-//                }
+                searchStatistics.addToOpened(-layer.size());
                 
                 queue.clear();
                 queue.addAll(
                         layer.subList(0,
                                       pathfindingSettings.getBeamWidth()));
-                
-//                for (Cell cell : layer) {
-//                    model.setCellType(cell, CellType.OPENED);
-//                }
+
+                searchStatistics.addToOpened(queue.size());
             }
             
             Cell current = queue.removeFirst();
             
             searchStatistics.incrementVisited();
+            searchStatistics.decrementOpened();
             
             if (current.equals(target)) {
                 return tracebackPath(target, parents);

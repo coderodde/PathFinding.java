@@ -5,11 +5,13 @@ io\github\coderodde\pathfinding\finders\IDDFSFinder$SolutionFound.class
 io\github\coderodde\pathfinding\finders\IDAStarFinder.class
 io\github\coderodde\pathfinding\heuristics\ZeroHeuristicFunction.class
 io\github\coderodde\pathfinding\app\Configuration.class
+io\github\coderodde\pathfinding\finders\BidirectionalDijkstraFinder.class
 io\github\coderodde\pathfinding\finders\NBAStarFinder$BestPathCost.class
 io\github\coderodde\pathfinding\logic\GridCellNeighbourIterable.class
 io\github\coderodde\pathfinding\heuristics\EuclideanHeuristicFunction.class
 io\github\coderodde\pathfinding\finders\BidirectionalBFSFinder.class
 io\github\coderodde\pathfinding\logic\PathfindingSettings.class
+io\github\coderodde\pathfinding\logic\SearchStatistics$LabelSelector.class
 io\github\coderodde\pathfinding\view\GridView$1.class
 io\github\coderodde\pathfinding\finders\BFSFinder.class
 io\github\coderodde\pathfinding\logic\SearchStatistics.class
@@ -38,7 +40,6 @@ io\github\coderodde\pathfinding\model\GridModel$1.class
 io\github\coderodde\pathfinding\finders\AStarFinder.class
 io\github\coderodde\pathfinding\finders\DijkstraFinder.class
 io\github\coderodde\pathfinding\finders\NBAStarFinder$TouchCell.class
-io\github\coderodde\pathfinding\finders\BidirectionalDijkstra.class
 io\github\coderodde\pathfinding\finders\IDAStarFinder$SolutionFound.class
 io\github\coderodde\pathfinding\controller\GridController.class
 io\github\coderodde\pathfinding\model\GridModel.class

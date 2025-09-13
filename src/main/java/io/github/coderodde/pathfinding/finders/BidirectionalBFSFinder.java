@@ -67,6 +67,7 @@ public final class BidirectionalBFSFinder implements Finder {
             if (distf <= distb) {
                 Cell current = queuef.removeFirst();
                 
+                searchStatistics.decrementOpened();
                 searchStatistics.incrementVisited();
                 
                 if (!current.getCellType().equals(CellType.SOURCE)) {
@@ -78,7 +79,6 @@ public final class BidirectionalBFSFinder implements Finder {
                     
                     bestCost  = distf + distb;
                     touchCell = current;
-                    searchStatistics.incrementVisited();
                 }
                 
                 neighbourIterable.setStartingCell(current);
@@ -116,6 +116,7 @@ public final class BidirectionalBFSFinder implements Finder {
             } else {
                 Cell current = queueb.removeFirst();
                 
+                searchStatistics.decrementOpened();
                 searchStatistics.incrementVisited();
                 
                 if (!current.getCellType().equals(CellType.TARGET)) {

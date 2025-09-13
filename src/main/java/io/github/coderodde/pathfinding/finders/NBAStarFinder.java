@@ -64,8 +64,7 @@ public final class NBAStarFinder implements Finder {
         parentsa.put(source, null);
         parentsb.put(target, null);
         
-        searchStatistics.incrementOpened();
-        searchStatistics.incrementOpened();
+        searchStatistics.addToOpened(2);
         
         while (!opena.isEmpty() && !openb.isEmpty()) {
             if (searchState.haltRequested()) {
@@ -75,8 +74,6 @@ public final class NBAStarFinder implements Finder {
             if (searchState.pauseRequested()) {
                 continue;
             }
-            
-            searchSleep(pathfindingSettings);
             
             if (opena.size() <= openb.size()) {
                 expandInForwardDirection(opena, 
@@ -146,6 +143,7 @@ public final class NBAStarFinder implements Finder {
         }
         
         closed.add(current);
+        searchStatistics.decrementOpened();
         searchStatistics.incrementVisited();
         
         if (!current.getCellType().equals(CellType.SOURCE)) {
@@ -158,6 +156,7 @@ public final class NBAStarFinder implements Finder {
                                    >= bestPathCost.value ||
             f.value - h.estimate(current, source) >= bestPathCost.value) {
             // Reject current.
+            searchStatistics.incrementRejected();
             model.setCellType(current, CellType.OPENED);
         } else {
             iterable.setStartingCell(current);
@@ -241,6 +240,7 @@ public final class NBAStarFinder implements Finder {
         }
         
         closed.add(current);
+        searchStatistics.decrementOpened();
         searchStatistics.incrementVisited();
         
         if (!current.getCellType().equals(CellType.TARGET)) {
@@ -253,6 +253,7 @@ public final class NBAStarFinder implements Finder {
                                    >= bestPathCost.value ||
             f.value - h.estimate(current, target) >= bestPathCost.value) {
             // Reject current.
+            searchStatistics.incrementRejected();
             model.setCellType(current, CellType.OPENED);
         } else {
             iterable.setStartingCell(current);

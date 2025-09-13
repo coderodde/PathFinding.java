@@ -52,11 +52,12 @@ public final class BFSFinder implements Finder {
             
             Cell current = queue.removeFirst();
             
+            searchStatistics.incrementVisited();
+            searchStatistics.decrementOpened();
+            
             if (!current.equals(source)) {
                 model.setCellType(current, CellType.VISITED);
             }
-            
-            searchStatistics.incrementVisited();
             
             if (current.equals(target)) {
                 return tracebackPath(target, parents);

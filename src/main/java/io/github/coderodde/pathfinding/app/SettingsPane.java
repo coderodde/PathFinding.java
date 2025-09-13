@@ -11,7 +11,7 @@ import io.github.coderodde.pathfinding.finders.BestFirstSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBeamSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBestFirstSearchFinder;
-import io.github.coderodde.pathfinding.finders.BidirectionalDijkstra;
+import io.github.coderodde.pathfinding.finders.BidirectionalDijkstraFinder;
 import io.github.coderodde.pathfinding.finders.DijkstraFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.finders.IDAStarFinder;
@@ -114,7 +114,7 @@ public final class SettingsPane extends Pane {
         
         FINDER_MAP.put(ASTAR,             new AStarFinder());
         FINDER_MAP.put(DIJKSTRA,          new DijkstraFinder());
-        FINDER_MAP.put(BI_DIJKSTRA,       new BidirectionalDijkstra());
+        FINDER_MAP.put(BI_DIJKSTRA,       new BidirectionalDijkstraFinder());
         FINDER_MAP.put(BFS,               new BFSFinder());
         FINDER_MAP.put(BI_BFS,            new BidirectionalBFSFinder());
         FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());
@@ -166,10 +166,11 @@ public final class SettingsPane extends Pane {
     
     private final TitledPane titledPaneDiagonalSettings;
     
-    private final Label labelPathLength   = new Label("Path cost: N/A");
-    private final Label labelVisitedCount = new Label("Visited cells: N/A");
-    private final Label labelOpenedCount  = new Label("Opened cells: N/A");
-    private final Label labelTracedCount  = new Label("Traced cells: N/A");
+    private final Label labelPathCost      = new Label("Path cost: N/A");
+    private final Label labelVisitedCount  = new Label("Visited cells: N/A");
+    private final Label labelOpenedCount   = new Label("Opened cells: N/A");
+    private final Label labelTracedCount   = new Label("Traced cells: N/A");
+    private final Label labelRejectedCount = new Label("Rejected cells: N/A");
     
     private final VBox vboxDiagonalSettings = new VBox();
     
@@ -188,10 +189,10 @@ public final class SettingsPane extends Pane {
         this.searchState = searchState;
         this.searchState.setCurrentState(CurrentState.IDLE);
         
-        this.labelPathLength.setStyle("-fx-background-color: white;" +                          
+        this.labelPathCost.setStyle("-fx-background-color: white;" +                          
                                       "-fx-font-size: 13px;");
         
-        this.labelPathLength.setPrefWidth(PIXELS_WIDTH);
+        this.labelPathCost.setPrefWidth(PIXELS_WIDTH);
         
         this.labelVisitedCount.setStyle("-fx-background-color: white;" +                          
                                         "-fx-font-size: 13px;");
@@ -207,6 +208,11 @@ public final class SettingsPane extends Pane {
                                        "-fx-font-size: 13px;");
         
         this.labelTracedCount.setPrefWidth(PIXELS_WIDTH);
+        
+        this.labelRejectedCount.setStyle("-fx-background-color: white;" +                          
+                                         "-fx-font-size: 13px;");
+        
+        this.labelRejectedCount.setPrefWidth(PIXELS_WIDTH);
         
         this.vboxDiagonalSettings
             .getChildren()
@@ -297,10 +303,11 @@ public final class SettingsPane extends Pane {
         accordion.setExpandedPane(titledPaneFinder);
         
         mainVBox.getChildren().addAll(accordion, 
-                                      labelPathLength,
+                                      labelPathCost,
                                       labelVisitedCount,
                                       labelOpenedCount,
-                                      labelTracedCount);
+                                      labelTracedCount,
+                                      labelRejectedCount);
         
         getChildren().add(mainVBox);
         
@@ -331,19 +338,18 @@ public final class SettingsPane extends Pane {
                 gridController.disableUserInteraction();
                 gridModel.clearStateCells();
                 buttonStartPause.setText("Pause");
-                buttonClearWalls.setDisable(true);
-                buttonReset.setDisable(false);
                 
                 finder = pathfindingSettings.getFinder();
                 gridNodeExpander = new GridNodeExpander(gridModel,
                                                         pathfindingSettings);
                 
-                SearchStatistics searchStatistics = new SearchStatistics();
+                SearchStatistics searchStatistics = computeSearchStatistics();
                 
                 Task<List<Cell>> task = new Task<>() {
                     
                     @Override
                     protected List<Cell> call() throws Exception {
+                        labelPathCost.setText("Path cost: N/A");
                         searchIsRunning = true;
                         
                         List<Cell> path = finder.findPath(
@@ -359,9 +365,6 @@ public final class SettingsPane extends Pane {
                         searchIsRunning = false;
                         
                         searchState.setCurrentState(CurrentState.IDLE);
-                        buttonReset.setDisable(false);
-                        buttonClearWalls.setDisable(true);
-                        
                         return path;
                     }
                 };
@@ -371,19 +374,10 @@ public final class SettingsPane extends Pane {
                         this.path.clear();
                         this.path.addAll(task.get());
                         
-                        labelPathLength.setText(
+                        labelPathCost.setText(
                                 "Path cost: " + computePathCost(
                                                     this.path,
                                                     pathfindingSettings));
-                        
-                        labelVisitedCount.setText(
-                                "Visited: " + searchStatistics.getVisited());
-                        
-                        labelOpenedCount.setText(
-                                "Opened: " + searchStatistics.getOpened());
-                        
-                        labelTracedCount.setText(
-                                "Traced: " + searchStatistics.getTraced());
                         
                     } catch (InterruptedException | ExecutionException ex) {
                         System.getLogger(
@@ -399,7 +393,7 @@ public final class SettingsPane extends Pane {
                     searchState.setCurrentState(CurrentState.IDLE);
                     buttonStartPause.setText("Search");
                     searchState.resetState();
-                    labelPathLength.setText(
+                    labelPathCost.setText(
                             "Path cost: " + 
                                     computePathCost(path, pathfindingSettings));
                 });
@@ -424,10 +418,18 @@ public final class SettingsPane extends Pane {
         });
         
         buttonClearWalls.setOnAction(event -> {
-           gridModel.clearWalls();
+            if (!searchState.getCurrentState().equals(CurrentState.IDLE)) {
+                return;
+            }
+            
+            gridModel.clearWalls();
         });    
         
         buttonReset.setOnAction(event -> {
+            if (searchState.getCurrentState().equals(CurrentState.IDLE)) {
+                return;
+            }
+            
             searchState.requestHalt();
             
             while (searchIsRunning) {
@@ -438,12 +440,11 @@ public final class SettingsPane extends Pane {
                 }
             }
             
-            buttonReset.setDisable(true);
             buttonStartPause.setText("Search");
-            buttonClearWalls.setDisable(false);
             gridModel.clearStateCells();
             gridView.drawBorders();
             gridView.drawAllCels();
+            searchState.setCurrentState(CurrentState.IDLE);
         });
         
         buttonVBox.getChildren().addAll(buttonStartPause,
@@ -505,6 +506,48 @@ public final class SettingsPane extends Pane {
         ps.setFinder(FINDER_MAP.get(comboBoxFinder.getValue()));
         
         return ps;
+    }
+    
+    private SearchStatistics computeSearchStatistics() {
+        switch (finder.getClass().getSimpleName()) {
+            case "AStarFinder":
+            case "BFS":
+            case "BeamSearchFinder":
+            case "BestFirstSearchFinder":
+            case "BidirectionalBFSFinder":
+            case "BidirectionalBeamSearchFinder":
+            case "BidirectionalBestFirstSearchFinder":
+            case "BidirectionalDijkstraFinder":
+            case "DijkstraFinder":
+                return new SearchStatistics(
+                        labelVisitedCount,
+                        labelOpenedCount, 
+                        labelTracedCount, 
+                        labelOpenedCount,
+                        SearchStatistics.LabelSelector.OPENED,
+                        SearchStatistics.LabelSelector.VISITED);
+                
+            case "IDAStarFinder":
+                return new SearchStatistics(
+                        labelVisitedCount,
+                        labelOpenedCount, 
+                        labelTracedCount, 
+                        labelOpenedCount, 
+                        SearchStatistics.LabelSelector.TRACED);
+                
+            case "NBAStarFinder":
+                return new SearchStatistics(
+                        labelVisitedCount,
+                        labelOpenedCount, 
+                        labelTracedCount, 
+                        labelOpenedCount,
+                        SearchStatistics.LabelSelector.OPENED,
+                        SearchStatistics.LabelSelector.VISITED,
+                        SearchStatistics.LabelSelector.REJECTED);
+                
+            default:
+                throw new IllegalStateException("Should not get here ever");
+        } 
     }
 }
     

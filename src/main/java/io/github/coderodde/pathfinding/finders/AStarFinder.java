@@ -82,11 +82,9 @@ public final class AStarFinder implements Finder {
                     searchSleep(pathfindingSettings);
                 }
                 
-
                 if (closed.contains(child)) {
                     continue;
                 }
-                
 
                 double tentativeDistance 
                         = distances.get(current)

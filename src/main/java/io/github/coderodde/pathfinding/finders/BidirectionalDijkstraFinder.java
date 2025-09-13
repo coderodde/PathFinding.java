@@ -23,7 +23,7 @@ import java.util.Set;
  * @version 1.0.0 (Sep 8, 2025)
  * @since 1.0.0 (Sep 8, 2025)
  */
-public final class BidirectionalDijkstra implements Finder {
+public final class BidirectionalDijkstraFinder implements Finder {
 
     @Override
     public List<Cell> findPath(GridModel model,
@@ -56,8 +56,7 @@ public final class BidirectionalDijkstra implements Finder {
         parentsf.put(source, null);
         parentsb.put(target, null);
         
-        searchStatistics.incrementOpened();
-        searchStatistics.incrementOpened();
+        searchStatistics.addToOpened(2);
         
         double mu = Double.POSITIVE_INFINITY;
         Cell touchf = null;
@@ -78,8 +77,8 @@ public final class BidirectionalDijkstra implements Finder {
             closedf.add(currentf);
             closedb.add(currentb);
             
-            searchStatistics.incrementVisited();
-            searchStatistics.incrementVisited();
+            searchStatistics.addToOpened(-2);
+            searchStatistics.addToVisited(2);
             
             if (!currentf.getCellType().equals(CellType.SOURCE)) {
                 model.setCellType(currentf, CellType.VISITED);

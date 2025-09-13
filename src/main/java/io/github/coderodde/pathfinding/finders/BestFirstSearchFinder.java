@@ -32,8 +32,6 @@ public final class BestFirstSearchFinder implements Finder {
                                SearchStatistics searchStatistics) {
         
         Queue<HeapNode> open    = new PriorityQueue<>();
-        Set<Cell> openSet       = new HashSet<>(); // Caches all the cells in 
-                                                   // the open queue.
         Set<Cell> closed        = new HashSet<>();
         Map<Cell, Cell> parents = new HashMap<>();
         
@@ -41,7 +39,6 @@ public final class BestFirstSearchFinder implements Finder {
         Cell target = model.getTargetGridCell();
         
         open.add(new HeapNode(source, 0.0));
-        openSet.add(source);
         parents.put(source, null);
         searchStatistics.incrementOpened();
         
@@ -61,8 +58,6 @@ public final class BestFirstSearchFinder implements Finder {
                 return tracebackPath(target, parents);
             }
             
-            openSet.remove(current);
-            
             if (!current.equals(source) &&
                 !current.equals(target)) {
                 model.setCellType(current, CellType.VISITED);
@@ -70,6 +65,7 @@ public final class BestFirstSearchFinder implements Finder {
            
             closed.add(current);
             neighbourIterable.setStartingCell(current);
+            searchStatistics.decrementOpened();
             searchStatistics.incrementVisited();
             
             for (Cell child : neighbourIterable) {
@@ -85,11 +81,11 @@ public final class BestFirstSearchFinder implements Finder {
                     continue;
                 }
                 
-                if (!openSet.contains(child)) {
+                if (!parents.containsKey(child)) {
                     searchSleep(pathfindingSettings);
+                    
                     model.setCellType(child, CellType.OPENED);
                     parents.put(child, current);
-                    openSet.add(child);
                     open.add(
                             new HeapNode(
                                     child,

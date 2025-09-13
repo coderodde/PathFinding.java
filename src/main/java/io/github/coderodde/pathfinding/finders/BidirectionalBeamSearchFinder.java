@@ -31,7 +31,6 @@ public final class BidirectionalBeamSearchFinder implements Finder {
                                SearchState searchState, 
                                SearchStatistics searchStatistics) {
         
-        
         Deque<Cell> queuef = new ArrayDeque<>();
         Deque<Cell> queueb = new ArrayDeque<>();
         Map<Cell, Cell> parentsf = new HashMap<>();
@@ -71,12 +70,14 @@ public final class BidirectionalBeamSearchFinder implements Finder {
                 if (queuef.size() > pathfindingSettings.getBeamWidth()) {
                     pruneQueueForward(queuef,
                                       target,
-                                      pathfindingSettings);
+                                      pathfindingSettings,
+                                      searchStatistics);
                 }
                 
                 Cell current = queuef.removeFirst();
                 
                 searchStatistics.incrementVisited();
+                searchStatistics.decrementOpened();
                 
                 if (!current.getCellType().equals(CellType.SOURCE)) {
                     model.setCellType(current, CellType.VISITED);
@@ -126,11 +127,13 @@ public final class BidirectionalBeamSearchFinder implements Finder {
                 if (queueb.size() > pathfindingSettings.getBeamWidth()) {
                     pruneQueueBackward(queueb,
                                        source,
-                                       pathfindingSettings);
+                                       pathfindingSettings,
+                                       searchStatistics);
                 }
                 
                 Cell current = queueb.removeFirst();
                 
+                searchStatistics.decrementOpened();
                 searchStatistics.incrementVisited();
                 
                 if (!current.getCellType().equals(CellType.TARGET)) {
@@ -179,9 +182,12 @@ public final class BidirectionalBeamSearchFinder implements Finder {
     
     private static void pruneQueueForward(Deque<Cell> queue,
                                           Cell target,
-                                          PathfindingSettings ps) {
+                                          PathfindingSettings ps,
+                                          SearchStatistics searchStatistics) {
         
         List<Cell> layer = new ArrayList<>(queue);
+        searchStatistics.addToOpened(-layer.size());
+        
         HeuristicFunction h = ps.getHeuristicFunction();
         
         layer.sort((a, b) -> {
@@ -192,14 +198,19 @@ public final class BidirectionalBeamSearchFinder implements Finder {
         queue.clear();
         queue.addAll(
                 layer.subList(0, ps.getBeamWidth()));
+        
+        searchStatistics.addToOpened(queue.size());
     }
     
     private static void pruneQueueBackward(
             Deque<Cell> queue,
             Cell source,
-            PathfindingSettings pathfindingSettings) {
+            PathfindingSettings pathfindingSettings,
+            SearchStatistics searchStatistics) {
         
         List<Cell> layer = new ArrayList<>(queue);
+        searchStatistics.addToOpened(-layer.size());
+        
         HeuristicFunction h = pathfindingSettings.getHeuristicFunction();
         
         layer.sort((a, b) -> {
@@ -210,5 +221,7 @@ public final class BidirectionalBeamSearchFinder implements Finder {
         queue.clear();
         queue.addAll(
                 layer.subList(0, pathfindingSettings.getBeamWidth()));
+        
+        searchStatistics.addToOpened(queue.size());
     }
 }
