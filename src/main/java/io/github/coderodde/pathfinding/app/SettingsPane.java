@@ -376,12 +376,6 @@ public final class SettingsPane extends Pane {
                     try {
                         this.path.clear();
                         this.path.addAll(task.get());
-                        
-                        labelPathCost.setText(
-                                "Path cost: " + computePathCost(
-                                                    this.path,
-                                                    pathfindingSettings));
-                        
                     } catch (InterruptedException | ExecutionException ex) {
                         System.getLogger(
                                 SettingsPane.class.getName()).log(
@@ -396,9 +390,15 @@ public final class SettingsPane extends Pane {
                     searchState.setCurrentState(CurrentState.IDLE);
                     buttonStartPause.setText("Search");
                     searchState.resetState();
-                    labelPathCost.setText(
-                            "Path cost: " + 
-                                    computePathCost(path, pathfindingSettings));
+                    
+                    if (this.path.isEmpty()) {
+                        labelPathCost.setText("Path cost: N/A");
+                    } else {
+                        labelPathCost.setText(
+                                "Path cost: " + computePathCost(
+                                                    this.path,
+                                                    pathfindingSettings));
+                    }
                 });
                 
                 new Thread(task).start();

@@ -107,6 +107,12 @@ public final class IDDFSFinder implements Finder {
 
         boolean anyCutoff = false;
         iterable.setStartingCell(cell);
+        
+        if (!cell.getCellType().equals(CellType.SOURCE) && 
+            !cell.getCellType().equals(CellType.TARGET)) {
+            model.setCellType(cell, CellType.TRACED);
+        }
+            
         searchStatistics.incrementTraced();
         
         for (Cell child : iterable) {
@@ -125,6 +131,8 @@ public final class IDDFSFinder implements Finder {
                     return Result.FAIL;
                 }
             }
+            
+            searchSleep(pathfindingSettings);
             
             Result result = 
                     depthLimitedSearch(child,
@@ -148,6 +156,12 @@ public final class IDDFSFinder implements Finder {
         }
         
         onPath.remove(cell);
+        
+        if (!cell.getCellType().equals(CellType.SOURCE) &&
+            !cell.getCellType().equals(CellType.TARGET)) {
+            model.setCellType(cell, CellType.FREE);
+        }
+        
         return anyCutoff ? Result.CUTOFF : Result.FAIL;
     }
 }

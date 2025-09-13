@@ -47,21 +47,17 @@ public final class GridView extends Canvas {
     
     private int contentHeight;
     
-    private int screenWidth;
-    
-    private int screenHeight;
+    private final GraphicsContext gc;
     
     public GridView() {
         Rectangle2D screenRect = Screen.getPrimary().getBounds();
         setWidth(screenRect.getWidth());
         setHeight(screenRect.getHeight());
+        this.gc = this.getGraphicsContext2D();
     }
     
     public void initializeState() {
         Rectangle2D screenRectangle = Screen.getPrimary().getBounds();
-        
-        screenWidth  = (int)(screenRectangle.getWidth());
-        screenHeight = (int)(screenRectangle.getHeight()); 
         
         GridBounds gridBounds = 
                 new GridBounds(screenRectangle, cellWidthHeight);
@@ -116,7 +112,6 @@ public final class GridView extends Canvas {
     
     public void drawCell(Cell cell) {
         Color color = cell.getCellType().getColor();
-        GraphicsContext gc = getGraphicsContext2D();
 
          gc.setFill(color);
          gc.fillRect(
@@ -143,7 +138,6 @@ public final class GridView extends Canvas {
         model.setCellType(sourceCell, CellType.SOURCE);
         model.setCellType(targetCell, CellType.TARGET);
         
-        GraphicsContext gc = getGraphicsContext2D();
         gc.setStroke(PATH_PAINT);
         gc.setLineWidth(PATH_THICKNESS);
         
@@ -177,7 +171,6 @@ public final class GridView extends Canvas {
     }
     
     public void drawBorders() {
-        GraphicsContext gc = getGraphicsContext2D();
         gc.setStroke(BORDER_PAINT);
         gc.setLineWidth(BORDER_THICKNESS);
         
