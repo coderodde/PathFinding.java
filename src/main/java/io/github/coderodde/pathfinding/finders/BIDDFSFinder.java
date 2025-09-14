@@ -10,6 +10,7 @@ import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,7 +63,8 @@ public final class BIDDFSFinder implements Finder {
             depthLimitedSearchForward(source,
                                       depth, 
                                       visitedForward, 
-                                      frontier, 
+                                      frontier,
+                                      parentForward,
                                       model,
                                       neighbourIterable, 
                                       pathfindingSettings,
@@ -91,12 +93,8 @@ public final class BIDDFSFinder implements Finder {
             
             if (meetingCell != null) {
                 return buildPath(meetingCell,
-                                 backwardSearchStack,
-                                 model,
-                                 neighbourIterable,
-                                 pathfindingSettings, 
-                                 searchState,
-                                 searchStatistics);
+                                 parentForward,
+                                 backwardSearchStack);
             }
             
             clearVisited(visitedBackward, 
@@ -117,12 +115,8 @@ public final class BIDDFSFinder implements Finder {
             
             if (meetingCell != null) {
                 return buildPath(meetingCell,
-                                 backwardSearchStack,
-                                 model,
-                                 neighbourIterable,
-                                 pathfindingSettings, 
-                                 searchState,
-                                 searchStatistics);
+                                 parentForward,
+                                 backwardSearchStack);
             }
             
             if (visitedBackward.size() == previousVisitedSizeBackward) {
@@ -133,37 +127,12 @@ public final class BIDDFSFinder implements Finder {
         }
     }
     
-    private static List<Cell> buildPath(Cell meetingCell,
-                                        Deque<Cell> backwardSearhStack,
-                                        GridModel model,
-                                        GridCellNeighbourIterable iterable,
-                                        PathfindingSettings pathfindingSettings,
-                                        SearchState searchState,
-                                        SearchStatistics searchStatistics) {
-        List<Cell> path = new ArrayList<>();
-        model.moveTarget(meetingCell.getx(),
-                         meetingCell.gety());
-        
-        List<Cell> prefixPath = 
-                new BIDDFSFinder()
-                        .findPath(model, 
-                                  iterable, 
-                                  pathfindingSettings, 
-                                  searchState,
-                                  searchStatistics);
-        
-        path.addAll(prefixPath);
-        path.remove(path.size() - 1);
-        path.addAll(backwardSearhStack);
-        
-        return path;
-    }
-    
     private static void depthLimitedSearchForward(
             Cell node,
             int depth,
             Set<Cell> visitedForward,
             Set<Cell> frontier,
+            Map<Cell, Cell> parents,
             GridModel model,
             GridCellNeighbourIterable iterable,
             PathfindingSettings ps,
@@ -193,7 +162,7 @@ public final class BIDDFSFinder implements Finder {
         
         if (depth == 0) {
             frontier.add(node);
-            model.setCellType(node, CellType.TRACED);
+//            model.setCellType(node, CellType.TRACED);
             return;
         }
         
@@ -204,10 +173,15 @@ public final class BIDDFSFinder implements Finder {
         iterable.setStartingCell(node);
         
         for (Cell child : iterable) {
+            if (!visitedForward.contains(child)) {
+                parents.put(child, node);
+            }
+            
             depthLimitedSearchForward(child,
                                       depth - 1, 
                                       visitedForward, 
-                                      frontier, 
+                                      frontier,
+                                      parents,
                                       model,
                                       iterable, 
                                       ps,
@@ -288,6 +262,33 @@ public final class BIDDFSFinder implements Finder {
         
         backwardsSearchStack.removeFirst();
         return null;
+    }
+    
+    private static List<Cell> buildPath(Cell meetingNode,
+                                        Map<Cell, Cell> parents,
+                                        Deque<Cell> backwardSearchStack) {
+        
+        List<Cell> prefix = buildPathForwardOnly(meetingNode,
+                                                 parents);
+        List<Cell> path = new ArrayList<>();
+        path.addAll(prefix);
+        backwardSearchStack.removeFirst();
+        path.addAll(backwardSearchStack);
+        return path;
+    }
+
+    private static List<Cell> buildPathForwardOnly(Cell targetOrMeeting,
+                                                   Map<Cell, Cell> parents) {
+        List<Cell> path = new ArrayList<>();
+        Cell current = targetOrMeeting;
+
+        while (current != null) {
+            path.add(current);
+            current = parents.get(current);
+        }
+
+        Collections.reverse(path);
+        return path;
     }
     
     private static void clearFrontier(Set<Cell> frontier, GridModel model) {
