@@ -11,8 +11,10 @@ import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,6 +43,7 @@ public final class BIDDFSFinder implements Finder {
         Set<Cell> frontier              = new HashSet<>();
         Set<Cell> visitedForward        = new HashSet<>();
         Set<Cell> visitedBackward       = new HashSet<>();
+        Map<Cell, Cell> parentForward   = new HashMap<>();
         int previousVisitedSizeForward  = 0;
         int previousVisitedSizeBackward = 0;
         
@@ -51,6 +54,10 @@ public final class BIDDFSFinder implements Finder {
             
             clearVisited(visitedForward,
                          model);
+            
+            visitedBackward.clear();
+            backwardSearchStack.clear();
+            parentForward.clear();
             
             depthLimitedSearchForward(source,
                                       depth, 
@@ -171,9 +178,11 @@ public final class BIDDFSFinder implements Finder {
         
         while (searchState.pauseRequested()) {
             searchSleep(ps);
+            
+            if (searchState.haltRequested()) {
+                throw new HaltRequestedException();
+            }
         }
-        
-        searchSleep(ps);
         
         if (visitedForward.contains(node)) {
             return;
@@ -184,11 +193,14 @@ public final class BIDDFSFinder implements Finder {
         
         if (depth == 0) {
             frontier.add(node);
-            model.setCellType(node, CellType.FREE);
+            model.setCellType(node, CellType.TRACED);
             return;
         }
         
-        model.setCellType(node, CellType.TRACED);
+        if (!node.getCellType().equals(CellType.SOURCE)) {
+            model.setCellType(node, CellType.TRACED);
+        }
+        
         iterable.setStartingCell(node);
         
         for (Cell child : iterable) {
@@ -209,16 +221,26 @@ public final class BIDDFSFinder implements Finder {
     private static Cell depthLimitedSearchBackward(
             Cell cell,
             int depth,
-            Set<Cell> visited,
+            Set<Cell> visitedBackward,
             Set<Cell> frontier,
-            Deque<Cell> backwardsStack,
+            Deque<Cell> backwardsSearchStack,
             GridModel model,
             GridCellNeighbourIterable iterable,
             PathfindingSettings ps,
             SearchState searchState,
             SearchStatistics searchStatistics) {
         
+        if (visitedBackward.contains(cell)) {
+            return null;
+        }
+        
+        visitedBackward.add(cell);
+        backwardsSearchStack.addFirst(cell);
         searchStatistics.incrementTraced();
+        
+        if (frontier.contains(cell)) {
+            return cell;
+        }
         
         if (searchState.haltRequested()) {
             return null;
@@ -226,31 +248,22 @@ public final class BIDDFSFinder implements Finder {
         
         while (searchState.pauseRequested()) {
             searchSleep(ps);
+            
+            if (searchState.haltRequested()) {
+                throw new HaltRequestedException();
+            }
         }
         
-        model.setCellType(cell, CellType.TRACED);
+        if (!cell.getCellType().equals(CellType.TARGET)) {
+            model.setCellType(cell, CellType.TRACED);
+        }
+        
         searchSleep(ps);
         
-        if (visited.contains(cell)) {
-            return null;
-        }
-        
-        backwardsStack.addFirst(cell);
-        
         if (depth == 0) {
-            if (frontier.contains(cell)) {
-                model.setCellType(cell, CellType.FREE);
-                return cell;
-            }
-            
-            model.setCellType(cell, CellType.FREE);
-            backwardsStack.removeFirst();
+            backwardsSearchStack.removeFirst();
             return null;
         }
-        
-        visited.add(cell);
-        model.setCellType(cell, CellType.VISITED);
-        searchStatistics.incrementVisited();
         
         iterable.setStartingCell(cell);
         
@@ -259,9 +272,9 @@ public final class BIDDFSFinder implements Finder {
                     depthLimitedSearchBackward(
                             parent, 
                             depth - 1, 
-                            visited,
+                            visitedBackward,
                             frontier, 
-                            backwardsStack, 
+                            backwardsSearchStack, 
                             model,
                             iterable,
                             ps,
@@ -273,7 +286,7 @@ public final class BIDDFSFinder implements Finder {
             }
         }
         
-        backwardsStack.removeFirst();
+        backwardsSearchStack.removeFirst();
         return null;
     }
     

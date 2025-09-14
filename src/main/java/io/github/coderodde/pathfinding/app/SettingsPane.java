@@ -550,6 +550,7 @@ public final class SettingsPane extends Pane {
                         SearchStatistics.LabelSelector.REJECTED);
                 
             case "IDDFSFinder":
+            case "BIDDFSFinder":
                 return new SearchStatistics(
                         labelVisitedCount,
                         labelOpenedCount,
