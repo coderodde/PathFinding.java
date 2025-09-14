@@ -48,82 +48,88 @@ public final class BIDDFSFinder implements Finder {
         int previousVisitedSizeForward  = 0;
         int previousVisitedSizeBackward = 0;
         
-        for (int depth = 0; ; ++depth) {
+        try {
             
-            clearFrontier(frontier,
-                          model);
-            
-            clearVisited(visitedForward,
-                         model);
-            
-            visitedBackward.clear();
-            backwardSearchStack.clear();
-            parentForward.clear();
-            
-            depthLimitedSearchForward(source,
-                                      depth, 
-                                      visitedForward, 
-                                      frontier,
-                                      parentForward,
-                                      model,
-                                      neighbourIterable, 
-                                      pathfindingSettings,
-                                      searchState,
-                                      searchStatistics);
-            
-            if (visitedForward.size() == previousVisitedSizeForward) {
-                return List.of();
-            }
-            
-            previousVisitedSizeForward = visitedForward.size();
-            clearVisited(visitedBackward, model);
-            
-            Cell meetingCell = 
-                    depthLimitedSearchBackward(
-                            target,
-                            depth, 
-                            visitedBackward, 
-                            frontier, 
-                            backwardSearchStack, 
-                            model, 
-                            neighbourIterable,
-                            pathfindingSettings, 
-                            searchState,
-                            searchStatistics);
-            
-            if (meetingCell != null) {
-                return buildPath(meetingCell,
-                                 parentForward,
-                                 backwardSearchStack);
-            }
-            
-            clearVisited(visitedBackward, 
-                         model);
+            for (int depth = 0; ; ++depth) {
 
-            meetingCell = 
-                    depthLimitedSearchBackward(
-                            target,
-                            depth + 1, // We need this for correctness! 
-                            visitedBackward, 
-                            frontier, 
-                            backwardSearchStack, 
-                            model, 
-                            neighbourIterable,
-                            pathfindingSettings, 
-                            searchState,
-                            searchStatistics);
-            
-            if (meetingCell != null) {
-                return buildPath(meetingCell,
-                                 parentForward,
-                                 backwardSearchStack);
+                clearFrontier(frontier,
+                              model);
+
+                clearVisited(visitedForward,
+                             model);
+
+                visitedBackward.clear();
+                backwardSearchStack.clear();
+                parentForward.clear();
+
+                depthLimitedSearchForward(source,
+                                          depth, 
+                                          visitedForward, 
+                                          frontier,
+                                          parentForward,
+                                          model,
+                                          neighbourIterable, 
+                                          pathfindingSettings,
+                                          searchState,
+                                          searchStatistics);
+
+                if (visitedForward.size() == previousVisitedSizeForward) {
+                    return List.of();
+                }
+
+                previousVisitedSizeForward = visitedForward.size();
+                clearVisited(visitedBackward, model);
+
+                Cell meetingCell = 
+                        depthLimitedSearchBackward(
+                                target,
+                                depth, 
+                                visitedBackward, 
+                                frontier, 
+                                backwardSearchStack, 
+                                model, 
+                                neighbourIterable,
+                                pathfindingSettings, 
+                                searchState,
+                                searchStatistics);
+
+                if (meetingCell != null) {
+                    return buildPath(meetingCell,
+                                     parentForward,
+                                     backwardSearchStack);
+                }
+
+                clearVisited(visitedBackward, 
+                             model);
+
+                meetingCell = 
+                        depthLimitedSearchBackward(
+                                target,
+                                depth + 1, // We need this for correctness! 
+                                visitedBackward, 
+                                frontier, 
+                                backwardSearchStack, 
+                                model, 
+                                neighbourIterable,
+                                pathfindingSettings, 
+                                searchState,
+                                searchStatistics);
+
+                if (meetingCell != null) {
+                    return buildPath(meetingCell,
+                                     parentForward,
+                                     backwardSearchStack);
+                }
+
+                if (visitedBackward.size() == previousVisitedSizeBackward) {
+                    return List.of();
+                }
+
+                previousVisitedSizeBackward = visitedBackward.size();
             }
-            
-            if (visitedBackward.size() == previousVisitedSizeBackward) {
-                return List.of();
-            }
-            
-            previousVisitedSizeBackward = visitedBackward.size();
+        } catch (HaltRequestedException ex) {
+            // User requested the halt.
+            return List.of();
         }
     }
     
@@ -162,7 +168,11 @@ public final class BIDDFSFinder implements Finder {
         
         if (depth == 0) {
             frontier.add(node);
-//            model.setCellType(node, CellType.TRACED);
+            
+            if (!node.getCellType().equals(CellType.SOURCE)) {
+                model.setCellType(node, CellType.TRACED);
+            }
+
             return;
         }
         
@@ -177,6 +187,20 @@ public final class BIDDFSFinder implements Finder {
                 parents.put(child, node);
             }
             
+            if (searchState.haltRequested()) {
+                throw new HaltRequestedException();
+            }
+            
+            while (searchState.pauseRequested()) {
+                searchSleep(ps);
+                
+                if (searchState.haltRequested()) {
+                    throw new HaltRequestedException();
+                }
+            }
+            
+            searchSleep(ps);
+            
             depthLimitedSearchForward(child,
                                       depth - 1, 
                                       visitedForward, 
@@ -189,7 +213,9 @@ public final class BIDDFSFinder implements Finder {
                                       searchStatistics);
         }
         
-        model.setCellType(node, CellType.FREE);
+        if (!node.getCellType().equals(CellType.SOURCE)) {
+            model.setCellType(node, CellType.VISITED);
+        }
     }
     
     private static Cell depthLimitedSearchBackward(
@@ -242,6 +268,21 @@ public final class BIDDFSFinder implements Finder {
         iterable.setStartingCell(cell);
         
         for (Cell parent : iterable) {
+            
+            if (searchState.haltRequested()) {
+                throw new HaltRequestedException();
+            }
+            
+            while (searchState.pauseRequested()) {
+                searchSleep(ps);
+                
+                if (searchState.haltRequested()) {
+                    throw new HaltRequestedException();
+                }
+            }
+            
+            searchSleep(ps);
+            
             Cell meetingCell = 
                     depthLimitedSearchBackward(
                             parent, 
@@ -258,6 +299,10 @@ public final class BIDDFSFinder implements Finder {
             if (meetingCell != null) {
                 return meetingCell;
             }
+        }
+        
+        if (!cell.getCellType().equals(CellType.TARGET)) {
+            model.setCellType(cell, CellType.VISITED);
         }
         
         backwardsSearchStack.removeFirst();
