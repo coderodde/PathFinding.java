@@ -57,8 +57,6 @@ public final class BeamStackSearchFinder implements Finder {
                 return List.of();
             }
             
-            System.out.println("bye bye");
-            
             if (searchState.haltRequested()) {
                 return List.of();
             }
@@ -146,6 +144,7 @@ public final class BeamStackSearchFinder implements Finder {
                 }
                 
                 if (searchState.pauseRequested()) {
+                    searchSleep(pathfindingSettings);
                     continue;
                 }
                 
@@ -182,26 +181,30 @@ public final class BeamStackSearchFinder implements Finder {
                         if (searchState.haltRequested()) {
                             throw new HaltRequestedException();
                         }
-                    }
+                    } 
                     
-                    if (g.containsKey(child)) {
-                        continue;
-                    }
+                    double tentativeGscore = g.get(cell) 
+                                           + pathfindingSettings
+                                                   .getWeight(cell, 
+                                                              child);
                     
-                    searchSleep(pathfindingSettings);
-                    
-                    double gscore = g.get(cell) 
-                                  + pathfindingSettings.getWeight(cell, 
-                                                                  child);
-                    
-                    double f = gscore + h.estimate(child, target);
-                    
-                    if (beamStackEntry.fmin <= f && f <= beamStackEntry.fmax) {
-                        searchStatistics.incrementOpened();
+                    if (tentativeGscore < g.getOrDefault(
+                                            child, 
+                                            Double.POSITIVE_INFINITY)) {
                         
-                        open.get(layerIndex + 1).add(new HeapNode(child, f));
-                        g.put(child, gscore);
-                        p.put(child, cell);
+                        double f = tentativeGscore + h.estimate(child, target);
+                        
+                        BeamStackEntry bse = beamStack.peek();
+                        searchSleep(pathfindingSettings);
+                        
+                        if (bse.fmin <= f && f <= bse.fmax) {
+                            open.get(layerIndex + 1)
+                                .add(new HeapNode(child, f));
+                            
+                            g.put(child, tentativeGscore);
+                            p.put(child, cell);
+                            searchStatistics.incrementOpened();
+                        }
                     }
                 }
                 
