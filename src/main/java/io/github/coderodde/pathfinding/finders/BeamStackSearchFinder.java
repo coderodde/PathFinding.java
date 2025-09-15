@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -42,6 +43,7 @@ public final class BeamStackSearchFinder implements Finder {
         U.value = Double.POSITIVE_INFINITY;
         
         while (!beamStack.isEmpty()) {
+            System.out.println("outermost");
             List<Cell> path = null;
             
             try {
@@ -57,6 +59,8 @@ public final class BeamStackSearchFinder implements Finder {
                 return List.of();
             }
             
+            System.out.println("Received path: " + path);
+            
             if (searchState.haltRequested()) {
                 return List.of();
             }
@@ -71,10 +75,12 @@ public final class BeamStackSearchFinder implements Finder {
             
             if (path != null) {
                 optimalPath = path;
-                U.value = getPathCost(path, pathfindingSettings);
+                double pathCost = getPathCost(path, pathfindingSettings);
+                System.out.println("pathCost: " + pathCost + ", U: " + U.value);
+                U.value = Math.min(U.value, pathCost);
             }
             
-            while (beamStack.peek().fmax >= U.value) {
+            while (!beamStack.isEmpty() && beamStack.peek().fmax >= U.value) {
                 beamStack.pop();
             }
             
@@ -82,8 +88,9 @@ public final class BeamStackSearchFinder implements Finder {
                 return optimalPath == null ? List.of() : optimalPath;
             }
             
-            beamStack.peek().fmin = beamStack.peek().fmax;
-            beamStack.peek().fmax = U.value;
+            BeamStackEntry top = beamStack.peek();
+            top.fmin = top.fmax;
+            top.fmax = U.value;
         }
         
         throw new IllegalStateException("Should not get here ever");
@@ -133,42 +140,50 @@ public final class BeamStackSearchFinder implements Finder {
         p.put(source, null);
         
         searchStatistics.incrementOpened();
+        System.out.println("search:"); 
         
         while (!open.get(layerIndex).isEmpty() ||
                !open.get(layerIndex + 1).isEmpty()) {
+            System.out.println("search on open outer");
+            
+            boolean prunedAtThisLayer = false;
+            double nextBound = Double.POSITIVE_INFINITY;
             
             while (!open.get(layerIndex).isEmpty()) {
+                System.out.println("search on open inner");
                 
                 if (searchState.haltRequested()) {
                     throw new HaltRequestedException();
                 }
                 
-                if (searchState.pauseRequested()) {
+                while (searchState.pauseRequested()) {
                     searchSleep(pathfindingSettings);
-                    continue;
+                    
+                    if (searchState.haltRequested()) {
+                        throw new HaltRequestedException();
+                    }
                 }
-                
-                searchSleep(pathfindingSettings);
                 
                 Cell cell = open.get(layerIndex).remove().cell;
                 closed.get(layerIndex).add(cell);
                 searchStatistics.decrementOpened();
                 searchStatistics.incrementVisited();
                 
-                if (!cell.getCellType().equals(CellType.SOURCE)) {
+                if (!cell.getCellType().equals(CellType.SOURCE) &&
+                    !cell.getCellType().equals(CellType.TARGET)) {
                     model.setCellType(cell, CellType.VISITED);
                 }
                 
                 System.out.println("shit!");
                 
                 if (cell.equals(target)) {
-                    U.value = g.get(cell);
+//                    U.value = g.get(cell);
+                    System.out.println("U = " + U.value + ", g(cell) = " + g.get(cell));
                     bestGoal = cell;
-                    System.out.println("U.value = " + U.value);
                 }
                 
                 iterable.setStartingCell(cell);
-                BeamStackEntry beamStackEntry = beamStack.peek();
+                BeamStackEntry bse = beamStack.peek();
                 
                 for (Cell child : iterable) {
                     if (searchState.haltRequested()) {
@@ -177,7 +192,7 @@ public final class BeamStackSearchFinder implements Finder {
                     
                     while (searchState.pauseRequested()) {
                         searchSleep(pathfindingSettings);
-                        
+                        System.out.println("sleep 2");
                         if (searchState.haltRequested()) {
                             throw new HaltRequestedException();
                         }
@@ -194,16 +209,19 @@ public final class BeamStackSearchFinder implements Finder {
                         
                         double f = tentativeGscore + h.estimate(child, target);
                         
-                        BeamStackEntry bse = beamStack.peek();
                         searchSleep(pathfindingSettings);
                         
-                        if (bse.fmin <= f && f <= bse.fmax) {
-                            open.get(layerIndex + 1)
-                                .add(new HeapNode(child, f));
-                            
+                        if (bse.fmin <= f && f < bse.fmax) {
+                            Queue<HeapNode> nextOpen = open.get(layerIndex + 1);
+                            nextOpen.removeIf(c -> c.equals(child));
+                            nextOpen.add(new HeapNode(child, f));
                             g.put(child, tentativeGscore);
                             p.put(child, cell);
                             searchStatistics.incrementOpened();
+                            
+                            if (!child.getCellType().equals(CellType.TARGET)) {
+                                model.setCellType(cell, CellType.OPENED);
+                            }
                         }
                     }
                 }
@@ -211,18 +229,28 @@ public final class BeamStackSearchFinder implements Finder {
                 if (open.get(layerIndex + 1).size() > 
                         pathfindingSettings.getBeamWidth()) {
                     
-                    pruneLayer(model,
-                               open.get(layerIndex + 1),
-                               beamStack,
-                               pathfindingSettings,
-                               searchStatistics);
+                    double fMinPruned = pruneLayer(model,
+                                                   open.get(layerIndex + 1),
+                                                   pathfindingSettings,
+                                                   searchStatistics);
+                    
+                    prunedAtThisLayer = true;
+                    nextBound = Math.min(nextBound, fMinPruned);
+                    System.out.println("pruned: " + open.get(layerIndex + 1).size());
                 }
             }
+            
+            BeamStackEntry bse = beamStack.peek();
+            bse.fmax = prunedAtThisLayer ? nextBound : Double.POSITIVE_INFINITY;
             
             layerIndex++;
             open.put(layerIndex + 1, new PriorityQueue<>());
             closed.put(layerIndex, new HashSet<>());
-            beamStack.push(new BeamStackEntry(0, U.value));
+            
+            if (beamStack.size() == layerIndex) {
+                beamStack.push(new BeamStackEntry(0, U.value));
+            }
+            
             System.out.println("hello");
         }
         
@@ -250,7 +278,7 @@ public final class BeamStackSearchFinder implements Finder {
                 }
             }
         }
-        
+        System.out.println("before path returning");
         if (bestGoal != null) {
             List<Cell> path = new ArrayList<>();
             Cell cell = bestGoal;
@@ -265,14 +293,15 @@ public final class BeamStackSearchFinder implements Finder {
             return path;
         }
         
+        System.out.println("no path in this search(...)");
         return null;
     }
     
-    private static void pruneLayer(GridModel model,
-                                   PriorityQueue<HeapNode> open,
-                                   Deque<BeamStackEntry> beamStack,
-                                   PathfindingSettings pathfindingSettings,
-                                   SearchStatistics searchStatistics) {
+    private static boolean pruneLayer(GridModel model,
+                                      PriorityQueue<HeapNode> open,
+                                      PathfindingSettings pathfindingSettings,
+                                      SearchStatistics searchStatistics) {
+        
         List<HeapNode> keep = new ArrayList<>(open);
         searchStatistics.addToOpened(-keep.size());
         for (HeapNode node : keep) {
