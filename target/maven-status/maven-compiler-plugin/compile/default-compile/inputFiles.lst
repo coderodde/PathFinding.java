@@ -4,9 +4,9 @@ C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\gith
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\controller\GridController.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\AStarFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BeamSearchFinder.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BeamStackSearchFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BestFirstSearchFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BFSFinder.java
-C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BIDDFSFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BidirectionalBeamSearchFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BidirectionalBestFirstSearchFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BidirectionalBFSFinder.java

@@ -5,8 +5,8 @@ import static io.github.coderodde.pathfinding.finders.Finder.computePathCost;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.AStarFinder;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
-import io.github.coderodde.pathfinding.finders.BIDDFSFinder;
 import io.github.coderodde.pathfinding.finders.BeamSearchFinder;
+import io.github.coderodde.pathfinding.finders.BeamStackSearchFinder;
 import io.github.coderodde.pathfinding.finders.BestFirstSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBeamSearchFinder;
@@ -66,12 +66,12 @@ public final class SettingsPane extends Pane {
     private static final String ASTAR             = "A* search";
     private static final String BFS               = "BFS";
     private static final String BEAM_SEARCH       = "Beam search";
+    private static final String BEAM_STACK_SEARCH = "Beam stack search";
     private static final String BEST_FIRST_SEARCH = "Best First search";
     private static final String BI_BFS            = "Bidirectional BFS";
     private static final String BI_BEAM_SEARCH    = "Bidirectional beam search";
     private static final String BI_BEST_FS        = "Bidirectional BeFS";
     private static final String BI_DIJKSTRA       = "Bidirectional Dijkstra";
-    private static final String BIDDFS            = "Bidirectional IDDFS";
     private static final String DIJKSTRA          = "Dijkstra";
     private static final String IDASTAR           = "IDA* search";
     private static final String IDDFS             = "IDDFS";
@@ -88,12 +88,12 @@ public final class SettingsPane extends Pane {
         ASTAR,
         BFS,
         BEAM_SEARCH,
+        BEAM_STACK_SEARCH,
         BEST_FIRST_SEARCH,
         BI_BFS,
         BI_BEAM_SEARCH,
         BI_BEST_FS,
         BI_DIJKSTRA,
-        BIDDFS,
         DIJKSTRA,
         IDASTAR,
         IDDFS,
@@ -119,13 +119,13 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(BI_BFS,            new BidirectionalBFSFinder());
         FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());
         FINDER_MAP.put(BI_BEAM_SEARCH,    new BidirectionalBeamSearchFinder());  
-        FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());  
-        FINDER_MAP.put(BIDDFS,            new BIDDFSFinder());
+        FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());
         FINDER_MAP.put(IDASTAR,           new IDAStarFinder());
         FINDER_MAP.put(IDDFS,             new IDDFSFinder());
         FINDER_MAP.put(NBASTAR,           new NBAStarFinder());
         FINDER_MAP.put(BI_BEST_FS,        
                        new BidirectionalBestFirstSearchFinder());
+        FINDER_MAP.put(BEAM_STACK_SEARCH, new BeamStackSearchFinder());
     }
     
     private static final int PIXELS_WIDTH  = 300;
@@ -376,6 +376,7 @@ public final class SettingsPane extends Pane {
                     try {
                         this.path.clear();
                         this.path.addAll(task.get());
+                        System.out.println("PATH: " + this.path);
                     } catch (InterruptedException | ExecutionException ex) {
                         System.getLogger(
                                 SettingsPane.class.getName()).log(
@@ -517,6 +518,7 @@ public final class SettingsPane extends Pane {
             case "AStarFinder":
             case "BFSFinder":
             case "BeamSearchFinder":
+            case "BeamStackSearchFinder":
             case "BestFirstSearchFinder":
             case "BidirectionalBFSFinder":
             case "BidirectionalBeamSearchFinder":
@@ -550,7 +552,6 @@ public final class SettingsPane extends Pane {
                         SearchStatistics.LabelSelector.REJECTED);
                 
             case "IDDFSFinder":
-            case "BIDDFSFinder":
                 return new SearchStatistics(
                         labelVisitedCount,
                         labelOpenedCount,

@@ -20,7 +20,9 @@ io\github\coderodde\pathfinding\finders\NBAStarFinder.class
 io\github\coderodde\pathfinding\app\SettingsPane.class
 io\github\coderodde\pathfinding\logic\GridNodeExpander.class
 io\github\coderodde\pathfinding\finders\HaltRequestedException.class
+io\github\coderodde\pathfinding\finders\BeamStackSearchFinder.class
 io\github\coderodde\pathfinding\heuristics\OctileHeuristicFunction.class
+io\github\coderodde\pathfinding\finders\BeamStackSearchFinder$BeamStackEntry.class
 io\github\coderodde\pathfinding\heuristics\HeuristicFunction.class
 io\github\coderodde\pathfinding\utils\CellType.class
 io\github\coderodde\pathfinding\app\SettingsPane$1.class
@@ -29,11 +31,11 @@ io\github\coderodde\pathfinding\logic\SearchState.class
 io\github\coderodde\pathfinding\logic\SearchState$CurrentState.class
 io\github\coderodde\pathfinding\finders\BidirectionalBestFirstSearchFinder.class
 io\github\coderodde\pathfinding\finders\HeapNode.class
+io\github\coderodde\pathfinding\finders\BeamStackSearchFinder$DoubleHolder.class
 io\github\coderodde\pathfinding\view\GridView.class
 io\github\coderodde\pathfinding\utils\GridBounds.class
 io\github\coderodde\pathfinding\controller\GridController$1.class
 io\github\coderodde\pathfinding\utils\Cell.class
-io\github\coderodde\pathfinding\finders\BIDDFSFinder.class
 io\github\coderodde\pathfinding\finders\IDDFSFinder.class
 io\github\coderodde\pathfinding\model\GridModel$1.class
 io\github\coderodde\pathfinding\finders\AStarFinder.class
