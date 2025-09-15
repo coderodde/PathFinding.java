@@ -38,15 +38,16 @@ public final class BeamStackSearchFinder implements Finder {
         List<Cell> optimalPath = null;
         DoubleHolder U = new DoubleHolder();
         U.value = Double.POSITIVE_INFINITY;
-        int relay = 2;
         
         while (!beamStack.isEmpty()) {
             List<Cell> path = search(model, 
                                      U,
-                                     relay, 
                                      beamStack,
                                      neighbourIterable,
                                      pathfindingSettings);
+            
+            System.out.println("bye bye");
+            
             if (path != null) {
                 optimalPath = path;
                 U.value = getPathCost(path, pathfindingSettings);
@@ -83,23 +84,24 @@ public final class BeamStackSearchFinder implements Finder {
    
     private static List<Cell> search(GridModel model,   
                                      DoubleHolder U,
-                                     int relay,
                                      Deque<BeamStackEntry> beamStack,
                                      GridCellNeighbourIterable iterable,
                                      PathfindingSettings pathfindingSettings) {
         
         Map<Integer, PriorityQueue<HeapNode>> open = new HashMap<>();
-        Map<Integer, Set<Cell>> closed = new HashMap<>();
-        Map<Cell, Double> g = new HashMap<>();
-        Map<Cell, Cell> p = new HashMap<>();
+        Map<Integer, Set<Cell>> closed             = new HashMap<>();
+        Map<Cell, Double> g                        = new HashMap<>();
+        Map<Cell, Cell> p                          = new HashMap<>();
         
+        HeuristicFunction h = pathfindingSettings.getHeuristicFunction();
         Cell source = model.getSourceGridCell();
         Cell target = model.getTargetGridCell();
         
         open.put(0, new PriorityQueue<>());
         open.put(1, new PriorityQueue<>());
-        closed.put(0, new HashSet<>());
         open.get(0).add(new HeapNode(source, 0.0));
+        
+        closed.put(0, new HashSet<>());
         g.put(source, 0.0);
         p.put(source, null);
         Cell bestGoal = null;
@@ -111,19 +113,22 @@ public final class BeamStackSearchFinder implements Finder {
             while (!open.get(layerIndex).isEmpty()) {
                 Cell cell = open.get(layerIndex).remove().cell;
                 closed.get(layerIndex).add(cell);
+                System.out.println("shit!");
                 
                 if (cell.equals(target)) {
                     U.value = g.get(cell);
                     bestGoal = cell;
-                    System.out.println(U.value);
+                    System.out.println("U.value = " + U.value);
                 }
                 
                 iterable.setStartingCell(cell);
                 BeamStackEntry beamStackEntry = beamStack.peek();
-                HeuristicFunction h = 
-                        pathfindingSettings.getHeuristicFunction();
                 
                 for (Cell child : iterable) {
+                    if (g.containsKey(child)) {
+                        continue;
+                    }
+                    
                     double gscore = g.get(cell) 
                                   + pathfindingSettings.getWeight(cell, 
                                                                   child);
@@ -155,6 +160,7 @@ public final class BeamStackSearchFinder implements Finder {
             open.put(layerIndex + 1, new PriorityQueue<>());
             closed.put(layerIndex, new HashSet<>());
             beamStack.push(new BeamStackEntry(0, U.value));
+            System.out.println("hello");
         }
         
         if (bestGoal != null) {
@@ -167,10 +173,11 @@ public final class BeamStackSearchFinder implements Finder {
             }
             
             Collections.reverse(path);
+            System.out.println("Path: " + path);
             return path;
         }
         
-        return List.of();
+        return null;
     }
     
     private static void pruneLayer(PriorityQueue<HeapNode> open,
