@@ -1,5 +1,6 @@
 package io.github.coderodde.pathfinding.finders;
 
+import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
@@ -7,6 +8,7 @@ import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
+import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,13 +42,34 @@ public final class BeamStackSearchFinder implements Finder {
         U.value = Double.POSITIVE_INFINITY;
         
         while (!beamStack.isEmpty()) {
-            List<Cell> path = search(model, 
-                                     U,
-                                     beamStack,
-                                     neighbourIterable,
-                                     pathfindingSettings);
+            List<Cell> path = null;
+            
+            try {
+                path = search(model, 
+                              U,
+                              beamStack,
+                              neighbourIterable,
+                              pathfindingSettings,
+                              searchState,
+                              searchStatistics);
+                
+            } catch (HaltRequestedException ex) {
+                return List.of();
+            }
             
             System.out.println("bye bye");
+            
+            if (searchState.haltRequested()) {
+                return List.of();
+            }
+            
+            while (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
+                
+                if (searchState.haltRequested()) {
+                    return List.of();
+                }
+            }
             
             if (path != null) {
                 optimalPath = path;
@@ -71,6 +94,7 @@ public final class BeamStackSearchFinder implements Finder {
     private static double 
         getPathCost(List<Cell> path,
                     PathfindingSettings pathsPathfindingSettings) {
+           
         double cost = 0.0;
         
         for (int i = 0; i < path.size() - 1; ++i) {
@@ -86,7 +110,9 @@ public final class BeamStackSearchFinder implements Finder {
                                      DoubleHolder U,
                                      Deque<BeamStackEntry> beamStack,
                                      GridCellNeighbourIterable iterable,
-                                     PathfindingSettings pathfindingSettings) {
+                                     PathfindingSettings pathfindingSettings,
+                                     SearchState searchState,
+                                     SearchStatistics searchStatistics) {
         
         Map<Integer, PriorityQueue<HeapNode>> open = new HashMap<>();
         Map<Integer, Set<Cell>> closed             = new HashMap<>();
@@ -97,6 +123,9 @@ public final class BeamStackSearchFinder implements Finder {
         Cell source = model.getSourceGridCell();
         Cell target = model.getTargetGridCell();
         
+        Cell bestGoal = null;
+        int layerIndex = 0;
+        
         open.put(0, new PriorityQueue<>());
         open.put(1, new PriorityQueue<>());
         open.get(0).add(new HeapNode(source, 0.0));
@@ -104,15 +133,33 @@ public final class BeamStackSearchFinder implements Finder {
         closed.put(0, new HashSet<>());
         g.put(source, 0.0);
         p.put(source, null);
-        Cell bestGoal = null;
-        int layerIndex = 0;
+        
+        searchStatistics.incrementOpened();
         
         while (!open.get(layerIndex).isEmpty() ||
                !open.get(layerIndex + 1).isEmpty()) {
             
             while (!open.get(layerIndex).isEmpty()) {
+                
+                if (searchState.haltRequested()) {
+                    throw new HaltRequestedException();
+                }
+                
+                if (searchState.pauseRequested()) {
+                    continue;
+                }
+                
+                searchSleep(pathfindingSettings);
+                
                 Cell cell = open.get(layerIndex).remove().cell;
                 closed.get(layerIndex).add(cell);
+                searchStatistics.decrementOpened();
+                searchStatistics.incrementVisited();
+                
+                if (!cell.getCellType().equals(CellType.SOURCE)) {
+                    model.setCellType(cell, CellType.VISITED);
+                }
+                
                 System.out.println("shit!");
                 
                 if (cell.equals(target)) {
@@ -125,9 +172,23 @@ public final class BeamStackSearchFinder implements Finder {
                 BeamStackEntry beamStackEntry = beamStack.peek();
                 
                 for (Cell child : iterable) {
+                    if (searchState.haltRequested()) {
+                        throw new HaltRequestedException();
+                    }
+                    
+                    while (searchState.pauseRequested()) {
+                        searchSleep(pathfindingSettings);
+                        
+                        if (searchState.haltRequested()) {
+                            throw new HaltRequestedException();
+                        }
+                    }
+                    
                     if (g.containsKey(child)) {
                         continue;
                     }
+                    
+                    searchSleep(pathfindingSettings);
                     
                     double gscore = g.get(cell) 
                                   + pathfindingSettings.getWeight(cell, 
@@ -136,6 +197,8 @@ public final class BeamStackSearchFinder implements Finder {
                     double f = gscore + h.estimate(child, target);
                     
                     if (beamStackEntry.fmin <= f && f <= beamStackEntry.fmax) {
+                        searchStatistics.incrementOpened();
+                        
                         open.get(layerIndex + 1).add(new HeapNode(child, f));
                         g.put(child, gscore);
                         p.put(child, cell);
@@ -145,22 +208,44 @@ public final class BeamStackSearchFinder implements Finder {
                 if (open.get(layerIndex + 1).size() > 
                         pathfindingSettings.getBeamWidth()) {
                     
-                    pruneLayer(open.get(layerIndex + 1),
-                                        beamStack,
-                                        pathfindingSettings);
+                    pruneLayer(model,
+                               open.get(layerIndex + 1),
+                               beamStack,
+                               pathfindingSettings,
+                               searchStatistics);
                 }
             }
-            
-//            if ((1 < layerIndex && layerIndex <= relay) ||
-//                (layerIndex > relay + 1)) {
-//                closed.get(layerIndex - 1).clear();
-//            }
             
             layerIndex++;
             open.put(layerIndex + 1, new PriorityQueue<>());
             closed.put(layerIndex, new HashSet<>());
             beamStack.push(new BeamStackEntry(0, U.value));
             System.out.println("hello");
+        }
+        
+        for (PriorityQueue<HeapNode> queue : open.values()) {
+            for (HeapNode heapNode : queue) {
+                Cell cell = heapNode.cell;
+                
+                if (cell.getCellType().equals(CellType.SOURCE)) {
+                    System.err.println("cell.getCellType().equals(CellType.SOURCE)");
+                }
+                
+                if (cell.getCellType().equals(CellType.TARGET)) {
+                    System.err.println("cell.getCellType().equals(CellType.TARGET)");
+                }
+                
+                model.setCellType(cell, CellType.FREE);
+            }
+        }
+        
+        for (Set<Cell> closedSet : closed.values()) {
+            for (Cell cell : closedSet) {
+                
+                if (!cell.getCellType().equals(CellType.SOURCE)) {
+                    model.setCellType(cell, CellType.FREE); 
+                }
+            }
         }
         
         if (bestGoal != null) {
@@ -180,19 +265,36 @@ public final class BeamStackSearchFinder implements Finder {
         return null;
     }
     
-    private static void pruneLayer(PriorityQueue<HeapNode> open,
+    private static void pruneLayer(GridModel model,
+                                   PriorityQueue<HeapNode> open,
                                    Deque<BeamStackEntry> beamStack,
-                                   PathfindingSettings pathfindingSettings) {
+                                   PathfindingSettings pathfindingSettings,
+                                   SearchStatistics searchStatistics) {
         List<HeapNode> keep = new ArrayList<>(open);
+        searchStatistics.addToOpened(-keep.size());
+        for (HeapNode node : keep) {
+            Cell cell = node.cell;
+            
+            if (!cell.getCellType().equals(CellType.TARGET)) {
+                model.setCellType(cell, CellType.FREE);
+            }
+        }
+        
         keep.sort((a, b) -> {
             return Double.compare(a.f, b.f);
         });
         
         keep = keep.subList(0, pathfindingSettings.getBeamWidth());
+        searchStatistics.addToOpened(keep.size());
         Set<Cell> keepSet = new HashSet<>();
         
         for (HeapNode heapNode : keep) {
-            keepSet.add(heapNode.cell);
+            Cell cell = heapNode.cell;
+            keepSet.add(cell);
+            
+            if (!cell.getCellType().equals(CellType.TARGET)) {
+                model.setCellType(cell, CellType.OPENED);
+            }
         }
         
         Set<HeapNode> pruned = new HashSet<>();

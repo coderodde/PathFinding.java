@@ -376,7 +376,7 @@ public final class SettingsPane extends Pane {
                     try {
                         this.path.clear();
                         this.path.addAll(task.get());
-                        System.out.println("PATH: " + this.path);
+//                        System.out.println("PATH: " + this.path);
                     } catch (InterruptedException | ExecutionException ex) {
                         System.getLogger(
                                 SettingsPane.class.getName()).log(
