@@ -36,6 +36,7 @@ public final class SearchState {
     }
     
     public void requestPause() {
+        System.out.println("Requesting pause...");
         this.requestPause = true;
     }
     
