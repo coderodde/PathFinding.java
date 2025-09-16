@@ -400,7 +400,7 @@ public final class SettingsPane extends Pane {
                                                     this.path,
                                                     pathfindingSettings));
                     }
-                });
+                }); 
                 
                 new Thread(task).start();
                 

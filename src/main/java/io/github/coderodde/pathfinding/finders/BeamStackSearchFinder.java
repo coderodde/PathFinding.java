@@ -79,7 +79,7 @@ public final class BeamStackSearchFinder implements Finder {
             
             while (!beamStack.isEmpty() && beamStack.peek().fmax >= U.value) {
                 beamStack.pop();
-            }
+            }   
             
             if (beamStack.isEmpty()) {
                 return optimalPath == null ? List.of() : optimalPath;
@@ -316,9 +316,8 @@ public final class BeamStackSearchFinder implements Finder {
         
         for (HeapNode heapNode : pruneList) {
             open.remove(heapNode);
-            
             Cell cell = heapNode.cell;
-            
+
             if (!cell.getCellType().equals(CellType.SOURCE) &&
                 !cell.getCellType().equals(CellType.TARGET)) {
                 model.setCellType(cell, CellType.VISITED);

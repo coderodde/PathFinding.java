@@ -44,10 +44,21 @@ public final class SearchStatistics {
         this.labelRejected = labelRejected;
         this.labelSelectors.addAll(Arrays.asList(selectors));
         
-        this.labelVisited .setText("Visited: N/A");
-        this.labelOpened  .setText("Opened: N/A");
-        this.labelTraced  .setText("Traced: N/A");
-        this.labelRejected.setText("Rejected: N/A");
+        if (labelVisited != null) {
+            this.labelVisited .setText("Visited: N/A");
+        }
+            
+        if (labelOpened != null) {
+            this.labelOpened  .setText("Opened: N/A");
+        }
+            
+        if (labelTraced != null) {
+            this.labelTraced  .setText("Traced: N/A");
+        }
+            
+        if (labelRejected != null) {
+            this.labelRejected.setText("Rejected: N/A");
+        }
     }
     
     public void incrementVisited() {
@@ -65,6 +76,10 @@ public final class SearchStatistics {
     public void incrementTraced() {
         traced++;
         
+        if (labelTraced == null) {
+            return;
+        }
+        
         Platform.runLater(() -> {
             if (labelSelectors.contains(LabelSelector.TRACED)) {
                 labelTraced.setText(String.format("Traced: %d", traced));
@@ -76,6 +91,10 @@ public final class SearchStatistics {
     
     public void incrementRejected() {
         rejected++;
+        
+        if (labelRejected == null) {
+            return;
+        }
         
         Platform.runLater(() -> {
             if (labelSelectors.contains(LabelSelector.REJECTED)) {
@@ -89,6 +108,10 @@ public final class SearchStatistics {
     public void addToOpened(int delta) {
         opened += delta;
         
+        if (labelOpened == null) {
+            return;
+        }
+        
         Platform.runLater(() -> {
             if (labelSelectors.contains(LabelSelector.OPENED)) {
                 labelOpened.setText(String.format("Opened: %d", opened));
@@ -100,6 +123,10 @@ public final class SearchStatistics {
     
     public void addToVisited(int delta) {
         visited += delta;
+        
+        if (labelVisited == null) {
+            return;
+        }
         
         Platform.runLater(() -> {
             if (labelSelectors.contains(LabelSelector.VISITED)) {

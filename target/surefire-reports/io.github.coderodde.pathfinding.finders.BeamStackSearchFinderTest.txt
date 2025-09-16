@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.766 s -- in io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest

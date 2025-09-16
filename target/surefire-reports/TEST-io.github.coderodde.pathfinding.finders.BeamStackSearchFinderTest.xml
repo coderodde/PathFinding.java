@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="0.766" tests="2" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\target\test-classes;C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\target\classes;C:\Users\rodio\.m2\repository\org\openjfx\javafx-controls\21.0.8\javafx-controls-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-controls\21.0.8\javafx-controls-21.0.8-win.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-fxml\21.0.8\javafx-fxml-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-fxml\21.0.8\javafx-fxml-21.0.8-win.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-graphics\21.0.8\javafx-graphics-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-graphics\21.0.8\javafx-graphics-21.0.8-win.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-base\21.0.8\javafx-base-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-base\21.0.8\javafx-base-21.0.8-win.jar;C:\Users\rodio\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\rodio\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="Europe/Helsinki"/>
+    <property name="user.country.format" value="FI"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="user.country" value="GB"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-21\bin"/>
+    <property name="sun.java.command" value="C:\Users\rodio\AppData\Local\Temp\surefire7604823705861464705\surefirebooter-20250916115000192_3.jar C:\Users\rodio\AppData\Local\Temp\surefire7604823705861464705 2025-09-16T11-49-59_959-jvmRun1 surefire-20250916115000192_1tmp surefire_0-20250916115000192_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="test" value="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest"/>
+    <property name="surefire.test.class.path" value="C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\target\test-classes;C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\target\classes;C:\Users\rodio\.m2\repository\org\openjfx\javafx-controls\21.0.8\javafx-controls-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-controls\21.0.8\javafx-controls-21.0.8-win.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-fxml\21.0.8\javafx-fxml-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-fxml\21.0.8\javafx-fxml-21.0.8-win.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-graphics\21.0.8\javafx-graphics-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-graphics\21.0.8\javafx-graphics-21.0.8-win.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-base\21.0.8\javafx-base-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-base\21.0.8\javafx-base-21.0.8-win.jar;C:\Users\rodio\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\rodio\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\rodio"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2023-09-19"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk-21"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\rodio\AppData\Local\Temp\surefire7604823705861464705\surefirebooter-20250916115000192_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21+35-LTS-2513"/>
+    <property name="user.name" value="rodio"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="maven.ext.class.path" value="C:\Program Files\NetBeans-27\netbeans\java\maven-nblib\netbeans-eventspy.jar"/>
+    <property name="localRepository" value="C:\Users\rodio\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\rodio\AppData\Local\Temp\"/>
+    <property name="java.version" value="21"/>
+    <property name="user.dir" value="C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-21\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Program Files (x86)\Embarcadero\Studio\22.0\bin;C:\Users\Public\Documents\Embarcadero\Studio\22.0\Bpl;C:\Program Files (x86)\Embarcadero\Studio\22.0\bin64;C:\Users\Public\Documents\Embarcadero\Studio\22.0\Bpl\Win64;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\System32;C:\Windows;C:\Windows\System32\wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\Git\cmd;C:\Program Files\gnuplot\bin;C:\Program Files (x86)\GnuPG\bin;C:\Program Files (x86)\Windows Kits\10\Windows Performance Toolkit\;C:\ProgramData\chocolatey\bin;C:\Users\rodio\AppData\Local\Programs\Python\Python313;C:\Program Files\nodejs\;C:\Program Files\PowerShell\7\;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\ghcup\bin;C:\Users\rodio;C:\Users\rodio\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\heroku\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools;C:\Program Files\nodejs;C:\Users\rodio\AppData\Local\Programs\MiKTeX\miktex\bin\x64\;C:\Users\rodio\AppData\Local\GitHubDesktop\bin;C:\Users\rodio\AppData\Local\Programs\Python\Python312;C:\Software\apache-maven-3.9.11\bin;C:\Program Files\Inkscape\bin;C:\Users\rodio\.fly\bin;C:\Program Files (x86)\MongoDB Atlas CLI\;C:\Program Files\JetBrains\PyCharm Community Edition 2025.1\bin;;C:\Users\rodio\AppData\Local\Microsoft\WindowsApps;C:\Users\rodio\AppData\Roaming\npm;C:\Program Files\Java\jdk-24\bin;;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="21+35-LTS-2513"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="65.0"/>
+  </properties>
+  <testcase name="debugNoPath" classname="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="0.475">
+    <system-out><![CDATA[Setting beam width 1
+hello
+BSS: 8
+BFS: 8
+]]></system-out>
+  </testcase>
+  <testcase name="hasSolutionPath" classname="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="0.168">
+    <system-out><![CDATA[Setting beam width 1
+hello
+BSS: 5
+BFS: 5
+]]></system-out>
+  </testcase>
+</testsuite>

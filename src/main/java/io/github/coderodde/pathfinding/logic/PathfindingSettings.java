@@ -111,6 +111,7 @@ public final class PathfindingSettings {
     }
     
     public void setBeamWidth(int beamWidth) {
+        System.out.println("Setting beam width " + beamWidth);
         if (beamWidth < 1) {
             throw new IllegalArgumentException(
                     String.format("beamWidth(%d) < 1", beamWidth));
