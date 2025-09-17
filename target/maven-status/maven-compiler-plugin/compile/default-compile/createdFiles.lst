@@ -34,6 +34,7 @@ io\github\coderodde\pathfinding\finders\HeapNode.class
 io\github\coderodde\pathfinding\finders\BeamStackSearchFinder$DoubleHolder.class
 io\github\coderodde\pathfinding\view\GridView.class
 io\github\coderodde\pathfinding\utils\GridBounds.class
+io\github\coderodde\pathfinding\finders\PEAStarFinder.class
 io\github\coderodde\pathfinding\controller\GridController$1.class
 io\github\coderodde\pathfinding\utils\Cell.class
 io\github\coderodde\pathfinding\finders\IDDFSFinder.class

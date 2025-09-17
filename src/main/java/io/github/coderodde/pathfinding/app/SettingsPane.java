@@ -17,6 +17,7 @@ import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.finders.IDAStarFinder;
 import io.github.coderodde.pathfinding.finders.IDDFSFinder;
 import io.github.coderodde.pathfinding.finders.NBAStarFinder;
+import io.github.coderodde.pathfinding.finders.PEAStarFinder;
 import io.github.coderodde.pathfinding.heuristics.ChebyshevHeuristicFunction;
 import io.github.coderodde.pathfinding.heuristics.EuclideanHeuristicFunction;
 import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
@@ -37,6 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.function.UnaryOperator;
+import java.util.regex.Pattern;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.geometry.Rectangle2D;
@@ -45,10 +48,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TitledPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
+import javafx.util.converter.DoubleStringConverter;
 
 /**
  *
@@ -76,6 +82,7 @@ public final class SettingsPane extends Pane {
     private static final String IDASTAR           = "IDA* search";
     private static final String IDDFS             = "IDDFS";
     private static final String NBASTAR           = "NBA* search";
+    private static final String PEASTAR           = "PEA* search";
     
     private static final String[] HEURISTIC_NAMES = {
         MANHATTAN,
@@ -98,6 +105,7 @@ public final class SettingsPane extends Pane {
         IDASTAR,
         IDDFS,
         NBASTAR,
+        PEASTAR,
     };
     
     private static final Map<String, HeuristicFunction> HEURISTIC_MAP =
@@ -125,7 +133,9 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(NBASTAR,           new NBAStarFinder());
         FINDER_MAP.put(BI_BEST_FS,        
                        new BidirectionalBestFirstSearchFinder());
+        
         FINDER_MAP.put(BEAM_STACK_SEARCH, new BeamStackSearchFinder());
+        FINDER_MAP.put(PEASTAR,           new PEAStarFinder());
     }
     
     private static final int PIXELS_WIDTH  = 300;
@@ -164,6 +174,11 @@ public final class SettingsPane extends Pane {
     private final TitledPane titledPaneBeamWidth = 
             new TitledPane("Beam width", comboBoxBeamWidth);
     
+    private final TextField textFieldCutoffValue = new TextField();
+    
+    private final TitledPane titledPaneCutoffValue = 
+            new TitledPane("Cutoff value", textFieldCutoffValue);
+    
     private final TitledPane titledPaneDiagonalSettings;
     
     private final Label labelPathCost      = new Label("Path cost: N/A");
@@ -178,6 +193,26 @@ public final class SettingsPane extends Pane {
     private final Button buttonReset      = new Button("Reset");
     private final Button buttonClearWalls = new Button("Clear walls");
     private final Button buttonDrawMaze   = new Button("Draw random maze");
+    
+    private static final Pattern CUTOFF_VALUE_PATTERN = 
+            Pattern.compile("\\d*(\\.\\d*)?");
+    
+    private static final UnaryOperator<TextFormatter.Change> cutoffValueFilter =
+            change -> {
+                String newText = change.getControlNewText();
+                
+                if (CUTOFF_VALUE_PATTERN.matcher(newText).matches()) {
+                    return change;
+                }
+                
+                return null;
+            };
+    
+    private static final TextFormatter<Double> TEXT_FOMATTER =
+            new TextFormatter<>(
+                    new DoubleStringConverter(),
+                    0.0,
+                    cutoffValueFilter);
     
     private volatile boolean searchIsRunning = false;
     
@@ -223,6 +258,8 @@ public final class SettingsPane extends Pane {
                 new TitledPane(
                         "Diagonal settings",
                         this.vboxDiagonalSettings);
+        
+        this.textFieldCutoffValue.setTextFormatter(TEXT_FOMATTER);
         
         setPrefSize(PIXELS_WIDTH,
                     PIXELS_HEIGHT);
@@ -298,7 +335,8 @@ public final class SettingsPane extends Pane {
                                     titledPaneDiagonalWeight,
                                     titledPaneFinder,
                                     titledPaneHeuristic,
-                                    titledPaneBeamWidth);
+                                    titledPaneBeamWidth,
+                                    titledPaneCutoffValue);
         
         accordion.setExpandedPane(titledPaneFinder);
         
@@ -509,6 +547,7 @@ public final class SettingsPane extends Pane {
                 HEURISTIC_MAP.get(comboBoxHeuristic.getValue()));
         
         ps.setFinder(FINDER_MAP.get(comboBoxFinder.getValue()));
+        ps.setCutoff(Double.parseDouble(textFieldCutoffValue.getText()));
         
         return ps;
     }
@@ -525,6 +564,7 @@ public final class SettingsPane extends Pane {
             case "BidirectionalBestFirstSearchFinder":
             case "BidirectionalDijkstraFinder":
             case "DijkstraFinder":
+            case "PEAStarFinder":
                 return new SearchStatistics(
                         labelVisitedCount,
                         labelOpenedCount, 

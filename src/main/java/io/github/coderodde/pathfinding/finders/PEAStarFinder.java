@@ -7,7 +7,6 @@ import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,16 +36,18 @@ public final class PEAStarFinder implements Finder {
         Cell target = model.getTargetGridCell();
         double C = ps.getCutoff();
         
-        Map<Cell, Double> distance = new HashMap<>();
-        Map<Cell, Double> F        = new HashMap<>();
-        Map<Cell, Cell> parents    = new HashMap<>();
-        Set<Cell> closed           = new HashSet<>();
-        Set<Cell> openSet          = new HashSet<>();
-        Queue<HeapNode> open       = new PriorityQueue<>();
-        HeuristicFunction h        = ps.getHeuristicFunction();
+        Map<Cell, Double> g  = new HashMap<>();
+        Map<Cell, Double> F  = new HashMap<>();
+        Map<Cell, Cell> p    = new HashMap<>();
+        Set<Cell> closed     = new HashSet<>();
+        Set<Cell> openSet    = new HashSet<>();
+        Queue<HeapNode> open = new PriorityQueue<>();
+        HeuristicFunction h  = ps.getHeuristicFunction();
         
+        g.put(source, 0.0);
         F.put(source, h.estimate(source, target));
-        parents.put(source, null);
+        p.put(source, null);
+        openSet.add(source);
         open.add(new HeapNode(source, 0.0));
         
         while (!open.isEmpty()) {
@@ -54,17 +55,16 @@ public final class PEAStarFinder implements Finder {
             Cell cell = heapNode.cell;
             
             if (cell.equals(target)) {
-                return tracebackPath(target, parents);
+                return tracebackPath(target, p);
             }
             
             Set<Cell> belowSet = new HashSet<>();
             Set<Cell> aboveSet = new HashSet<>();
-            List<Cell> successors = new ArrayList<>();
             neighbourIterable.setStartingCell(cell);
             
             for (Cell child : neighbourIterable) {
-                if (distance.containsKey(child)) {
-                    double f = distance.get(child) + h.estimate(child, target);
+                if (g.containsKey(child)) {
+                    double f = g.get(child) + h.estimate(child, target);
                     
                     if (f <= F.get(cell) + C) {
                         belowSet.add(child);
@@ -78,31 +78,23 @@ public final class PEAStarFinder implements Finder {
             
             for (Cell child : belowSet) {
                 if (!openSet.contains(child) && !closed.contains(child)) {
-                    double g = distance.get(cell) + ps.getWeight(cell, child);
-                    F.put(child, g + h.estimate(child, target));
+                    double gScore = g.get(cell) + ps.getWeight(cell, child);
+                    F.put(child, gScore + h.estimate(child, target));
                     openSet.add(child);
                     open.add(new HeapNode(child, (double) F.get(child)));
                 } else if (openSet.contains(child) 
-                        && distance.get(cell) + 
-                        ps.getWeight(cell, child) < distance.get(child)) {
+                        && g.get(cell) + 
+                        ps.getWeight(cell, child) < g.get(child)) {
                     
-                    distance.put(child, 
-                                 distance.get(cell) + ps.getWeight(cell,
-                                                                   child));
-                    
-                    F.put(child, 
-                          distance.get(child) + h.estimate(child, target));
+                    g.put(child, g.get(cell) + ps.getWeight(cell, child));
+                    F.put(child, g.get(child) + h.estimate(child, target));
                     
                 } else if (closed.contains(child) 
-                        && distance.get(cell) +
-                        ps.getWeight(cell, child) < distance.get(child)) {
+                        && g.get(cell) +
+                        ps.getWeight(cell, child) < g.get(child)) {
                     
-                    distance.put(child, 
-                                 distance.get(cell) + ps.getWeight(cell, 
-                                                                   child));
-                    
-                    F.put(child, 
-                          distance.get(child) + h.estimate(child, target));
+                    g.put(child, g.get(cell) + ps.getWeight(cell, child));
+                    F.put(child, g.get(child) + h.estimate(child, target));
                     
                     closed.remove(child);
                     openSet.add(child);
@@ -117,7 +109,7 @@ public final class PEAStarFinder implements Finder {
                 
                 for (Cell c : aboveSet) {
                     fmin = Math.min(fmin,
-                                    distance.get(c) + h.estimate(c, target));
+                                    g.get(c) + h.estimate(c, target));
                 }
                 
                 F.put(cell, fmin);
