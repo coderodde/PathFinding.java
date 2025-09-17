@@ -1,5 +1,6 @@
 package io.github.coderodde.pathfinding.finders;
 
+import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
@@ -7,6 +8,7 @@ import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
+import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,11 +53,16 @@ public final class PEAStarFinder implements Finder {
         open.add(new HeapNode(source, F.get(source)));
         
         while (!open.isEmpty()) {
-//            System.out.println("main loop");
             HeapNode heapNode = open.remove();
             Cell cell = heapNode.cell;
             openSet.remove(cell);
-            System.out.println(cell);
+            searchStatistics.decrementOpened();
+            searchStatistics.incrementVisited();
+            
+            if (!cell.getCellType().equals(CellType.SOURCE) &&
+                !cell.getCellType().equals(CellType.TARGET)) {
+                model.setCellType(cell, CellType.VISITED);
+            }
             
             if (cell.equals(target)) {
                 return tracebackPath(target, p);
@@ -66,8 +73,6 @@ public final class PEAStarFinder implements Finder {
             neighbourIterable.setStartingCell(cell);
             
             for (Cell child : neighbourIterable) {
-//                System.out.println("first inner loop");)
-                
                 double tentativeDistance = (g.containsKey(child)) 
                         ? g.get(child)
                         : g.get(cell) + ps.getWeight(cell, child);
@@ -79,21 +84,8 @@ public final class PEAStarFinder implements Finder {
                 } else {
                     aboveSet.add(child);
                 }
-//                
-//                if (g.containsKey(child)) {
-//                    double f = g.get(child) + h.estimate(child, target);
-//                    
-//                    
-//                    
-//                    if (f <= F.get(cell) + C) {
-//                        belowSet.add(child);
-//                    } else {
-//                        aboveSet.add(child);
-//                    }
-//                } else {
-//                    System.out.println("shit");
-//                    aboveSet.add(child);
-//                }
+                
+                searchStatistics.incrementOpened();;
             }
             
             for (Cell child : belowSet) {
@@ -101,6 +93,21 @@ public final class PEAStarFinder implements Finder {
                                          + ps.getWeight(cell, child);
                 
                 if (!openSet.contains(child) && !closed.contains(child)) {
+                    
+                    if (searchState.haltRequested()) {
+                        return List.of();
+                    }
+                    
+                    while (searchState.pauseRequested()) {
+                        searchSleep(ps);
+                        
+                        if (searchState.haltRequested()) {
+                            return List.of();
+                        }
+                    }
+                    
+                    searchStatistics.incrementOpened();
+                    searchSleep(ps);
                     
                     g.put(child, tentativeDistance);
                     F.put(child, tentativeDistance + h.estimate(child, target));
@@ -111,12 +118,42 @@ public final class PEAStarFinder implements Finder {
                 } else if (openSet.contains(child) 
                         && tentativeDistance < g.get(child)) {
                     
+                    if (searchState.haltRequested()) {
+                        return List.of();
+                    }
+                    
+                    while (searchState.pauseRequested()) {
+                        searchSleep(ps);
+                        
+                        if (searchState.haltRequested()) {
+                            return List.of();
+                        }
+                    }
+                    
+                    searchStatistics.incrementOpened();
+                    searchSleep(ps);
+                    
                     g.put(child, tentativeDistance);
                     F.put(child, tentativeDistance + h.estimate(child, target));
                     p.put(child, cell);
                     
                 } else if (closed.contains(child) 
                         && tentativeDistance < g.get(child)) {
+                    
+                    if (searchState.haltRequested()) {
+                        return List.of();
+                    }
+                    
+                    while (searchState.pauseRequested()) {
+                        searchSleep(ps);
+                        
+                        if (searchState.haltRequested()) {
+                            return List.of();
+                        }
+                    }
+                    
+                    searchStatistics.incrementOpened();
+                    searchSleep(ps);
                     
                     g.put(child, tentativeDistance);
                     F.put(child, tentativeDistance + h.estimate(child, target));
@@ -125,12 +162,16 @@ public final class PEAStarFinder implements Finder {
                     openSet.add(child);
                     open.add(new HeapNode(child, (double) F.get(child)));
                 }
+                
+                if (!child.getCellType().equals(CellType.SOURCE) &&
+                    !child.getCellType().equals(CellType.TARGET)) {
+                    model.setCellType(child, CellType.OPENED);
+                }
             }
             
             if (aboveSet.isEmpty()) {
                 closed.add(cell);
             } else {
-//                System.out.println("if at end");
                 double fmin = Double.POSITIVE_INFINITY;
                 
                 for (Cell c : aboveSet) {
@@ -147,6 +188,13 @@ public final class PEAStarFinder implements Finder {
                 F.put(cell, fmin);
                 openSet.add(cell);
                 open.add(new HeapNode(cell, fmin));
+                
+                if (!cell.getCellType().equals(CellType.SOURCE) &&
+                    !cell.getCellType().equals(CellType.TARGET)) {
+                    model.setCellType(cell, CellType.OPENED);
+                }
+                
+                searchStatistics.incrementOpened();
             }
         }
         
