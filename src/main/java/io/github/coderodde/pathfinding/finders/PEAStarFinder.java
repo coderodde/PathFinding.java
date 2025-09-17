@@ -48,11 +48,14 @@ public final class PEAStarFinder implements Finder {
         F.put(source, h.estimate(source, target));
         p.put(source, null);
         openSet.add(source);
-        open.add(new HeapNode(source, 0.0));
+        open.add(new HeapNode(source, F.get(source)));
         
         while (!open.isEmpty()) {
+//            System.out.println("main loop");
             HeapNode heapNode = open.remove();
             Cell cell = heapNode.cell;
+            openSet.remove(cell);
+            System.out.println(cell);
             
             if (cell.equals(target)) {
                 return tracebackPath(target, p);
@@ -63,39 +66,61 @@ public final class PEAStarFinder implements Finder {
             neighbourIterable.setStartingCell(cell);
             
             for (Cell child : neighbourIterable) {
-                if (g.containsKey(child)) {
-                    double f = g.get(child) + h.estimate(child, target);
-                    
-                    if (f <= F.get(cell) + C) {
-                        belowSet.add(child);
-                    } else {
-                        aboveSet.add(child);
-                    }
+//                System.out.println("first inner loop");)
+                
+                double tentativeDistance = (g.containsKey(child)) 
+                        ? g.get(child)
+                        : g.get(cell) + ps.getWeight(cell, child);
+                
+                double f = tentativeDistance + h.estimate(child, target);
+
+                if (f <= F.get(cell) + C) {
+                    belowSet.add(child);
                 } else {
                     aboveSet.add(child);
                 }
+//                
+//                if (g.containsKey(child)) {
+//                    double f = g.get(child) + h.estimate(child, target);
+//                    
+//                    
+//                    
+//                    if (f <= F.get(cell) + C) {
+//                        belowSet.add(child);
+//                    } else {
+//                        aboveSet.add(child);
+//                    }
+//                } else {
+//                    System.out.println("shit");
+//                    aboveSet.add(child);
+//                }
             }
             
             for (Cell child : belowSet) {
+                double tentativeDistance = g.get(cell)
+                                         + ps.getWeight(cell, child);
+                
                 if (!openSet.contains(child) && !closed.contains(child)) {
-                    double gScore = g.get(cell) + ps.getWeight(cell, child);
-                    F.put(child, gScore + h.estimate(child, target));
+                    
+                    g.put(child, tentativeDistance);
+                    F.put(child, tentativeDistance + h.estimate(child, target));
+                    p.put(child, cell);
                     openSet.add(child);
                     open.add(new HeapNode(child, (double) F.get(child)));
-                } else if (openSet.contains(child) 
-                        && g.get(cell) + 
-                        ps.getWeight(cell, child) < g.get(child)) {
                     
-                    g.put(child, g.get(cell) + ps.getWeight(cell, child));
-                    F.put(child, g.get(child) + h.estimate(child, target));
+                } else if (openSet.contains(child) 
+                        && tentativeDistance < g.get(child)) {
+                    
+                    g.put(child, tentativeDistance);
+                    F.put(child, tentativeDistance + h.estimate(child, target));
+                    p.put(child, cell);
                     
                 } else if (closed.contains(child) 
-                        && g.get(cell) +
-                        ps.getWeight(cell, child) < g.get(child)) {
+                        && tentativeDistance < g.get(child)) {
                     
-                    g.put(child, g.get(cell) + ps.getWeight(cell, child));
-                    F.put(child, g.get(child) + h.estimate(child, target));
-                    
+                    g.put(child, tentativeDistance);
+                    F.put(child, tentativeDistance + h.estimate(child, target));
+                    p.put(child, cell);
                     closed.remove(child);
                     openSet.add(child);
                     open.add(new HeapNode(child, (double) F.get(child)));
@@ -105,11 +130,18 @@ public final class PEAStarFinder implements Finder {
             if (aboveSet.isEmpty()) {
                 closed.add(cell);
             } else {
+//                System.out.println("if at end");
                 double fmin = Double.POSITIVE_INFINITY;
                 
                 for (Cell c : aboveSet) {
-                    fmin = Math.min(fmin,
-                                    g.get(c) + h.estimate(c, target));
+                    double tentativeGScore = 
+                            g.containsKey(c) ?
+                                g.get(c) :
+                                g.get(cell) + ps.getWeight(cell, c);
+                    
+                    double f = tentativeGScore + h.estimate(c, target);
+                    
+                    fmin = Math.min(fmin, f);
                 }
                 
                 F.put(cell, fmin);
