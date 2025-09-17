@@ -52,6 +52,7 @@ public final class PathfindingSettings {
     private DiagonalWeight diagonalWeight = DiagonalWeight.SQRT2;
     private int beamWidth;
     private Finder finder;
+    private double cutoff = 0.0;
 
     private HeuristicFunction heuristicFunction;
 
@@ -157,5 +158,18 @@ public final class PathfindingSettings {
         }
         
         throw new IllegalStateException("Should not get here");
+    }
+    
+    public double getCutoff() {
+        return cutoff;
+    }
+
+    public void setCutoff(double cutoff) {
+        if (cutoff < 0.0) {
+            throw new IllegalArgumentException(
+                    String.format("cutoff(%f) < 0.0", cutoff));
+        }
+        
+        this.cutoff = cutoff;
     }
 }

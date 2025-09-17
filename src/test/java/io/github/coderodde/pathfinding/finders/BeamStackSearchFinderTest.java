@@ -24,7 +24,8 @@ public class BeamStackSearchFinderTest {
                                  null);
     
     public BeamStackSearchFinderTest() {
-        ps.setDontCrossCorners(true);
+        ps.setDontCrossCorners(false);
+        ps.setAllowDiagonals(true);
         ps.setFinder(new BeamStackSearchFinder());
         ps.setHeuristicFunction(new OctileHeuristicFunction());
         ps.setFrequency(1000);
@@ -32,6 +33,8 @@ public class BeamStackSearchFinderTest {
     
     @Test
     public void hasSolutionPath() {
+        System.out.println("hasSolutionPath()");
+        
         GridModel model = new GridModel(20, 5);
         model.moveTarget(17, 2);
         model.moveSource(15, 2);
@@ -70,6 +73,8 @@ public class BeamStackSearchFinderTest {
     
     @Test
     public void debugNoPath() {
+        System.out.println("debugNoPath()");
+        
         GridModel model = new GridModel(53, 33);
         model.moveTarget(6, 4);
         model.moveSource(3, 4);
@@ -78,6 +83,58 @@ public class BeamStackSearchFinderTest {
         model.setCellType(5, 3, CellType.WALL);
         model.setCellType(5, 4, CellType.WALL);
         model.setCellType(5, 5, CellType.WALL);
+        
+        ps.setBeamWidth(1);
+        
+        GridNodeExpander expander = new GridNodeExpander(model, ps);
+        
+        GridCellNeighbourIterable iterable =
+                new GridCellNeighbourIterable(model, 
+                                              expander,
+                                              ps);
+        
+        List<Cell> pathBreadthFirstSearch = 
+                new BFSFinder()
+                        .findPath(model, 
+                                  iterable, 
+                                  ps,
+                                  searchState, 
+                                  searchStatistics);
+        
+        List<Cell> pathBeamStackSearch = 
+                new BeamStackSearchFinder()
+                        .findPath(model, 
+                                  iterable, 
+                                  ps,
+                                  searchState, 
+                                  searchStatistics);
+        
+        System.out.println("BSS: " + pathBeamStackSearch.size());
+        System.out.println("BFS: " + pathBreadthFirstSearch.size());
+        
+        assertEquals(pathBreadthFirstSearch.size(),
+                     pathBeamStackSearch.size());
+    }
+    
+    @Test
+    public void suboptimal() {
+        System.out.println("suboptimal()");
+        
+        GridModel model = new GridModel(53, 33);
+        model.moveTarget(7, 3);
+        model.moveSource(6, 5);
+        
+        model.setCellType(5, 2, CellType.WALL);
+        model.setCellType(5, 3, CellType.WALL);
+        model.setCellType(6, 3, CellType.WALL);
+        
+        model.setCellType(6, 4, CellType.WALL);
+        model.setCellType(7, 4, CellType.WALL);
+        model.setCellType(7, 5, CellType.WALL);
+        
+        model.setCellType(7, 6, CellType.WALL);
+        model.setCellType(6, 6, CellType.WALL);
+        model.setCellType(5, 7, CellType.WALL);
         
         ps.setBeamWidth(1);
         
