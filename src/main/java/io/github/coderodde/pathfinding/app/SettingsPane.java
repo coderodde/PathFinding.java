@@ -6,7 +6,6 @@ import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.AStarFinder;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
 import io.github.coderodde.pathfinding.finders.BeamSearchFinder;
-import io.github.coderodde.pathfinding.finders.BeamStackSearchFinder;
 import io.github.coderodde.pathfinding.finders.BestFirstSearchFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBFSFinder;
 import io.github.coderodde.pathfinding.finders.BidirectionalBeamSearchFinder;
@@ -72,7 +71,6 @@ public final class SettingsPane extends Pane {
     private static final String ASTAR             = "A* search";
     private static final String BFS               = "BFS";
     private static final String BEAM_SEARCH       = "Beam search";
-    private static final String BEAM_STACK_SEARCH = "Beam stack search";
     private static final String BEST_FIRST_SEARCH = "Best First search";
     private static final String BI_BFS            = "Bidirectional BFS";
     private static final String BI_BEAM_SEARCH    = "Bidirectional beam search";
@@ -95,7 +93,6 @@ public final class SettingsPane extends Pane {
         ASTAR,
         BFS,
         BEAM_SEARCH,
-        BEAM_STACK_SEARCH,
         BEST_FIRST_SEARCH,
         BI_BFS,
         BI_BEAM_SEARCH,
@@ -134,7 +131,6 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(BI_BEST_FS,        
                        new BidirectionalBestFirstSearchFinder());
         
-        FINDER_MAP.put(BEAM_STACK_SEARCH, new BeamStackSearchFinder());
         FINDER_MAP.put(PEASTAR,           new PEAStarFinder());
     }
     

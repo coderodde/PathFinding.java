@@ -184,6 +184,15 @@ public final class GridModel {
         this.targetCellCoversWallCell = targetCellCoversWallCell;
     }
     
+    public boolean isWalkable(int x, int y) {
+        Cell cell = getCell(x, y);
+        
+        return switch (cell.getCellType()) {
+            case WALL, SOURCE, TARGET -> false;
+            default -> true;
+        };
+    }
+    
     /**
      * Moves the source cell to the cell with cell coordinates {@code (x, y)}.
      * 

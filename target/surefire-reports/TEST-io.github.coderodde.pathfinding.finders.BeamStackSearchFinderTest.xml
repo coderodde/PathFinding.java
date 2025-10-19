@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="1.969" tests="3" errors="0" skipped="0" failures="2">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="2.055" tests="3" errors="3" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -16,9 +16,8 @@
     <property name="user.country" value="GB"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-21\bin"/>
-    <property name="sun.java.command" value="C:\Users\rodio\AppData\Local\Temp\surefire6941643158493293574\surefirebooter-20250916122022418_3.jar C:\Users\rodio\AppData\Local\Temp\surefire6941643158493293574 2025-09-16T12-20-22_166-jvmRun1 surefire-20250916122022418_1tmp surefire_0-20250916122022418_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\rodio\AppData\Local\Temp\surefire12037435583882721462\surefirebooter-20250917192654492_3.jar C:\Users\rodio\AppData\Local\Temp\surefire12037435583882721462 2025-09-17T19-26-54_228-jvmRun1 surefire-20250917192654492_1tmp surefire_0-20250917192654492_2tmp"/>
     <property name="jdk.debug" value="release"/>
-    <property name="test" value="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest"/>
     <property name="surefire.test.class.path" value="C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\target\test-classes;C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\target\classes;C:\Users\rodio\.m2\repository\org\openjfx\javafx-controls\21.0.8\javafx-controls-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-controls\21.0.8\javafx-controls-21.0.8-win.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-fxml\21.0.8\javafx-fxml-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-fxml\21.0.8\javafx-fxml-21.0.8-win.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-graphics\21.0.8\javafx-graphics-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-graphics\21.0.8\javafx-graphics-21.0.8-win.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-base\21.0.8\javafx-base-21.0.8.jar;C:\Users\rodio\.m2\repository\org\openjfx\javafx-base\21.0.8\javafx-base-21.0.8-win.jar;C:\Users\rodio\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\rodio\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="C:\Users\rodio"/>
@@ -32,7 +31,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\rodio\AppData\Local\Temp\surefire6941643158493293574\surefirebooter-20250916122022418_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\rodio\AppData\Local\Temp\surefire12037435583882721462\surefirebooter-20250917192654492_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="21+35-LTS-2513"/>
@@ -61,13 +60,11 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="debugNoPath" classname="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="0.651">
-    <failure message="expected:&lt;5&gt; but was:&lt;0&gt;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: expected:<5> but was:<0>
-	at org.junit.Assert.fail(Assert.java:89)
-	at org.junit.Assert.failNotEquals(Assert.java:835)
-	at org.junit.Assert.assertEquals(Assert.java:647)
-	at org.junit.Assert.assertEquals(Assert.java:633)
-	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest.debugNoPath(BeamStackSearchFinderTest.java:115)
+  <testcase name="debugNoPath" classname="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="0.712">
+    <error message="Cannot invoke &quot;java.util.Set.clear()&quot; because the return value of &quot;java.util.Map.get(Object)&quot; is null" type="java.lang.NullPointerException"><![CDATA[java.lang.NullPointerException: Cannot invoke "java.util.Set.clear()" because the return value of "java.util.Map.get(Object)" is null
+	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinder.search(BeamStackSearchFinder.java:241)
+	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinder.findPath(BeamStackSearchFinder.java:51)
+	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest.debugNoPath(BeamStackSearchFinderTest.java:106)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
@@ -94,29 +91,17 @@
 	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-]]></failure>
+]]></error>
     <system-out><![CDATA[debugNoPath()
 Setting beam width 1
 hello
-BSS: 0
-BFS: 5
 ]]></system-out>
   </testcase>
-  <testcase name="hasSolutionPath" classname="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="0.223">
-    <system-out><![CDATA[hasSolutionPath()
-Setting beam width 1
-hello
-BSS: 3
-BFS: 3
-]]></system-out>
-  </testcase>
-  <testcase name="suboptimal" classname="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="0.978">
-    <failure message="expected:&lt;7&gt; but was:&lt;0&gt;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: expected:<7> but was:<0>
-	at org.junit.Assert.fail(Assert.java:89)
-	at org.junit.Assert.failNotEquals(Assert.java:835)
-	at org.junit.Assert.assertEquals(Assert.java:647)
-	at org.junit.Assert.assertEquals(Assert.java:633)
-	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest.suboptimal(BeamStackSearchFinderTest.java:167)
+  <testcase name="hasSolutionPath" classname="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="0.225">
+    <error message="Cannot invoke &quot;java.util.Set.clear()&quot; because the return value of &quot;java.util.Map.get(Object)&quot; is null" type="java.lang.NullPointerException"><![CDATA[java.lang.NullPointerException: Cannot invoke "java.util.Set.clear()" because the return value of "java.util.Map.get(Object)" is null
+	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinder.search(BeamStackSearchFinder.java:241)
+	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinder.findPath(BeamStackSearchFinder.java:51)
+	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest.hasSolutionPath(BeamStackSearchFinderTest.java:61)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
@@ -143,12 +128,47 @@ BFS: 3
 	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
 	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
 	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
-]]></failure>
+]]></error>
+    <system-out><![CDATA[hasSolutionPath()
+Setting beam width 1
+hello
+]]></system-out>
+  </testcase>
+  <testcase name="suboptimal" classname="io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest" time="0.99">
+    <error message="Cannot invoke &quot;java.util.Set.clear()&quot; because the return value of &quot;java.util.Map.get(Object)&quot; is null" type="java.lang.NullPointerException"><![CDATA[java.lang.NullPointerException: Cannot invoke "java.util.Set.clear()" because the return value of "java.util.Map.get(Object)" is null
+	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinder.search(BeamStackSearchFinder.java:241)
+	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinder.findPath(BeamStackSearchFinder.java:51)
+	at io.github.coderodde.pathfinding.finders.BeamStackSearchFinderTest.suboptimal(BeamStackSearchFinderTest.java:158)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
+	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:316)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:240)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:214)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
+	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
+	at org.apache.maven.surefire.booter.ForkedBooter.run(ForkedBooter.java:507)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:495)
+]]></error>
     <system-out><![CDATA[suboptimal()
 Setting beam width 1
 hello
-BSS: 0
-BFS: 7
 ]]></system-out>
   </testcase>
 </testsuite>

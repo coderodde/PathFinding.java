@@ -9,6 +9,7 @@ import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -68,8 +69,8 @@ public final class PEAStarFinder implements Finder {
                 return tracebackPath(target, p);
             }
             
-            Set<Cell> belowSet = new HashSet<>();
-            Set<Cell> aboveSet = new HashSet<>();
+            List<Cell> belowSet = new ArrayList<>();
+            List<Cell> aboveSet = new ArrayList<>();
             neighbourIterable.setStartingCell(cell);
             
             for (Cell child : neighbourIterable) {
@@ -85,7 +86,8 @@ public final class PEAStarFinder implements Finder {
                     aboveSet.add(child);
                 }
                 
-                searchStatistics.incrementOpened();;
+                searchStatistics.incrementOpened();
+                model.setCellType(child, CellType.OPENED);
             }
             
             for (Cell child : belowSet) {
@@ -163,10 +165,10 @@ public final class PEAStarFinder implements Finder {
                     open.add(new HeapNode(child, (double) F.get(child)));
                 }
                 
-                if (!child.getCellType().equals(CellType.SOURCE) &&
-                    !child.getCellType().equals(CellType.TARGET)) {
-                    model.setCellType(child, CellType.OPENED);
-                }
+//                if (!child.getCellType().equals(CellType.SOURCE) &&
+//                    !child.getCellType().equals(CellType.TARGET)) {
+//                    model.setCellType(child, CellType.OPENED);
+//                }
             }
             
             if (aboveSet.isEmpty()) {

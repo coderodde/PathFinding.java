@@ -39,6 +39,7 @@ public interface Finder {
     
     public default List<Cell> 
         tracebackPath(Cell target, Map<Cell, Cell> parentMap) {
+            
         List<Cell> path = new ArrayList<>();
         Cell current = target;
         
