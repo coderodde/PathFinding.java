@@ -6,7 +6,7 @@ import io.github.coderodde.pathfinding.utils.Cell;
  * Implements the octile heuristic function.
  * 
  * @author Rodion "rodde" Efremov
- * @version 1.0.0 
+ * @version 1.1.0 (Oct 21, 2025) 
  * @since 1.0.0
  */
 public final class OctileHeuristicFunction implements HeuristicFunction {
@@ -22,5 +22,18 @@ public final class OctileHeuristicFunction implements HeuristicFunction {
         int dx = Math.abs(cell1.getx() - cell2.getx());
         int dy = Math.abs(cell1.gety() - cell2.gety());
         return Math.max(dx, dy) + FACTOR * Math.min(dx, dy);
+    }
+
+    /**
+     * {@inheritDoc } 
+     */
+    @Override
+    public double estimate(double dx, double dy) {
+        dx = Math.abs(dx);
+        dy = Math.abs(dy);
+        
+        return (dx < dy) 
+                ? FACTOR * dx + dy 
+                : FACTOR * dy + dx;
     }
 }

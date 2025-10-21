@@ -20,4 +20,13 @@ public interface HeuristicFunction {
      * @return the distance estimate.
      */
     public double estimate(Cell cell1, Cell cell2);
+    
+    /**
+     * Computes the heuristic estimate using the coordinate differences.
+     * 
+     * @param dx the difference in {@code X}-coordinate.
+     * @param dy the difference in {@code Y}-coordinate.
+     * @return the distance estimate.
+     */
+    public double estimate(double dx, double dy);
 }

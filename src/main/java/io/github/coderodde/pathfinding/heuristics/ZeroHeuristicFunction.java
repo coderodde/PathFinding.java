@@ -15,4 +15,9 @@ public final class ZeroHeuristicFunction implements HeuristicFunction {
     public double estimate(Cell cell1, Cell cell2) {
         return 0.0;
     }
+    
+    @Override
+    public double estimate(double dx, double dy) {
+        return 0.0;
+    }
 }

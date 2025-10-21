@@ -1,22 +1,26 @@
 package io.github.coderodde.pathfinding.finders;
 
+import io.github.coderodde.pathfinding.finders.jps.DiagonalCrossingJumper;
 import io.github.coderodde.pathfinding.finders.jps.DiagonalCrossingNeighbourFinder;
 import io.github.coderodde.pathfinding.finders.jps.DiagonalNoCrossingNeighbourFinder;
+import io.github.coderodde.pathfinding.finders.jps.DiagonalNonCrossingJumper;
+import io.github.coderodde.pathfinding.finders.jps.NoDiagonalJumper;
 import io.github.coderodde.pathfinding.finders.jps.NoDiagonalNeighbourFinder;
+import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
-import io.github.coderodde.pathfinding.logic.GridNodeExpander;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
 import io.github.coderodde.pathfinding.logic.SearchState;
 import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 
 /**
  * This class implements the Jump Point Search.
@@ -82,12 +86,21 @@ public final class JumpPointSearchFinder implements Finder {
         NeighbourFinder neighbourFinder = 
                 getNeighbourFinder(pathfindingSettings);
         
+        Jumper jumper = getJumper(pathfindingSettings);
+        
         Cell source = model.getSourceGridCell();
         Cell target = model.getTargetGridCell();
-        HeapNode startHeapNode = new HeapNode(source, 0.0);
         
-        Queue<HeapNode> open = new PriorityQueue<>();
-        Map<Cell, Cell> parentsMap = new HashMap<>();
+        Queue<HeapNode> open          = new PriorityQueue<>();
+        Set<Cell> openSet             = new HashSet<>();
+        Set<Cell> closed              = new HashSet<>();
+        Map<Cell, Double> distanceMap = new HashMap<>();
+        Map<Cell, Cell> parentsMap    = new HashMap<>();
+        
+        open.add(new HeapNode(source, 0.0));
+        openSet.add(source);
+        parentsMap.put(source, null);
+        distanceMap.put(source, 0.0);
         
         while (!open.isEmpty()) {
             Cell current = open.remove().cell;
@@ -97,21 +110,36 @@ public final class JumpPointSearchFinder implements Finder {
                 model.setCellType(current, CellType.VISITED);
             }
             
+            closed.add(current);
+            
             if (current.equals(target)) {
                 return tracebackPath(target, 
                                      parentsMap);
             }
             
             identifySuccessors(current,
+                               open,
+                               closed,
+                               openSet,
+                               distanceMap,
                                parentsMap,
                                model,
                                pathfindingSettings,
-                               neighbourFinder);
+                               neighbourFinder,
+                               jumper);
         }
         
         return List.of();
     }
     
+    /**
+     * Returns the required neighbour finder.
+     * 
+     * @param pathfindingSettings the pathfinding settings object.
+     * 
+     * @return an instance of the suitable 
+     *         {@link io.github.coderodde.pathfinding.finders.JumpPointSearchFinder.NeighbourFinder}.
+     */
     private static NeighbourFinder 
         getNeighbourFinder(PathfindingSettings pathfindingSettings) {
         
@@ -125,17 +153,92 @@ public final class JumpPointSearchFinder implements Finder {
             return new NoDiagonalNeighbourFinder();
         }
     }
+    
+    /**
+     * Returns the required jumper.
+     * 
+     * @param pathfindingSettings the pathfinding settings object.
+     * 
+     * @return an instance of the suitable 
+     *         {@link io.github.coderodde.pathfinding.finders.JumpPointSearchFinder.Jumper}.
+     */
+    private static Jumper getJumper(PathfindingSettings pathfindingSettings) {
+        
+        if (pathfindingSettings.allowDiagonals()) {
+            if (pathfindingSettings.dontCrossCorners()) {
+                return new DiagonalNonCrossingJumper();
+            } else {
+                return new DiagonalCrossingJumper();
+            }
+        } else {
+            return new NoDiagonalJumper();
+        }
+    }
            
     private static void identifySuccessors(Cell current,
+                                           Queue<HeapNode> open,
+                                           Set<Cell> closed,
+                                           Set<Cell> openSet,
+                                           Map<Cell, Double> distanceMap,
                                            Map<Cell, Cell> parentsMap,
                                            GridModel model,
                                            PathfindingSettings ps,
-                                           NeighbourFinder neighbourFinder) {
+                                           NeighbourFinder neighbourFinder,
+                                           Jumper jumper) {
         
         List<Cell> neighbors = 
                 neighbourFinder.findNeighbours(current,
                                                parentsMap,
                                                model,
                                                ps);
+        
+        int x = current.getx();
+        int y = current.gety();
+        HeuristicFunction hf = ps.getHeuristicFunction();
+        
+        for (Cell child : neighbors) {
+            Cell jumpCell = jumper.jump(child.getx(),
+                                        child.gety(),
+                                        x,
+                                        y,
+                                        model);
+            
+            if (jumpCell == null) {
+                continue;
+            }
+            
+            int jx = jumpCell.getx();
+            int jy = jumpCell.gety();
+            jumpCell = model.getCell(jx, jy);
+            
+            if (closed.contains(jumpCell)) {
+                continue;
+            }
+            
+            double distance = hf.estimate(jx - x,
+                                          jy - y);
+            
+            double nextg = distanceMap.get(current) + distance;
+            
+            if (!openSet.contains(jumpCell) ||
+                nextg < distanceMap.get(jumpCell)) {
+                
+                distanceMap.put(jumpCell, nextg);
+                
+                double f = 
+                        nextg + 
+                        hf.estimate(jx - model.getTargetGridCell().getx(),
+                                    jy - model.getTargetGridCell().gety());
+                
+                parentsMap.put(jumpCell, current);
+                
+                
+                if (!openSet.contains(jumpCell)) {
+                     openSet.add(jumpCell);
+                }
+                
+                open.add(new HeapNode(jumpCell, f));
+            }
+        }
     }
 }
