@@ -1,5 +1,8 @@
 package io.github.coderodde.pathfinding.finders;
 
+import io.github.coderodde.pathfinding.finders.jps.DiagonalCrossingNeighbourFinder;
+import io.github.coderodde.pathfinding.finders.jps.DiagonalNoCrossingNeighbourFinder;
+import io.github.coderodde.pathfinding.finders.jps.NoDiagonalNeighbourFinder;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.GridNodeExpander;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
@@ -24,6 +27,51 @@ import java.util.Queue;
  */
 public final class JumpPointSearchFinder implements Finder {
 
+    /**
+     * This interface defines the API for computing neighbour cells of a given 
+     * cell.
+     */
+    public interface NeighbourFinder {
+        
+        /**
+         * Finds the neighbour cells of the cell {@code current}.
+         * 
+         * @param current    the cell whose neighbours to find.
+         * @param parentsMap the map which maps cells to their respective parent
+         *                   cells.
+         * @param model      the grid model.
+         * @param ps         the pathfinding settings.
+         * @return 
+         */
+        List<Cell> findNeighbours(Cell current,
+                                  Map<Cell, Cell> parentsMap,
+                                  GridModel model,
+                                  PathfindingSettings ps);
+    }
+    
+    /**
+     * This interface defines the API for jumping algorithms.
+     */
+    public interface Jumper {
+        
+        /**
+         * Jumps to the next jump point cell.
+         * 
+         * @param x          the {@code x} coordinate of the current cell.
+         * @param y          the {@code y} coordinate of the current cell.
+         * @param px         the {@code x} coordinate of the parent cell.
+         * @param py         the {@code y} coordinate of the parent cell.
+         * @param model      the grid model.
+         * 
+         * @return the next jump point cell or {@code null} if there is no such.
+         */
+        Cell jump(int x,
+                  int y,
+                  int px,
+                  int py,
+                  GridModel model);
+    }
+    
     @Override
     public List<Cell> findPath(GridModel model, 
                                GridCellNeighbourIterable neighbourIterable, 
@@ -89,166 +137,5 @@ public final class JumpPointSearchFinder implements Finder {
                                                parentsMap,
                                                model,
                                                ps);
-    }
-    
-    private static final class DiagonalNoCrossingNeighbourFinder 
-            implements NeighbourFinder {
-
-        @Override
-        public List<Cell> findNeighbours(Cell current,
-                                         Map<Cell, Cell> parentsMap,
-                                         GridModel model, 
-                                         PathfindingSettings ps) {
-        
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-    }
-    
-    private static final class DiagonalCrossingNeighbourFinder 
-            implements NeighbourFinder {
-
-        @Override
-        public List<Cell> findNeighbours(Cell current,
-                                         Map<Cell, Cell> parentsMap,
-                                         GridModel model, 
-                                         PathfindingSettings ps) {
-            List<Cell> neighbours = new ArrayList<>();
-            Cell parent = parentsMap.get(current);
-            
-            int x = current.getx();
-            int y = current.gety();
-            int px;
-            int py;
-            int dx;
-            int dy;
-
-            if (parent != null) {
-                px = parent.getx();
-                py = parent.gety();
-
-                dx = (x - px) / Math.max(Math.abs(x - px), 1);
-                dy = (y - py) / Math.max(Math.abs(y - py), 1);
-
-                // Diagonal search:
-                if (dx != 0 && dy != 0) {
-                    if (model.isWalkable(x, y + dy)) {
-                        neighbours.add(model.getCell(x, y + dy));
-                    }
-
-                    if (model.isWalkable(x + dx, y)) {
-                        neighbours.add(model.getCell(x + dx, y));
-                    }
-
-                    if (model.isWalkable(x + dx, y + dy)) {
-                        neighbours.add(model.getCell(x + dx, y + dy));
-                    }
-
-                    if (model.isWalkable(x - dx, y)) {
-                        neighbours.add(model.getCell(x - dx, y + dy));
-                    }
-
-                    if (model.isWalkable(x, y - dy)) {
-                        neighbours.add(model.getCell(x + dx, y - dy));
-                    }
-                } else {
-                    // Once here, search horizontally and vertically:
-                    if (dx == 0) {
-                        if (model.isWalkable(x, y + dy)) {
-                            neighbours.add(model.getCell(x, y + dy));
-                        }
-
-                        if (model.isWalkable(x + 1, y)) {
-                            neighbours.add(model.getCell(x + 1, y + dy));
-                        }
-
-                        if (model.isWalkable(x - 1, y)) {
-                            neighbours.add(model.getCell(x - 1, y + dy));
-                        }
-                    } else {
-                        if (model.isWalkable(x + dx, y)) {
-                            neighbours.add(model.getCell(x + dx, y));
-                        }
-
-                        if (model.isWalkable(x, y + 1)) {
-                            neighbours.add(model.getCell(x + dx, y + 1));
-                        }
-
-                        if (model.isWalkable(x, y - 1)) {
-                            neighbours.add(model.getCell(x + dx, y - 1));
-                        }
-                    }
-                }
-            } else {
-                // Once here, return all neighbours:
-                neighbours.addAll(
-                        new GridNodeExpander(model, 
-                                             ps).expand(current));
-            }
-
-            return neighbours;
-        }
-    }
-    
-    private static final class NoDiagonalNeighbourFinder 
-            implements NeighbourFinder {
-
-        @Override
-        public List<Cell> findNeighbours(Cell current,
-                                         Map<Cell, Cell> parentsMap,
-                                         GridModel model,
-                                         PathfindingSettings ps) {
-            
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-        }
-    }
-    
-    /**
-     * This interface defines the API for computing neighbour cells of a given 
-     * cell.
-     */
-    public interface NeighbourFinder {
-        
-        /**
-         * Finds the neighbour cells of the cell {@code current}.
-         * 
-         * @param current    the cell whose neighbours to find.
-         * @param parentsMap the map which maps cells to their respective parent
-         *                   cells.
-         * @param model      the grid model.
-         * @param ps         the pathfinding settings.
-         * @return 
-         */
-        List<Cell> findNeighbours(Cell current,
-                                  Map<Cell, Cell> parentsMap,
-                                  GridModel model,
-                                  PathfindingSettings ps);
-    }
-    
-    private static Cell jump(Cell current,
-                             Cell target,
-                             int px,
-                             int py,
-                             GridModel model) {
-        int x = current.getx();
-        int y = current.gety();
-        int dx = x - px;
-        int dy = y - py;
-        
-        if (!model.isWalkable(x, y)) {
-            return null;
-        }
-        
-        if (model.getCellType(current) != CellType.SOURCE &&
-            model.getCellType(current) != CellType.TARGET) {
-            model.setCellType(current, CellType.TRACED);
-        }
-        
-        if (current.equals(target)) {
-            return target;
-        }
-        
-        if (dx != 0 && dy != 0) {
-            
-        }
     }
 }
