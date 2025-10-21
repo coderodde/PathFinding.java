@@ -31,9 +31,12 @@ public final class JumpPointSearchFinder implements Finder {
                                SearchState searchState, 
                                SearchStatistics searchStatistics) {
         
+        NeighbourFinder neighbourFinder = 
+                getNeighbourFinder(pathfindingSettings);
+        
         Cell source = model.getSourceGridCell();
         Cell target = model.getTargetGridCell();
-        HeapNode startHeapNode = new HeapNode(source, 0.0, 0.0);
+        HeapNode startHeapNode = new HeapNode(source, 0.0);
         
         Queue<HeapNode> open = new PriorityQueue<>();
         Map<Cell, Cell> parentsMap = new HashMap<>();
@@ -54,101 +57,171 @@ public final class JumpPointSearchFinder implements Finder {
             identifySuccessors(current,
                                parentsMap,
                                model,
-                               pathfindingSettings);
+                               pathfindingSettings,
+                               neighbourFinder);
         }
         
         return List.of();
+    }
+    
+    private static NeighbourFinder 
+        getNeighbourFinder(PathfindingSettings pathfindingSettings) {
+        
+        if (pathfindingSettings.allowDiagonals()) {
+            if (pathfindingSettings.dontCrossCorners()) {
+                return new DiagonalNoCrossingNeighbourFinder();
+            } else {
+                return new DiagonalCrossingNeighbourFinder();
+            }
+        } else {
+            return new NoDiagonalNeighbourFinder();
+        }
     }
            
     private static void identifySuccessors(Cell current,
                                            Map<Cell, Cell> parentsMap,
                                            GridModel model,
-                                           PathfindingSettings ps) {
+                                           PathfindingSettings ps,
+                                           NeighbourFinder neighbourFinder) {
         
-        List<Cell> neighbors = findNeighbours(current,
-                                              parentsMap,
-                                              model,
-                                              ps);
+        List<Cell> neighbors = 
+                neighbourFinder.findNeighbours(current,
+                                               parentsMap,
+                                               model,
+                                               ps);
     }
     
-    private static List<Cell> findNeighbours(Cell current,
-                                             Map<Cell, Cell> parentsMap,
-                                             GridModel model,
-                                             PathfindingSettings ps) {
+    private static final class DiagonalNoCrossingNeighbourFinder 
+            implements NeighbourFinder {
+
+        @Override
+        public List<Cell> findNeighbours(Cell current,
+                                         Map<Cell, Cell> parentsMap,
+                                         GridModel model, 
+                                         PathfindingSettings ps) {
         
-        List<Cell> neighbours = new ArrayList<>();
-        Cell parent = parentsMap.get(current);
-        int x = current.getx();
-        int y = current.gety();
-        int px;
-        int py;
-        int dx;
-        int dy;
-        
-        if (parent != null) {
-            px = parent.getx();
-            py = parent.gety();
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+    }
+    
+    private static final class DiagonalCrossingNeighbourFinder 
+            implements NeighbourFinder {
+
+        @Override
+        public List<Cell> findNeighbours(Cell current,
+                                         Map<Cell, Cell> parentsMap,
+                                         GridModel model, 
+                                         PathfindingSettings ps) {
+            List<Cell> neighbours = new ArrayList<>();
+            Cell parent = parentsMap.get(current);
             
-            dx = (x - px) / Math.max(Math.abs(x - px), 1);
-            dy = (y - py) / Math.max(Math.abs(y - py), 1);
-            
-            // Diagonal search:
-            if (dx != 0 && dy != 0) {
-                if (model.isWalkable(x, y + dy)) {
-                    neighbours.add(model.getCell(x, y + dy));
-                }
-                
-                if (model.isWalkable(x + dx, y)) {
-                    neighbours.add(model.getCell(x + dx, y));
-                }
-                
-                if (model.isWalkable(x + dx, y + dy)) {
-                    neighbours.add(model.getCell(x + dx, y + dy));
-                }
-                
-                if (model.isWalkable(x - dx, y)) {
-                    neighbours.add(model.getCell(x - dx, y + dy));
-                }
-                
-                if (model.isWalkable(x, y - dy)) {
-                    neighbours.add(model.getCell(x + dx, y - dy));
-                }
-            } else {
-                // Once here, search horizontally and vertically:
-                if (dx == 0) {
+            int x = current.getx();
+            int y = current.gety();
+            int px;
+            int py;
+            int dx;
+            int dy;
+
+            if (parent != null) {
+                px = parent.getx();
+                py = parent.gety();
+
+                dx = (x - px) / Math.max(Math.abs(x - px), 1);
+                dy = (y - py) / Math.max(Math.abs(y - py), 1);
+
+                // Diagonal search:
+                if (dx != 0 && dy != 0) {
                     if (model.isWalkable(x, y + dy)) {
                         neighbours.add(model.getCell(x, y + dy));
                     }
-                    
-                    if (model.isWalkable(x + 1, y)) {
-                        neighbours.add(model.getCell(x + 1, y + dy));
-                    }
-                    
-                    if (model.isWalkable(x - 1, y)) {
-                        neighbours.add(model.getCell(x - 1, y + dy));
-                    }
-                } else {
+
                     if (model.isWalkable(x + dx, y)) {
                         neighbours.add(model.getCell(x + dx, y));
                     }
-                    
-                    if (model.isWalkable(x, y + 1)) {
-                        neighbours.add(model.getCell(x + dx, y + 1));
+
+                    if (model.isWalkable(x + dx, y + dy)) {
+                        neighbours.add(model.getCell(x + dx, y + dy));
                     }
-                    
-                    if (model.isWalkable(x, y - 1)) {
-                        neighbours.add(model.getCell(x + dx, y - 1));
+
+                    if (model.isWalkable(x - dx, y)) {
+                        neighbours.add(model.getCell(x - dx, y + dy));
+                    }
+
+                    if (model.isWalkable(x, y - dy)) {
+                        neighbours.add(model.getCell(x + dx, y - dy));
+                    }
+                } else {
+                    // Once here, search horizontally and vertically:
+                    if (dx == 0) {
+                        if (model.isWalkable(x, y + dy)) {
+                            neighbours.add(model.getCell(x, y + dy));
+                        }
+
+                        if (model.isWalkable(x + 1, y)) {
+                            neighbours.add(model.getCell(x + 1, y + dy));
+                        }
+
+                        if (model.isWalkable(x - 1, y)) {
+                            neighbours.add(model.getCell(x - 1, y + dy));
+                        }
+                    } else {
+                        if (model.isWalkable(x + dx, y)) {
+                            neighbours.add(model.getCell(x + dx, y));
+                        }
+
+                        if (model.isWalkable(x, y + 1)) {
+                            neighbours.add(model.getCell(x + dx, y + 1));
+                        }
+
+                        if (model.isWalkable(x, y - 1)) {
+                            neighbours.add(model.getCell(x + dx, y - 1));
+                        }
                     }
                 }
+            } else {
+                // Once here, return all neighbours:
+                neighbours.addAll(
+                        new GridNodeExpander(model, 
+                                             ps).expand(current));
             }
-        } else {
-            // Once here, return all neighbours:
-            neighbours.addAll(
-                    new GridNodeExpander(model, 
-                                         ps).expand(current));
+
+            return neighbours;
         }
+    }
+    
+    private static final class NoDiagonalNeighbourFinder 
+            implements NeighbourFinder {
+
+        @Override
+        public List<Cell> findNeighbours(Cell current,
+                                         Map<Cell, Cell> parentsMap,
+                                         GridModel model,
+                                         PathfindingSettings ps) {
+            
+            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        }
+    }
+    
+    /**
+     * This interface defines the API for computing neighbour cells of a given 
+     * cell.
+     */
+    public interface NeighbourFinder {
         
-        return neighbours;
+        /**
+         * Finds the neighbour cells of the cell {@code current}.
+         * 
+         * @param current    the cell whose neighbours to find.
+         * @param parentsMap the map which maps cells to their respective parent
+         *                   cells.
+         * @param model      the grid model.
+         * @param ps         the pathfinding settings.
+         * @return 
+         */
+        List<Cell> findNeighbours(Cell current,
+                                  Map<Cell, Cell> parentsMap,
+                                  GridModel model,
+                                  PathfindingSettings ps);
     }
     
     private static Cell jump(Cell current,
