@@ -4,7 +4,6 @@ import io.github.coderodde.pathfinding.finders.JumpPointSearchFinder;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
-import java.util.Map;
 
 /**
  * This class implements the algorithm for doing jumps diagonally, vertically 
@@ -17,6 +16,18 @@ import java.util.Map;
 public final class DiagonalCrossingJumper 
         implements JumpPointSearchFinder.Jumper {
 
+    /**
+     * This method implements jumping when diagonal moves with crossing an 
+     * obstacle wall is allowed.
+     * 
+     * @param x     the {@code X}-coordinate of the current cell.
+     * @param y     the {@code Y}-coordinate of the current cell.
+     * @param px    the {@code X}-coordinate of the parent cell.
+     * @param py    the {@code Y}-coordinate of the parent cell.
+     * @param model the grid model.
+     * 
+     * @return the next cell.
+     */
     @Override
     public Cell jump(int x,
                      int y,
