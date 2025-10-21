@@ -10,7 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * This class implements the 
+ * {@link io.github.coderodde.pathfinding.finders.JumpPointSearchFinder.NeighbourFinder} 
+ * interface for computing neighbours with diagonal movement that does not 
+ * involve crossing an obstacle wall.
+ * 
  * @author Rodion "rodde" Efremov
  * @version 1.0.0 (Oct 21, 2025)
  * @since 1.0.0 (Oct 21, 2025)
