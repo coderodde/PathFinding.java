@@ -1,4 +1,4 @@
-package io.github.coderodde.pathfinding.finders.jps;
+package io.github.coderodde.pathfinding.finders.jps.jumpers;
 
 import io.github.coderodde.pathfinding.finders.JumpPointSearchFinder;
 import io.github.coderodde.pathfinding.model.GridModel;
@@ -6,19 +6,19 @@ import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
 
 /**
- * This class implements the algorithm for doing jumps also diagonally but only 
- * if there is no obstacle wall crossing on the way.
- *
+ * This class implements the algorithm for doing jumps diagonally, vertically 
+ * and horizontally with obstacle wall crossing enabled.
+ * 
  * @author Rodion "rodde" Efremov
  * @version 1.0.0 (Oct 21, 2025)
  * @since 1.0.0 (Oct 21, 2025)
  */
-public final class DiagonalNonCrossingJumper 
+public final class DiagonalCrossingJumper 
         implements JumpPointSearchFinder.Jumper {
-    
+
     /**
-     * This method implements jumping when diagonal moves crossing obstacle wall 
-     * corners are not allowed.
+     * This method implements jumping when diagonal moves with crossing an 
+     * obstacle wall is allowed.
      * 
      * @param x     the {@code X}-coordinate of the current cell.
      * @param y     the {@code Y}-coordinate of the current cell.
@@ -52,47 +52,44 @@ public final class DiagonalNonCrossingJumper
         }
         
         if (dx != 0 && dy != 0) {
-            if (jump(x + dx,
-                     y,
-                     x,
-                     y,
-                     model) != null ||
-                jump(x,
-                     y + dy,
-                     x,
-                     y,
-                     model) != null) {
-                
+            if ((model.isWalkable(x - dx, y + dy) && 
+                 model.isWalkable(x - dx, y)) ||
+                (model.isWalkable(x + dx, y - dy) &&
+                 model.isWalkable(x, y - dy))) {
+                return model.getCell(x, y);
+            }
+            
+            if (jump(x + dx, y, x, y, model) != null ||
+                jump(x, y + dy, x, y, model) != null) {
                 return model.getCell(x, y);
             }
         } else {
+            // Move horizontally or vertically:
             if (dx != 0) {
-                if ((model.isWalkable(x, y - 1) &&
-                    !model.isWalkable(x - dx, y - 1)) ||
-                    (model.isWalkable(x, y + 1) &&
-                    !model.isWalkable(x - dx, y + 1))) {
+                // Once here, moving horizontally:
+                if ((model.isWalkable(x + dx, y + 1) &&
+                    !model.isWalkable(x, y + 1)) ||
+                    (model.isWalkable(x + dx, y - 1) &&
+                    !model.isWalkable(x, y - 1))) {
                     
                     return model.getCell(x, y);
                 }
-            } else if (dy != 0) {
-                if ((model.isWalkable(x - 1, y) &&
-                    !model.isWalkable(x - 1, y - dy)) ||
-                    (model.isWalkable(x + 1, y) &&
-                    !model.isWalkable(x + 1, y - dy))) {
+            } else {
+                // Once here, moving vertically:
+                if ((model.isWalkable(x + 1, y + dy) &&
+                    !model.isWalkable(x + 1, y)) ||
+                    (model.isWalkable(x - 1, y + dy) &&
+                    !model.isWalkable(x - 1, y))) {
                     
                     return model.getCell(x, y);
                 }
             }
         }
         
-        if (model.isWalkable(x + dx, y) && model.isWalkable(x, y + dy)) {
-            return jump(x + dx, 
-                        y + dy, 
-                        x, 
-                        y, 
-                        model);
-        }
-        
-        return null;
+        return jump(x + dx,
+                    y + dy,
+                    x, 
+                    y,
+                    model);
     }
 }

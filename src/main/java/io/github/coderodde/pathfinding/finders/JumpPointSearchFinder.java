@@ -1,11 +1,11 @@
 package io.github.coderodde.pathfinding.finders;
 
-import io.github.coderodde.pathfinding.finders.jps.DiagonalCrossingJumper;
-import io.github.coderodde.pathfinding.finders.jps.DiagonalCrossingNeighbourFinder;
-import io.github.coderodde.pathfinding.finders.jps.DiagonalNoCrossingNeighbourFinder;
-import io.github.coderodde.pathfinding.finders.jps.DiagonalNonCrossingJumper;
-import io.github.coderodde.pathfinding.finders.jps.NoDiagonalJumper;
-import io.github.coderodde.pathfinding.finders.jps.NoDiagonalNeighbourFinder;
+import io.github.coderodde.pathfinding.finders.jps.jumpers.DiagonalCrossingJumper;
+import io.github.coderodde.pathfinding.finders.jps.jumpers.DiagonalNonCrossingJumper;
+import io.github.coderodde.pathfinding.finders.jps.jumpers.NoDiagonalJumper;
+import io.github.coderodde.pathfinding.finders.jps.neighbourfinders.DiagonalCrossingNeighbourFinder;
+import io.github.coderodde.pathfinding.finders.jps.neighbourfinders.DiagonalNoCrossingNeighbourFinder;
+import io.github.coderodde.pathfinding.finders.jps.neighbourfinders.NoDiagonalNeighbourFinder;
 import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;

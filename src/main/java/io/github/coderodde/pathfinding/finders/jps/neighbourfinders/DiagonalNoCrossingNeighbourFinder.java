@@ -1,4 +1,4 @@
-package io.github.coderodde.pathfinding.finders.jps;
+package io.github.coderodde.pathfinding.finders.jps.neighbourfinders;
 
 import io.github.coderodde.pathfinding.finders.JumpPointSearchFinder;
 import io.github.coderodde.pathfinding.logic.GridNodeExpander;
