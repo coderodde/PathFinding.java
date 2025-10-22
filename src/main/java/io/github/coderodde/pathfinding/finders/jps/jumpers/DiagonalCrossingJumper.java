@@ -53,14 +53,16 @@ public final class DiagonalCrossingJumper
         
         if (dx != 0 && dy != 0) {
             if ((model.isWalkable(x - dx, y + dy) && 
-                 model.isWalkable(x - dx, y)) ||
+                !model.isWalkable(x - dx, y)) ||
                 (model.isWalkable(x + dx, y - dy) &&
-                 model.isWalkable(x, y - dy))) {
+                !model.isWalkable(x, y - dy))) {
+                
                 return model.getCell(x, y);
             }
             
             if (jump(x + dx, y, x, y, model) != null ||
                 jump(x, y + dy, x, y, model) != null) {
+                
                 return model.getCell(x, y);
             }
         } else {

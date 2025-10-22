@@ -15,6 +15,7 @@ import io.github.coderodde.pathfinding.finders.DijkstraFinder;
 import io.github.coderodde.pathfinding.finders.Finder;
 import io.github.coderodde.pathfinding.finders.IDAStarFinder;
 import io.github.coderodde.pathfinding.finders.IDDFSFinder;
+import io.github.coderodde.pathfinding.finders.JumpPointSearchFinder;
 import io.github.coderodde.pathfinding.finders.NBAStarFinder;
 import io.github.coderodde.pathfinding.finders.PEAStarFinder;
 import io.github.coderodde.pathfinding.heuristics.ChebyshevHeuristicFunction;
@@ -79,6 +80,7 @@ public final class SettingsPane extends Pane {
     private static final String DIJKSTRA          = "Dijkstra";
     private static final String IDASTAR           = "IDA* search";
     private static final String IDDFS             = "IDDFS";
+    private static final String JUMP_POINT_SEARCH = "Jump point search";
     private static final String NBASTAR           = "NBA* search";
     private static final String PEASTAR           = "PEA* search";
     
@@ -101,6 +103,7 @@ public final class SettingsPane extends Pane {
         DIJKSTRA,
         IDASTAR,
         IDDFS,
+        JUMP_POINT_SEARCH,
         NBASTAR,
         PEASTAR,
     };
@@ -127,6 +130,7 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(BEAM_SEARCH,       new BeamSearchFinder());
         FINDER_MAP.put(IDASTAR,           new IDAStarFinder());
         FINDER_MAP.put(IDDFS,             new IDDFSFinder());
+        FINDER_MAP.put(JUMP_POINT_SEARCH, new JumpPointSearchFinder());
         FINDER_MAP.put(NBASTAR,           new NBAStarFinder());
         FINDER_MAP.put(BI_BEST_FS,        
                        new BidirectionalBestFirstSearchFinder());
@@ -565,7 +569,7 @@ public final class SettingsPane extends Pane {
                         labelVisitedCount,
                         labelOpenedCount, 
                         labelTracedCount, 
-                        labelOpenedCount,
+                        labelRejectedCount,
                         SearchStatistics.LabelSelector.OPENED,
                         SearchStatistics.LabelSelector.VISITED);
                 
@@ -574,7 +578,7 @@ public final class SettingsPane extends Pane {
                         labelVisitedCount,
                         labelOpenedCount, 
                         labelTracedCount, 
-                        labelOpenedCount, 
+                        labelRejectedCount, 
                         SearchStatistics.LabelSelector.TRACED);
                 
             case "NBAStarFinder":
@@ -582,7 +586,7 @@ public final class SettingsPane extends Pane {
                         labelVisitedCount,
                         labelOpenedCount, 
                         labelTracedCount, 
-                        labelOpenedCount,
+                        labelRejectedCount,
                         SearchStatistics.LabelSelector.OPENED,
                         SearchStatistics.LabelSelector.VISITED,
                         SearchStatistics.LabelSelector.REJECTED);
@@ -593,6 +597,16 @@ public final class SettingsPane extends Pane {
                         labelOpenedCount,
                         labelTracedCount,
                         labelRejectedCount,
+                        SearchStatistics.LabelSelector.VISITED,
+                        SearchStatistics.LabelSelector.TRACED);
+                
+            case "JumpPointSearchFinder":
+                return new SearchStatistics(
+                        labelVisitedCount,
+                        labelOpenedCount,
+                        labelTracedCount,
+                        labelRejectedCount,
+                        SearchStatistics.LabelSelector.OPENED,
                         SearchStatistics.LabelSelector.VISITED,
                         SearchStatistics.LabelSelector.TRACED);
                 

@@ -1,5 +1,6 @@
 package io.github.coderodde.pathfinding.finders;
 
+import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.finders.jps.jumpers.DiagonalCrossingJumper;
 import io.github.coderodde.pathfinding.finders.jps.jumpers.DiagonalNonCrossingJumper;
 import io.github.coderodde.pathfinding.finders.jps.jumpers.NoDiagonalJumper;
@@ -103,6 +104,15 @@ public final class JumpPointSearchFinder implements Finder {
         distanceMap.put(source, 0.0);
         
         while (!open.isEmpty()) {
+            if (searchState.haltRequested()) {
+                return List.of();
+            }
+            
+            if (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
+                continue;
+            }
+            
             Cell current = open.remove().cell;
             
             if (model.getCellType(current) != CellType.SOURCE &&
@@ -110,12 +120,13 @@ public final class JumpPointSearchFinder implements Finder {
                 model.setCellType(current, CellType.VISITED);
             }
             
-            closed.add(current);
-            
             if (current.equals(target)) {
                 return tracebackPath(target, 
                                      parentsMap);
             }
+            
+            searchStatistics.incrementVisited();
+            closed.add(current);
             
             identifySuccessors(current,
                                open,
@@ -125,6 +136,8 @@ public final class JumpPointSearchFinder implements Finder {
                                parentsMap,
                                model,
                                pathfindingSettings,
+                               searchState,
+                               searchStatistics,
                                neighbourFinder,
                                jumper);
         }
@@ -183,6 +196,8 @@ public final class JumpPointSearchFinder implements Finder {
                                            Map<Cell, Cell> parentsMap,
                                            GridModel model,
                                            PathfindingSettings ps,
+                                           SearchState searchState,
+                                           SearchStatistics searchStatistics,
                                            NeighbourFinder neighbourFinder,
                                            Jumper jumper) {
         
@@ -197,6 +212,18 @@ public final class JumpPointSearchFinder implements Finder {
         HeuristicFunction hf = ps.getHeuristicFunction();
         
         for (Cell child : neighbors) {
+            if (searchState.haltRequested()) {
+                throw new HaltRequestedException();
+            }
+            
+            while (searchState.pauseRequested()) {
+                searchSleep(ps);
+                
+                if (searchState.haltRequested()) {
+                    throw new HaltRequestedException();
+                }
+            }
+            
             Cell jumpCell = jumper.jump(child.getx(),
                                         child.gety(),
                                         x,
@@ -238,6 +265,9 @@ public final class JumpPointSearchFinder implements Finder {
                 }
                 
                 open.add(new HeapNode(jumpCell, f));
+                
+                searchStatistics.incrementOpened();
+                searchSleep(ps);
             }
         }
     }

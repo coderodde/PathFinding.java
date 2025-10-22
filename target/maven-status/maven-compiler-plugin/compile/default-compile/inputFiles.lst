@@ -4,7 +4,6 @@ C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\gith
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\controller\GridController.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\AStarFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BeamSearchFinder.java
-C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BeamStackSearchFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BestFirstSearchFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BFSFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BidirectionalBeamSearchFinder.java
@@ -17,6 +16,13 @@ C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\gith
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\HeapNode.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\IDAStarFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\IDDFSFinder.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\jps\jumpers\DiagonalCrossingJumper.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\jps\jumpers\DiagonalNonCrossingJumper.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\jps\jumpers\NoDiagonalJumper.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\jps\neighbourfinders\DiagonalCrossingNeighbourFinder.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\jps\neighbourfinders\DiagonalNoCrossingNeighbourFinder.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\jps\neighbourfinders\NoDiagonalNeighbourFinder.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\JumpPointSearchFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\NBAStarFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\PEAStarFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\heuristics\ChebyshevHeuristicFunction.java

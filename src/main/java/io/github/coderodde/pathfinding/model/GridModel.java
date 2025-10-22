@@ -185,12 +185,13 @@ public final class GridModel {
     }
     
     public boolean isWalkable(int x, int y) {
+        if (!isValidCellLocation(x, y)) {
+            return false;
+        }
+        
         Cell cell = getCell(x, y);
         
-        return switch (cell.getCellType()) {
-            case WALL, SOURCE, TARGET -> false;
-            default -> true;
-        };
+        return !cell.getCellType().equals(CellType.WALL);
     }
     
     /**

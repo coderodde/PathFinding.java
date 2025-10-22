@@ -34,8 +34,6 @@ public final class NoDiagonalNeighbourFinder
         int y = current.gety();
         int px;
         int py;
-        int nx;
-        int ny;
         int dx;
         int dy;
         
