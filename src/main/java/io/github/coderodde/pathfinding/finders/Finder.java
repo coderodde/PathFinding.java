@@ -75,6 +75,33 @@ public interface Finder {
         return path;
     }
         
+    public static List<Cell> expandPath(List<Cell> compressedPath,
+                                        GridModel model) {
+        
+        if (compressedPath.size() < 2) {
+            return List.of();
+        }
+        
+        List<Cell> expandedPath = new ArrayList<>();
+        
+        for (int i = 0; i < compressedPath.size() - 1; ++i) {
+            Cell cell1 = compressedPath.get(i);
+            Cell cell2 = compressedPath.get(i + 1);
+            
+            List<Cell> interpolated = interpolate(cell1, 
+                                                  cell2,
+                                                  model);
+            
+            for (int j = 0; j < interpolated.size() - 1; ++j) {
+                expandedPath.add(interpolated.get(j));
+            }
+        }
+        
+        expandedPath.add(compressedPath.getLast());
+        
+        return expandedPath;
+    } 
+        
     public static List<Cell> tracebackPathBiDijkstra(Cell touchf,
                                                      Cell touchb,
                                                      Map<Cell, Cell> parentsf,
@@ -121,5 +148,47 @@ public interface Finder {
         }
         
         return cost;
+    }
+    
+    private static List<Cell> interpolate(Cell cell1, 
+                                          Cell cell2,
+                                          GridModel model) {
+        
+        List<Cell> line = new ArrayList<>();
+        
+        int x1 = cell1.getx();
+        int y1 = cell1.gety();
+        int x2 = cell2.getx();
+        int y2 = cell2.gety();
+        
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
+        
+        int sx = (x1 < x2) ? 1 : -1;
+        int sy = (y1 < y2) ? 1 : -1;
+        
+        int err = dx - dy;
+        
+        while (true) {
+            line.add(model.getCell(x1, y1));
+            
+            if (x1 == x2 && y1 == y2) {
+                break;
+            }
+            
+            int e2 = 2 * err;
+            
+            if (e2 > -dy) {
+                err -= dy;
+                x1 += sx;
+            }
+            
+            if (e2 < dx) {
+                err += dx;
+                y1 += sy;
+            }
+        }
+        
+        return line;
     }
 }

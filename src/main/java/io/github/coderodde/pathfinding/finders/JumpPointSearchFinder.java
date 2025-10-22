@@ -1,5 +1,6 @@
 package io.github.coderodde.pathfinding.finders;
 
+import static io.github.coderodde.pathfinding.finders.Finder.expandPath;
 import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.finders.jps.jumpers.DiagonalCrossingJumper;
 import io.github.coderodde.pathfinding.finders.jps.jumpers.DiagonalNonCrossingJumper;
@@ -62,11 +63,12 @@ public final class JumpPointSearchFinder implements Finder {
         /**
          * Jumps to the next jump point cell.
          * 
-         * @param x          the {@code x} coordinate of the current cell.
-         * @param y          the {@code y} coordinate of the current cell.
-         * @param px         the {@code x} coordinate of the parent cell.
-         * @param py         the {@code y} coordinate of the parent cell.
-         * @param model      the grid model.
+         * @param x                the {@code x} coordinate of the current cell.
+         * @param y                the {@code y} coordinate of the current cell.
+         * @param px               the {@code x} coordinate of the parent cell.
+         * @param py               the {@code y} coordinate of the parent cell.
+         * @param model            the grid model.
+         * @param searchStatistics the search statistics object.
          * 
          * @return the next jump point cell or {@code null} if there is no such.
          */
@@ -74,7 +76,8 @@ public final class JumpPointSearchFinder implements Finder {
                   int y,
                   int px,
                   int py,
-                  GridModel model);
+                  GridModel model,
+                  SearchStatistics searchStatistics);
     }
     
     @Override
@@ -121,8 +124,10 @@ public final class JumpPointSearchFinder implements Finder {
             }
             
             if (current.equals(target)) {
-                return tracebackPath(target, 
-                                     parentsMap);
+                List<Cell> compressedPath = tracebackPath(target,
+                                                          parentsMap);
+                return expandPath(compressedPath, 
+                                  model);
             }
             
             searchStatistics.incrementVisited();
@@ -228,7 +233,8 @@ public final class JumpPointSearchFinder implements Finder {
                                         child.gety(),
                                         x,
                                         y,
-                                        model);
+                                        model,
+                                        searchStatistics);
             
             if (jumpCell == null) {
                 continue;
@@ -258,7 +264,6 @@ public final class JumpPointSearchFinder implements Finder {
                                     jy - model.getTargetGridCell().gety());
                 
                 parentsMap.put(jumpCell, current);
-                
                 
                 if (!openSet.contains(jumpCell)) {
                      openSet.add(jumpCell);

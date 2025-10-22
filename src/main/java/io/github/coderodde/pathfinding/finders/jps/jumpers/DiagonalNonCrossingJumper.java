@@ -1,6 +1,7 @@
 package io.github.coderodde.pathfinding.finders.jps.jumpers;
 
 import io.github.coderodde.pathfinding.finders.JumpPointSearchFinder;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -20,11 +21,12 @@ public final class DiagonalNonCrossingJumper
      * This method implements jumping when diagonal moves crossing obstacle wall 
      * corners are not allowed.
      * 
-     * @param x     the {@code X}-coordinate of the current cell.
-     * @param y     the {@code Y}-coordinate of the current cell.
-     * @param px    the {@code X}-coordinate of the parent cell.
-     * @param py    the {@code Y}-coordinate of the parent cell.
-     * @param model the grid model.
+     * @param x                the {@code X}-coordinate of the current cell.
+     * @param y                the {@code Y}-coordinate of the current cell.
+     * @param px               the {@code X}-coordinate of the parent cell.
+     * @param py               the {@code Y}-coordinate of the parent cell.
+     * @param model            the grid model.
+     * @param searchStatistics the search statistics object.
      * 
      * @return the next cell.
      */
@@ -33,7 +35,8 @@ public final class DiagonalNonCrossingJumper
                      int y,
                      int px, 
                      int py,
-                     GridModel model) {
+                     GridModel model,
+                     SearchStatistics searchStatistics) {
         
         int dx = x - px;
         int dy = y - py;
@@ -45,6 +48,7 @@ public final class DiagonalNonCrossingJumper
         if (!model.getCellType(x, y).equals(CellType.SOURCE) &&
             !model.getCellType(x, y).equals(CellType.TARGET)) {
             model.setCellType(x, y, CellType.TRACED);
+            searchStatistics.incrementTraced();
         }
         
         if (model.getCell(x, y).equals(model.getTargetGridCell())) {
@@ -56,12 +60,14 @@ public final class DiagonalNonCrossingJumper
                      y,
                      x,
                      y,
-                     model) != null ||
+                     model,
+                     searchStatistics) != null ||
                 jump(x,
                      y + dy,
                      x,
                      y,
-                     model) != null) {
+                     model,
+                     searchStatistics) != null) {
                 
                 return model.getCell(x, y);
             }
@@ -90,7 +96,8 @@ public final class DiagonalNonCrossingJumper
                         y + dy, 
                         x, 
                         y, 
-                        model);
+                        model,
+                        searchStatistics);
         }
         
         return null;

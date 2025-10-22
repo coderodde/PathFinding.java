@@ -145,16 +145,21 @@ public final class PathfindingSettings {
         int dx = Math.abs(cell1.getx() - cell2.getx());
         int dy = Math.abs(cell1.gety() - cell2.gety());
         
-        if (dx == 1 && dy == 0) {
-            return 1.0;
+        if (dx > 0 && dy == 0) {
+            return dx;
         }
         
-        if (dx == 0 && dy == 1) {
-            return 1.0;
+        if (dx == 0 && dy > 0) {
+            return dy;
         }
         
-        if (dx == 1 && dy == 1) {
-            return diagonalWeight.getWeight();
+        if (dx > 0 && dy > 0) {
+            if (dx != dy) {
+                throw new IllegalStateException("Should not get here");
+            }
+            
+//            System.out.println("[DEBUG] dx = " + dx + ", dy = " + dy);
+            return dx * diagonalWeight.getWeight();
         }
         
         throw new IllegalStateException("Should not get here");

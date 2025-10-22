@@ -16,7 +16,7 @@ public enum CellType {
     TARGET  (Color.web("#dd2222")),
     VISITED (Color.web("#b3b2b1")),
     OPENED  (Color.web("#aaffaa")),
-    TRACED  (Color.web("#ffff80"));
+    TRACED  (Color.web("#cccccc"));
     
     private final Color color;
     

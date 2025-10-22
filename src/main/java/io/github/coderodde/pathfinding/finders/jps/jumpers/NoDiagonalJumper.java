@@ -1,6 +1,7 @@
 package io.github.coderodde.pathfinding.finders.jps.jumpers;
 
 import io.github.coderodde.pathfinding.finders.JumpPointSearchFinder;
+import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
@@ -18,11 +19,12 @@ public final class NoDiagonalJumper implements JumpPointSearchFinder.Jumper {
     /**
      * This method implements jumping when diagonal moves are not allowed.
      * 
-     * @param x     the {@code X}-coordinate of the current cell.
-     * @param y     the {@code Y}-coordinate of the current cell.
-     * @param px    the {@code X}-coordinate of the parent cell.
-     * @param py    the {@code Y}-coordinate of the parent cell.
-     * @param model the grid model.
+     * @param x                the {@code X}-coordinate of the current cell.
+     * @param y                the {@code Y}-coordinate of the current cell.
+     * @param px               the {@code X}-coordinate of the parent cell.
+     * @param py               the {@code Y}-coordinate of the parent cell.
+     * @param model            the grid model.
+     * @param searchStatistics the search statistics object.
      * 
      * @return the next cell.
      */
@@ -31,8 +33,9 @@ public final class NoDiagonalJumper implements JumpPointSearchFinder.Jumper {
                      int y, 
                      int px, 
                      int py, 
-                     GridModel model) {
-    
+                     GridModel model,
+                     SearchStatistics searchStatistics) {
+        
         int dx = x - px;
         int dy = y - py;
         
@@ -66,8 +69,8 @@ public final class NoDiagonalJumper implements JumpPointSearchFinder.Jumper {
                 return model.getCell(x, y);
             }
             
-            if (jump(x + 1, y, x, y, model) != null ||
-                jump(x - 1, y, x, y, model) != null) {
+            if (jump(x + 1, y, x, y, model, searchStatistics) != null ||
+                jump(x - 1, y, x, y, model, searchStatistics) != null) {
                 
                 return model.getCell(x, y);
             }
@@ -79,6 +82,7 @@ public final class NoDiagonalJumper implements JumpPointSearchFinder.Jumper {
                     y + dy,
                     x,
                     y, 
-                    model);
+                    model, 
+                    searchStatistics);
     }
 }
