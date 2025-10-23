@@ -183,11 +183,7 @@ public final class JumpPointSearchFinder implements Finder {
     private static Jumper getJumper(PathfindingSettings pathfindingSettings) {
         
         if (pathfindingSettings.allowDiagonals()) {
-            if (pathfindingSettings.dontCrossCorners()) {
-                return new DiagonalNonCrossingJumper();
-            } else {
-                return new DiagonalCrossingJumper();
-            }
+            return new DiagonalNonCrossingJumper();
         } else {
             return new NoDiagonalJumper();
         }

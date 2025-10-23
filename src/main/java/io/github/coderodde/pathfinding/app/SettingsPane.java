@@ -194,6 +194,8 @@ public final class SettingsPane extends Pane {
     private final Button buttonClearWalls = new Button("Clear walls");
     private final Button buttonDrawMaze   = new Button("Draw random maze");
     
+    private boolean previouslyReset = false;
+    
     private static final Pattern CUTOFF_VALUE_PATTERN = 
             Pattern.compile("\\d*(\\.\\d*)?");
     
@@ -362,6 +364,7 @@ public final class SettingsPane extends Pane {
             }
             
             gridModel.drawRandomMaze();
+            previouslyReset = false;
         });
         
         buttonStartPause.setOnAction(event -> {
@@ -375,7 +378,11 @@ public final class SettingsPane extends Pane {
                 searchState.setCurrentState(CurrentState.SEARCHING);
                 gridController.disableUserInteraction();
                 gridModel.clearStateCells();
+                gridView.clearView();
+                gridView.drawBorders();
+                gridView.drawAllCels();
                 buttonStartPause.setText("Pause");
+                previouslyReset = false;
                 
                 finder = pathfindingSettings.getFinder();
                 gridNodeExpander = new GridNodeExpander(gridModel,
@@ -414,7 +421,6 @@ public final class SettingsPane extends Pane {
                     try {
                         this.path.clear();
                         this.path.addAll(task.get());
-//                        System.out.println("PATH: " + this.path);
                     } catch (InterruptedException | ExecutionException ex) {
                         System.getLogger(
                                 SettingsPane.class.getName()).log(
@@ -450,16 +456,20 @@ public final class SettingsPane extends Pane {
                 searchState.requestPause();
                 searchState.setCurrentState(CurrentState.PAUSED);
                 buttonStartPause.setText("Continue");
+                previouslyReset = false;
             } else if (searchState.getCurrentState()
                                   .equals(CurrentState.PAUSED)) {
                 
                 searchState.resetState();
                 searchState.setCurrentState(CurrentState.SEARCHING);
                 buttonStartPause.setText("Pause");
+                previouslyReset = false;
             }
         });
         
         buttonClearWalls.setOnAction(event -> {
+            previouslyReset = false;
+            
             if (!searchState.getCurrentState().equals(CurrentState.IDLE)) {
                 return;
             }
@@ -468,7 +478,16 @@ public final class SettingsPane extends Pane {
         });    
         
         buttonReset.setOnAction(event -> {
+            if (previouslyReset) {
+                return;
+            }
+            
             if (searchState.getCurrentState().equals(CurrentState.IDLE)) {
+                gridView.clearView();
+                gridModel.clearStateCells();
+                gridView.drawAllCels();
+                gridView.drawBorders();
+                previouslyReset = true;
                 return;
             }
             
@@ -485,8 +504,10 @@ public final class SettingsPane extends Pane {
             
             buttonStartPause.setText("Search");
             gridModel.clearStateCells();
+            gridView.clearView();
             gridView.drawBorders();
             gridView.drawAllCels();
+            previouslyReset = true;
             searchState.setCurrentState(CurrentState.IDLE);
         });
         

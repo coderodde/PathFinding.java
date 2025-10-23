@@ -52,7 +52,7 @@ public final class DiagonalCrossingJumper
         }
         
         if (model.getCell(x, y).equals(model.getTargetGridCell())) {
-            return model.getTargetGridCell();
+            return model.getCell(x, y);
         }
         
         if (dx != 0 && dy != 0) {

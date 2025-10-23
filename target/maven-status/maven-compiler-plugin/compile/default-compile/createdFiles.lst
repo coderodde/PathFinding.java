@@ -27,6 +27,7 @@ io\github\coderodde\pathfinding\logic\GridNodeExpander.class
 io\github\coderodde\pathfinding\finders\HaltRequestedException.class
 io\github\coderodde\pathfinding\finders\jps\jumpers\DiagonalCrossingJumper.class
 io\github\coderodde\pathfinding\heuristics\OctileHeuristicFunction.class
+io\github\coderodde\pathfinding\view\GridView$2.class
 io\github\coderodde\pathfinding\finders\jps\jumpers\DiagonalNonCrossingJumper.class
 io\github\coderodde\pathfinding\heuristics\HeuristicFunction.class
 io\github\coderodde\pathfinding\utils\CellType.class

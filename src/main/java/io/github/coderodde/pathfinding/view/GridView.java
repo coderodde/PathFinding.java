@@ -10,10 +10,12 @@ import io.github.coderodde.pathfinding.utils.GridBounds;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.Screen;
 
 /**
@@ -103,96 +105,125 @@ public final class GridView extends Canvas {
     }
     
     public void drawAllCels() {
-        for (int y = 0; y < verticalCells; ++y) {
-            for (int x = 0; x < horizontalCells; ++x) {
-                drawCell(model.getCell(x, y));
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                for (int y = 0; y < verticalCells; ++y) {
+                    for (int x = 0; x < horizontalCells; ++x) {
+                        drawCell(model.getCell(x, y), false);
+                    }
+                }
             }
-        }
+        });
     }
     
-    public void drawCell(Cell cell) {
-        Color color = cell.getCellType().getColor();
-
-         gc.setFill(color);
-         gc.fillRect(
-                leftMargin +
-                        cell.getx() * (cellWidthHeight + BORDER_THICKNESS) 
-                        + BORDER_THICKNESS,
-
-                topMargin +
-                        cell.gety() * (cellWidthHeight + BORDER_THICKNESS) 
-                        + BORDER_THICKNESS,
-
-                cellWidthHeight,
-                cellWidthHeight);
+    public void drawCell(Cell cell, boolean drawLater) {
+        Runnable runnable = () -> {
+            Color color = cell.getCellType().getColor();
+            
+            gc.setFill(color);
+            gc.fillRect(
+                    leftMargin +
+                            cell.getx()
+                                    * (cellWidthHeight + BORDER_THICKNESS)
+                            + BORDER_THICKNESS,
+                    
+                    topMargin +
+                            cell.gety()
+                                    * (cellWidthHeight + BORDER_THICKNESS)
+                            + BORDER_THICKNESS,
+                    
+                    cellWidthHeight,
+                    cellWidthHeight);
+        };
+        
+        if (drawLater) {
+            Platform.runLater(runnable);
+        } else {
+            runnable.run();
+        }
     }
     
     public void drawPath(List<Cell> path) {
-        if (path.size() < 2) {
-            return;
-        }
-        
-        Cell sourceCell = model.getSourceGridCell();
-        Cell targetCell = model.getTargetGridCell();
-        
-        model.setCellType(sourceCell, CellType.SOURCE);
-        model.setCellType(targetCell, CellType.TARGET);
-        
-        gc.setStroke(PATH_PAINT);
-        gc.setLineWidth(PATH_THICKNESS);
-        
-        Cell cell1 = path.get(0);
-        int stride = cellWidthHeight + BORDER_THICKNESS;
-        
-        for (int i = 1; i < path.size(); ++i) {
-            Cell cell2 = path.get(i);
-            
-            int startX = 
-                    (int)(leftMargin + cell1.getx() * stride 
-                                     + cellWidthHeight / 2.0);
-            
-            int startY = 
-                    (int)(topMargin + cell1.gety() * stride
-                                    + cellWidthHeight / 2.0);
-            
-            int endX = (int)(leftMargin + cell2.getx() * stride 
+        Platform.runLater(() -> {
+            if (path.size() < 2) {
+                return;
+            }
+
+            Cell sourceCell = model.getSourceGridCell();
+            Cell targetCell = model.getTargetGridCell();
+
+            model.setCellType(sourceCell, CellType.SOURCE);
+            model.setCellType(targetCell, CellType.TARGET);
+
+            gc.setStroke(PATH_PAINT);
+            gc.setLineWidth(PATH_THICKNESS);
+
+            Cell cell1 = path.get(0);
+            int stride = cellWidthHeight + BORDER_THICKNESS;
+
+            for (int i = 1; i < path.size(); ++i) {
+                Cell cell2 = path.get(i);
+
+                int startX = 
+                        (int)(leftMargin + cell1.getx() * stride 
+                                         + cellWidthHeight / 2.0);
+
+                int startY = 
+                        (int)(topMargin + cell1.gety() * stride
                                         + cellWidthHeight / 2.0);
-            
-            int endY = (int)(topMargin + cell2.gety() * stride 
-                                       + cellWidthHeight / 2.0);
-            
-            gc.strokeLine(startX, 
-                          startY, 
-                          endX, 
-                          endY);
-            
-            cell1 = cell2;
-        }
+
+                int endX = (int)(leftMargin + cell2.getx() * stride 
+                                            + cellWidthHeight / 2.0);
+
+                int endY = (int)(topMargin + cell2.gety() * stride 
+                                           + cellWidthHeight / 2.0);
+
+                gc.strokeLine(startX, 
+                              startY, 
+                              endX, 
+                              endY);
+
+                cell1 = cell2;
+            }
+        });
+    }
+    
+    public void clearView() {
+        Platform.runLater(() -> {
+            gc.setStroke(Color.WHITE);
+            gc.fillRect(0, 
+                        0, 
+                        getWidth(), 
+                        getHeight());
+        });
     }
     
     public void drawBorders() {
-        gc.setStroke(BORDER_PAINT);
-        gc.setLineWidth(BORDER_THICKNESS);
-        
-        // Draw verticla borders:
-        for (int borderX = 0; borderX <= horizontalCells; ++borderX) {
-            int x = leftMargin + borderX * (cellWidthHeight + BORDER_THICKNESS);
-            
-            gc.strokeLine(x,
-                          topMargin, 
-                          x,
-                          topMargin + contentHeight);
-        }
-        
-        // Draw horizontal borders:
-        for (int borderY = 0; borderY <= verticalCells; ++borderY) {
-            int y = topMargin + borderY * (cellWidthHeight + BORDER_THICKNESS);
-            
-            gc.strokeLine(leftMargin, 
-                          y,
-                          leftMargin + contentWidth, 
-                          y);
-        }
+        Platform.runLater(() -> {
+            gc.setStroke(BORDER_PAINT);
+            gc.setLineWidth(BORDER_THICKNESS);
+
+            // Draw verticla borders:
+            for (int borderX = 0; borderX <= horizontalCells; ++borderX) {
+                int x = leftMargin + borderX * (cellWidthHeight + BORDER_THICKNESS);
+
+                gc.strokeLine(x,
+                              topMargin, 
+                              x,
+                              topMargin + contentHeight);
+            }
+
+            // Draw horizontal borders:
+            for (int borderY = 0; borderY <= verticalCells; ++borderY) {
+                int y = topMargin + borderY * (cellWidthHeight + BORDER_THICKNESS);
+
+                gc.strokeLine(leftMargin, 
+                              y,
+                              leftMargin + contentWidth, 
+                              y);
+            }
+        });
     }
 
     public void setGridModel(GridModel model) {
@@ -253,12 +284,12 @@ public final class GridView extends Canvas {
             switch (current.getCellType()) {
                 case VISITED, OPENED, TRACED -> {
                     current.setCellType(CellType.FREE);
-                    drawCell(current);
+                    drawCell(current, true);
                 }
                 
                 // The following redraw of a cell will remove the partial path
                 // artifact from UI:
-                 case SOURCE, TARGET -> drawCell(current);
+                 case SOURCE, TARGET -> drawCell(current, true);
             }
         }
     }

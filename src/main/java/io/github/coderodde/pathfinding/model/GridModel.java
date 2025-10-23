@@ -353,7 +353,7 @@ public final class GridModel {
         cell.setCellType(cellType);
         
         if (view != null) {
-            view.drawCell(cell);
+            view.drawCell(cell, true);
         }
     }
     
