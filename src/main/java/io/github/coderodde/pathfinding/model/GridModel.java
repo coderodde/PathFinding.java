@@ -1,5 +1,6 @@
 package io.github.coderodde.pathfinding.model;
 
+import static io.github.coderodde.pathfinding.logic.SearchStatistics.LabelSelector.REJECTED;
 import io.github.coderodde.pathfinding.utils.Cell;
 import io.github.coderodde.pathfinding.utils.CellType;
 import static io.github.coderodde.pathfinding.utils.CellType.FREE;

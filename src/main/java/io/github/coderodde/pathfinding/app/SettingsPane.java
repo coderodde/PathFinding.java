@@ -374,11 +374,11 @@ public final class SettingsPane extends Pane {
                     
             if (searchState.getCurrentState().equals(CurrentState.IDLE)) {
                 // Once here, start search:
-                gridView.clearPath(path); // Clear the possible previous path!
                 searchState.setCurrentState(CurrentState.SEARCHING);
+                gridView.clearPath(path); // Clear the possible previous path!
                 gridController.disableUserInteraction();
                 gridModel.clearStateCells();
-                gridView.clearView();
+//                gridView.clearView();
                 gridView.drawBorders();
                 gridView.drawAllCels();
                 buttonStartPause.setText("Pause");
@@ -483,10 +483,15 @@ public final class SettingsPane extends Pane {
             }
             
             if (searchState.getCurrentState().equals(CurrentState.IDLE)) {
-                gridView.clearView();
-                gridModel.clearStateCells();
-                gridView.drawAllCels();
-                gridView.drawBorders();
+                
+            gridModel.clearStateCells();
+//            gridView.clearView();
+            gridView.drawBorders();
+            gridView.drawAllCels();
+//                gridView.clearView();
+//                gridModel.clearStateCells();
+//                gridView.drawAllCels();
+//                gridView.drawBorders();
                 previouslyReset = true;
                 return;
             }
@@ -504,7 +509,7 @@ public final class SettingsPane extends Pane {
             
             buttonStartPause.setText("Search");
             gridModel.clearStateCells();
-            gridView.clearView();
+//            gridView.clearView();
             gridView.drawBorders();
             gridView.drawAllCels();
             previouslyReset = true;
