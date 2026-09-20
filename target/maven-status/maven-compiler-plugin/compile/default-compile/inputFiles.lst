@@ -5,6 +5,7 @@ C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\gith
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\AStarFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BeamSearchFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BestFirstSearchFinder.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BFHSFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BFSFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BidirectionalBeamSearchFinder.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\finders\BidirectionalBestFirstSearchFinder.java
@@ -38,6 +39,7 @@ C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\gith
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\logic\SearchState.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\logic\SearchStatistics.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\model\GridModel.java
+C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\util\DoublePriorityBinaryHeap.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\utils\Cell.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\utils\CellType.java
 C:\Users\rodio\Documents\NetBeansProjects\PathFinding.java\src\main\java\io\github\coderodde\pathfinding\utils\GridBounds.java

@@ -1,6 +1,5 @@
 package io.github.coderodde.pathfinding.app;
 
-import java.util.Collections;
 import java.util.List;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;

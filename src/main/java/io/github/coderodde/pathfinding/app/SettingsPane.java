@@ -4,6 +4,7 @@ import static io.github.coderodde.pathfinding.app.Configuration.FREQUENCIES;
 import static io.github.coderodde.pathfinding.finders.Finder.computePathCost;
 import io.github.coderodde.pathfinding.controller.GridController;
 import io.github.coderodde.pathfinding.finders.AStarFinder;
+import io.github.coderodde.pathfinding.finders.BFHSFinder;
 import io.github.coderodde.pathfinding.finders.BFSFinder;
 import io.github.coderodde.pathfinding.finders.BeamSearchFinder;
 import io.github.coderodde.pathfinding.finders.BestFirstSearchFinder;
@@ -71,6 +72,7 @@ public final class SettingsPane extends Pane {
     
     private static final String ASTAR             = "A* search";
     private static final String BFS               = "BFS";
+    private static final String BFHS              = "BFHS";
     private static final String BEAM_SEARCH       = "Beam search";
     private static final String BEST_FIRST_SEARCH = "Best First search";
     private static final String BI_BFS            = "Bidirectional BFS";
@@ -94,6 +96,7 @@ public final class SettingsPane extends Pane {
     private static final String[] FINDER_NAMES = {
         ASTAR,
         BFS,
+        BFHS,
         BEAM_SEARCH,
         BEST_FIRST_SEARCH,
         BI_BFS,
@@ -124,6 +127,7 @@ public final class SettingsPane extends Pane {
         FINDER_MAP.put(DIJKSTRA,          new DijkstraFinder());
         FINDER_MAP.put(BI_DIJKSTRA,       new BidirectionalDijkstraFinder());
         FINDER_MAP.put(BFS,               new BFSFinder());
+        FINDER_MAP.put(BFHS,              new BFHSFinder());
         FINDER_MAP.put(BI_BFS,            new BidirectionalBFSFinder());
         FINDER_MAP.put(BEST_FIRST_SEARCH, new BestFirstSearchFinder());
         FINDER_MAP.put(BI_BEAM_SEARCH,    new BidirectionalBeamSearchFinder());  
@@ -159,6 +163,9 @@ public final class SettingsPane extends Pane {
     private final CheckBox checkBoxDontCrossCorners = 
               new CheckBox("Don't cross corners");
     
+    private final TextField textFieldCutoffValue    = new TextField();
+    private final TextField textFieldBFHSUpperBound = new TextField(); 
+    
     private final TitledPane titledPaneFrequency = 
             new TitledPane("Frequency", comboBoxFrequency);
     
@@ -174,10 +181,11 @@ public final class SettingsPane extends Pane {
     private final TitledPane titledPaneBeamWidth = 
             new TitledPane("Beam width", comboBoxBeamWidth);
     
-    private final TextField textFieldCutoffValue = new TextField();
+    private final TitledPane titledPaneBFHSUpperBound = 
+            new TitledPane("BFHS upper bound", textFieldCutoffValue);
     
     private final TitledPane titledPaneCutoffValue = 
-            new TitledPane("Cutoff value", textFieldCutoffValue);
+            new TitledPane("PEA* cutoff value", textFieldCutoffValue);
     
     private final TitledPane titledPaneDiagonalSettings;
     
@@ -263,6 +271,17 @@ public final class SettingsPane extends Pane {
         
         this.textFieldCutoffValue.setTextFormatter(TEXT_FOMATTER);
         
+        UnaryOperator<TextFormatter.Change> integerFilter = change -> {
+            String newText = change.getControlNewText();
+            
+            return newText.matches("-?\\d*") ? change : null;
+        };
+        
+        TextFormatter<Integer> formatter = new TextFormatter<>(integerFilter);
+        
+        this.textFieldBFHSUpperBound.setTextFormatter(formatter);
+        
+        
         setPrefSize(PIXELS_WIDTH,
                     PIXELS_HEIGHT);
         
@@ -338,7 +357,8 @@ public final class SettingsPane extends Pane {
                                     titledPaneFinder,
                                     titledPaneHeuristic,
                                     titledPaneBeamWidth,
-                                    titledPaneCutoffValue);
+                                    titledPaneCutoffValue,
+                                    titledPaneBFHSUpperBound);
         
         accordion.setExpandedPane(titledPaneFinder);
         
@@ -573,9 +593,14 @@ public final class SettingsPane extends Pane {
                 HEURISTIC_MAP.get(comboBoxHeuristic.getValue()));
         
         ps.setFinder(FINDER_MAP.get(comboBoxFinder.getValue()));
-        ps.setCutoff(Double.parseDouble(textFieldCutoffValue.getText()));
+        ps.setPeaStarCutoff(Double.parseDouble(textFieldCutoffValue.getText()));
         
-        return ps;
+        //                                               Remove " Hz":
+        String freqString = comboBoxFrequency.getValue().replaceAll(" Hz", "");
+        
+        ps.setFrequency(Integer.parseInt(freqString));
+        
+        return ps; 
     }
     
     private SearchStatistics computeSearchStatistics() {

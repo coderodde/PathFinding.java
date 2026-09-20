@@ -37,7 +37,7 @@ public final class PEAStarFinder implements Finder {
     
         Cell source = model.getSourceGridCell();
         Cell target = model.getTargetGridCell();
-        double C = ps.getCutoff();
+        double C = ps.getPeaStarCutoff();
         
         Map<Cell, Double> g  = new HashMap<>();
         Map<Cell, Double> F  = new HashMap<>();
