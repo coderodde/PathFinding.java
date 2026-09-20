@@ -2,7 +2,6 @@ package io.github.coderodde.pathfinding.finders;
 
 import static io.github.coderodde.pathfinding.finders.Finder.expandPath;
 import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
-import io.github.coderodde.pathfinding.finders.jps.jumpers.DiagonalCrossingJumper;
 import io.github.coderodde.pathfinding.finders.jps.jumpers.DiagonalNonCrossingJumper;
 import io.github.coderodde.pathfinding.finders.jps.jumpers.NoDiagonalJumper;
 import io.github.coderodde.pathfinding.finders.jps.neighbourfinders.DiagonalCrossingNeighbourFinder;
