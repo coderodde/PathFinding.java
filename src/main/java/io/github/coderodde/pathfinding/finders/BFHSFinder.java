@@ -1,5 +1,6 @@
 package io.github.coderodde.pathfinding.finders;
 
+import static io.github.coderodde.pathfinding.finders.Finder.searchSleep;
 import io.github.coderodde.pathfinding.heuristics.HeuristicFunction;
 import io.github.coderodde.pathfinding.logic.GridCellNeighbourIterable;
 import io.github.coderodde.pathfinding.logic.PathfindingSettings;
@@ -8,6 +9,7 @@ import io.github.coderodde.pathfinding.logic.SearchStatistics;
 import io.github.coderodde.pathfinding.model.GridModel;
 import io.github.coderodde.pathfinding.util.DoublePriorityBinaryHeap;
 import io.github.coderodde.pathfinding.utils.Cell;
+import io.github.coderodde.pathfinding.utils.CellType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,14 +44,18 @@ public final class BFHSFinder implements Finder {
                                SearchState searchState, 
                                SearchStatistics searchStatistics) {
         
-        return findPathImpl(model, 
-                            neighbourIterable, 
-                            pathfindingSettings, 
-                            searchState, 
-                            searchStatistics,
-                            model.getSourceGridCell(),
-                            model.getTargetGridCell(), 
-                            upperBound);
+        try {
+            return findPathImpl(model, 
+                                neighbourIterable, 
+                                pathfindingSettings, 
+                                searchState, 
+                                searchStatistics,
+                                model.getSourceGridCell(),
+                                model.getTargetGridCell(), 
+                                upperBound);
+        } catch (HaltRequestedException ex) {
+            return List.of();
+        }
     }
     
     private List<Cell> findPathImpl(GridModel model,
@@ -85,8 +91,25 @@ public final class BFHSFinder implements Finder {
         int relayLevel = upperBound / 2;
         
         while (!open.get(level).isEmpty() || !open.get(level + 1).isEmpty()) {
-            Cell n = open.get(level).extractTop();
+            if (searchState.haltRequested()) {
+                throw new HaltRequestedException();
+            }
             
+            if (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
+                continue;
+            }
+            
+            Cell n = open.get(level).extractTop();
+            searchStatistics.decrementOpened();
+            
+            if (!n.equals(source) && 
+                !n.equals(target)) {
+                
+                model.setCellType(n, CellType.VISITED);
+            }
+            
+            searchStatistics.incrementVisited();
             closed.get(level).add(n);
             
             Cell solution = expandNode(model, 
@@ -99,7 +122,9 @@ public final class BFHSFinder implements Finder {
                                        closed, 
                                        g,
                                        ancestors, 
-                                       pathfindingSettings);
+                                       pathfindingSettings,
+                                       searchState,
+                                       searchStatistics);
             
             if (solution != null) {
                 List<Cell> path1;
@@ -141,6 +166,26 @@ public final class BFHSFinder implements Finder {
             }
         }
         
+        if (level > 0) {
+            for (Cell cell : open.get(level - 1)) {
+                model.setCellType(cell, CellType.FREE);
+            }
+            
+            open.set(level - 1, null);
+        }
+        
+        if (1 < level && level <= relayLevel || level > relayLevel + 1) {
+            for (Cell cell : closed.get(level - 1)) {
+                model.setCellType(cell, CellType.FREE);
+            }
+            
+            closed.set(level - 1, null);
+        }
+        
+        ++level;
+        open.addLast(new DoublePriorityBinaryHeap<>());
+        closed.addLast(new HashSet<>());
+        
         return List.of();
     }
     
@@ -154,14 +199,27 @@ public final class BFHSFinder implements Finder {
                                    List<Set<Cell>> closed,
                                    Map<Cell, Integer> g,
                                    Map<Cell, Cell> ancestors,
-                                   PathfindingSettings pathfindingSettings) {
+                                   PathfindingSettings pathfindingSettings,
+                                   SearchState searchState,
+                                   SearchStatistics searchStatistics) {
+        
         HeuristicFunction h = pathfindingSettings.getHeuristicFunction();
         neighbourIterable.setStartingCell(n);
         
         Cell source = model.getSourceGridCell();
         Cell target = model.getTargetGridCell();
         
+        expansionLoop:
         for (Cell neighbour : neighbourIterable) {
+            if (searchState.haltRequested()) {
+                throw new HaltRequestedException();
+            }
+            
+            while (searchState.pauseRequested()) {
+                searchSleep(pathfindingSettings);
+                continue expansionLoop;
+            }
+            
             if (g.get(n) + 1 + h.estimate(neighbour, target) > upperBound) {
                 continue;
             }
@@ -190,9 +248,16 @@ public final class BFHSFinder implements Finder {
                 return neighbour;
             }
             
+            if (!neighbour.getCellType().equals(CellType.TARGET)) {
+                model.setCellType(neighbour, CellType.OPENED);
+            }
+            
             open.get(level + 1)
                 .insert(neighbour, 
                         g.get(neighbour) + h.estimate(neighbour, target));
+            
+            searchStatistics.incrementOpened();
+            searchSleep(pathfindingSettings);
         }
         
         return null;

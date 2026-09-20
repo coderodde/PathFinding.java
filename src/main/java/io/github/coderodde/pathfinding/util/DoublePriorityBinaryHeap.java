@@ -2,6 +2,7 @@ package io.github.coderodde.pathfinding.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -16,7 +17,24 @@ import java.util.NoSuchElementException;
  * @version 1.0.0 (Sep 20, 2026)
  * @since 1.0.0 (Sep 20, 2026)
  */
-public final class DoublePriorityBinaryHeap<T> {
+public final class DoublePriorityBinaryHeap<T> implements Iterable<T> {
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<>(){
+            private int index = table.size() - 1;
+            
+            @Override
+            public boolean hasNext() {
+                return index >= 0;
+            }
+
+            @Override
+            public T next() {
+                return table.get(index--).datum;
+            }
+        };
+    }
 
     /**
      * This class implements the binary heap entry.
