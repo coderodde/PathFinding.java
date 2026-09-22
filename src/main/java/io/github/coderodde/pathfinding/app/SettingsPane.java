@@ -607,6 +607,7 @@ public final class SettingsPane extends Pane {
         switch (finder.getClass().getSimpleName()) {
             case "AStarFinder":
             case "BFSFinder":
+            case "BFHSFinder":
             case "BeamSearchFinder":
             case "BeamStackSearchFinder":
             case "BestFirstSearchFinder":

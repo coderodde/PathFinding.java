@@ -127,6 +127,11 @@ public interface Finder {
     }
         
     public static void searchSleep(PathfindingSettings pathfindingSettings) {
+        if (pathfindingSettings.dontSleep()) {
+            // Please don't sleep and return immediately!
+            return;
+        }
+        
         try {
             Thread.sleep(pathfindingSettings.getWaitTime());
         } catch (InterruptedException ex) {

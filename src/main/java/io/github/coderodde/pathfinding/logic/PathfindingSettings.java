@@ -47,13 +47,14 @@ public final class PathfindingSettings {
     private boolean allowDiagonals;
     private boolean dontCrossCorners;
     private boolean bidirectional;
-    private boolean dontSleep = true;
+    private boolean dontSleep = false;
+    private boolean dontColorCells = false;
     private int frequency = FREQUENCIES.getLast();
     private DiagonalWeight diagonalWeight = DiagonalWeight.SQRT2;
     private int beamWidth;
     private Finder finder;
     private double peaStarCutoff = 0.0;
-    private int bfhsUpperBound = Integer.MAX_VALUE;
+    private int bfhsUpperBound = Integer.MAX_VALUE; // TODO: do I need this?
 
     private HeuristicFunction heuristicFunction;
 
@@ -76,6 +77,10 @@ public final class PathfindingSettings {
     public boolean isBidirectional() {
         return bidirectional;
     }
+    
+    public boolean dontColorCells() {
+        return dontColorCells;
+    }
 
     public void setBidirectional(boolean bidirectional) {
         this.bidirectional = bidirectional;
@@ -87,6 +92,10 @@ public final class PathfindingSettings {
     
     public void setDontSleep(boolean dontSleep) {
         this.dontSleep = dontSleep;
+    }
+    
+    public void setDontColorCells(boolean dontColorCells) {
+        this.dontColorCells = dontColorCells;
     }
     
     public int getFrequency() {

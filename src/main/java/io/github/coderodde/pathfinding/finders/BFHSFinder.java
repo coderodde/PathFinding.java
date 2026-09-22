@@ -44,6 +44,29 @@ public final class BFHSFinder implements Finder {
                                SearchState searchState, 
                                SearchStatistics searchStatistics) {
         
+        boolean saveddDontSleep     = pathfindingSettings.dontSleep();
+        boolean savedDontColorCells = pathfindingSettings.dontColorCells();
+        
+        pathfindingSettings.setDontSleep(true);
+        pathfindingSettings.setDontColorCells(true);
+        
+        Finder helperFinder = new AStarFinder();
+        
+        List<Cell> helperPath = helperFinder.findPath(model, 
+                                                      neighbourIterable,
+                                                      pathfindingSettings, 
+                                                      searchState, 
+                                                      searchStatistics);
+        
+        pathfindingSettings.setDontSleep(saveddDontSleep);
+        pathfindingSettings.setDontColorCells(savedDontColorCells);
+        
+        if (helperPath.isEmpty()) {
+            return List.of();
+        }
+        
+        setUpperBound(helperPath.size()); // Set the tightest upper bound.
+        
         try {
             return findPathImpl(model, 
                                 neighbourIterable, 
@@ -111,6 +134,8 @@ public final class BFHSFinder implements Finder {
             
             searchStatistics.incrementVisited();
             closed.get(level).add(n);
+            
+            searchSleep(pathfindingSettings);
             
             Cell solution = expandNode(model, 
                                        neighbourIterable, 
@@ -219,6 +244,8 @@ public final class BFHSFinder implements Finder {
                 searchSleep(pathfindingSettings);
                 continue expansionLoop;
             }
+            
+            searchSleep(pathfindingSettings);
             
             if (g.get(n) + 1 + h.estimate(neighbour, target) > upperBound) {
                 continue;
