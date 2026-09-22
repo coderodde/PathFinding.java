@@ -52,11 +52,16 @@ public final class BFHSFinder implements Finder {
         
         Finder helperFinder = new AStarFinder();
         
-        List<Cell> helperPath = helperFinder.findPath(model, 
-                                                      neighbourIterable,
-                                                      pathfindingSettings, 
-                                                      searchState, 
-                                                      searchStatistics);
+        List<Cell> helperPath = 
+                helperFinder.findPath(model, 
+                    neighbourIterable,
+                    pathfindingSettings, 
+                    new SearchState(),
+                    new SearchStatistics(null,
+                                         null,
+                                         null,
+                                         null)); // Mock the search state and
+                                                 // statistics.
         
         pathfindingSettings.setDontSleep(saveddDontSleep);
         pathfindingSettings.setDontColorCells(savedDontColorCells);
@@ -109,6 +114,8 @@ public final class BFHSFinder implements Finder {
         
         g.put(source, 0);
         ancestors.put(source, null);
+        
+        
         
         int level = 0;
         int relayLevel = upperBound / 2;
