@@ -121,102 +121,105 @@ public final class BFHSFinder implements Finder {
         int relayLevel = upperBound / 2;
         
         while (!open.get(level).isEmpty() || !open.get(level + 1).isEmpty()) {
-            if (searchState.haltRequested()) {
-                throw new HaltRequestedException();
-            }
-            
-            if (searchState.pauseRequested()) {
+            while (!open.get(level).isEmpty()) {
+                
+                if (searchState.haltRequested()) {
+                    throw new HaltRequestedException();
+                }
+
+                if (searchState.pauseRequested()) {
+                    searchSleep(pathfindingSettings);
+                    continue;
+                }
+
+                Cell n = open.get(level).extractTop();
+                searchStatistics.decrementOpened();
+
+                if (!n.equals(source) && 
+                    !n.equals(target)) {
+
+                    model.setCellType(n, CellType.VISITED);
+                }
+
+                searchStatistics.incrementVisited();
+                closed.get(level).add(n);
+
                 searchSleep(pathfindingSettings);
-                continue;
-            }
-            
-            Cell n = open.get(level).extractTop();
-            searchStatistics.decrementOpened();
-            
-            if (!n.equals(source) && 
-                !n.equals(target)) {
-                
-                model.setCellType(n, CellType.VISITED);
-            }
-            
-            searchStatistics.incrementVisited();
-            closed.get(level).add(n);
-            
-            searchSleep(pathfindingSettings);
-            
-            Cell solution = expandNode(model, 
-                                       neighbourIterable, 
-                                       n,
-                                       level,
-                                       relayLevel, 
-                                       upperBound, 
-                                       open,
-                                       closed, 
-                                       g,
-                                       ancestors, 
-                                       pathfindingSettings,
-                                       searchState,
-                                       searchStatistics);
-            
-            if (solution != null) {
-                List<Cell> path1;
-                List<Cell> path2;
-                
-                Cell middle = ancestors.get(solution);
-                
-                if (g.get(middle) == 1) {
-                    path1 = List.of(source, middle);
-                } else {
-                    path1 = findPathImpl(model, 
-                                         neighbourIterable,
-                                         pathfindingSettings, 
-                                         searchState, 
-                                         searchStatistics,
-                                         source,
-                                         middle, 
-                                         g.get(middle));
+
+                Cell solution = expandNode(model, 
+                                           neighbourIterable, 
+                                           n,
+                                           level,
+                                           relayLevel, 
+                                           upperBound, 
+                                           open,
+                                           closed, 
+                                           g,
+                                           ancestors, 
+                                           pathfindingSettings,
+                                           searchState,
+                                           searchStatistics);
+
+                if (solution != null) {
+                    List<Cell> path1;
+                    List<Cell> path2;
+
+                    Cell middle = ancestors.get(solution);
+
+                    if (g.get(middle) == 1) {
+                        path1 = List.of(source, middle);
+                    } else {
+                        path1 = findPathImpl(model, 
+                                             neighbourIterable,
+                                             pathfindingSettings, 
+                                             searchState, 
+                                             searchStatistics,
+                                             source,
+                                             middle, 
+                                             g.get(middle));
+                    }
+
+                    if (g.get(solution) - g.get(middle) == 1) {
+                        path2 = List.of(middle, solution);
+                    } else {
+                        path2 = findPathImpl(model, 
+                                             neighbourIterable,
+                                             pathfindingSettings,
+                                             searchState, 
+                                             searchStatistics,
+                                             middle, 
+                                             solution, 
+                                             g.get(solution) - g.get(middle));
+                    }
+
+                    List<Cell> path  = new ArrayList<>(path1);
+
+                    path.addAll(path2.subList(1, path2.size()));
+
+                    return path;
                 }
-                
-                if (g.get(solution) - g.get(middle) == 1) {
-                    path2 = List.of(middle, solution);
-                } else {
-                    path2 = findPathImpl(model, 
-                                         neighbourIterable,
-                                         pathfindingSettings,
-                                         searchState, 
-                                         searchStatistics,
-                                         middle, 
-                                         solution, 
-                                         g.get(solution) - g.get(middle));
+            }
+            
+            if (level > 0) {
+                for (Cell cell : open.get(level - 1)) {
+                    model.setCellType(cell, CellType.FREE);
                 }
-                
-                List<Cell> path  = new ArrayList<>(path1);
-                
-                path.addAll(path2.subList(1, path2.size()));
-                
-                return path;
+
+                open.set(level - 1, null);
             }
-        }
-        
-        if (level > 0) {
-            for (Cell cell : open.get(level - 1)) {
-                model.setCellType(cell, CellType.FREE);
+
+            if ((1 < level && level <= relayLevel) || level > relayLevel + 1) {
+                for (Cell cell : closed.get(level - 1)) {
+                    model.setCellType(cell, CellType.FREE);
+                }
+
+                closed.set(level - 1, null);
             }
-            
-            open.set(level - 1, null);
+
+            ++level;
+            open.addLast(new DoublePriorityBinaryHeap<>());
+            closed.addLast(new HashSet<>());
         }
-        
-        if (1 < level && level <= relayLevel || level > relayLevel + 1) {
-            for (Cell cell : closed.get(level - 1)) {
-                model.setCellType(cell, CellType.FREE);
-            }
-            
-            closed.set(level - 1, null);
-        }
-        
-        ++level;
-        open.addLast(new DoublePriorityBinaryHeap<>());
-        closed.addLast(new HashSet<>());
         
         return List.of();
     }
