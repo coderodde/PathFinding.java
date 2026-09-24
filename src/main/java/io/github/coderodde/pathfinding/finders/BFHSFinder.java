@@ -112,10 +112,10 @@ public final class BFHSFinder implements Finder {
         
         open.getFirst().insert(source, 0.0);
         
+        searchStatistics.incrementOpened();
+        
         g.put(source, 0);
         ancestors.put(source, null);
-        
-        
         
         int level = 0;
         int relayLevel = upperBound / 2;
@@ -268,7 +268,7 @@ public final class BFHSFinder implements Finder {
                 continue;
             }
             
-            g.put(neighbour, g.get(neighbour) + 1);
+            g.put(neighbour, g.get(n) + 1);
             
             if (level < relayLevel) {
                 ancestors.put(neighbour, source);
