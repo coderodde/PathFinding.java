@@ -139,8 +139,8 @@ public final class BFHSFinder implements Finder {
                 Cell n = open.get(level).extractTop();
                 searchStatistics.decrementOpened();
 
-                if (!n.equals(source) && 
-                    !n.equals(target)) {
+                if (!n.equals(model.getSourceGridCell()) && 
+                    !n.equals(model.getTargetGridCell())) {
 
                     model.setCellType(n, CellType.VISITED);
                 }
