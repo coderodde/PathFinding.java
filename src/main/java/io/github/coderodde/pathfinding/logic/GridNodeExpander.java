@@ -130,11 +130,7 @@ public final class GridNodeExpander {
         
         cell = gridModel.getCell(x, y - 1);
         
-        if (cell.getCellType().equals(CellType.WALL)) {
-            return false;
-        }
-        
-        return true;
+        return !cell.getCellType().equals(CellType.WALL);
     }
     
     public boolean canCrossNorthEast(int x, int y) {
@@ -150,11 +146,7 @@ public final class GridNodeExpander {
         
         cell = gridModel.getCell(x, y - 1);
         
-        if (cell.getCellType().equals(CellType.WALL)) {
-            return false;
-        }
-        
-        return true;
+        return !cell.getCellType().equals(CellType.WALL);
     }
     
     public boolean canCrossSouthWest(int x, int y) {
@@ -170,11 +162,7 @@ public final class GridNodeExpander {
         
         cell = gridModel.getCell(x, y + 1);
         
-        if (cell.getCellType().equals(CellType.WALL)) {
-            return false;
-        }
-        
-        return true;
+        return !cell.getCellType().equals(CellType.WALL);
     }
     
     public boolean canCrossSouthEast(int x, int y) {
@@ -190,10 +178,6 @@ public final class GridNodeExpander {
         
         cell = gridModel.getCell(x, y + 1);
         
-        if (cell.getCellType().equals(CellType.WALL)) {
-            return false;
-        }
-        
-        return true;
+        return !cell.getCellType().equals(CellType.WALL);
     }
 }
