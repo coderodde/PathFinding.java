@@ -73,14 +73,17 @@ public final class BFHSFinder implements Finder {
         setUpperBound(helperPath.size()); // Set the tightest upper bound.
         
         try {
-            return findPathImpl(model, 
-                                neighbourIterable, 
-                                pathfindingSettings, 
-                                searchState, 
-                                searchStatistics,
-                                model.getSourceGridCell(),
-                                model.getTargetGridCell(), 
-                                upperBound);
+            List<Cell> path = findPathImpl(model, 
+                                           neighbourIterable, 
+                                           pathfindingSettings, 
+                                           searchState, 
+                                           searchStatistics,
+                                           model.getSourceGridCell(),
+                                           model.getTargetGridCell(), 
+                                           upperBound,
+                                           0);
+            
+            return path;
         } catch (HaltRequestedException ex) {
             return List.of();
         }
@@ -93,7 +96,8 @@ public final class BFHSFinder implements Finder {
                                     SearchStatistics searchStatistics,
                                     Cell source,
                                     Cell target,
-                                    int upperBound) {
+                                    int upperBound,
+                                    int depth) {
         
         if (source.equals(target)) {
             return List.of(target);
@@ -149,6 +153,8 @@ public final class BFHSFinder implements Finder {
                 Cell solution = expandNode(model, 
                                            neighbourIterable, 
                                            n,
+                                           source, 
+                                           target,
                                            level,
                                            relayLevel, 
                                            upperBound, 
@@ -176,7 +182,8 @@ public final class BFHSFinder implements Finder {
                                              searchStatistics,
                                              source,
                                              middle, 
-                                             g.get(middle));
+                                             g.get(middle),
+                                             depth + 1);
                     }
 
                     if (g.get(solution) - g.get(middle) == 1) {
@@ -189,7 +196,8 @@ public final class BFHSFinder implements Finder {
                                              searchStatistics,
                                              middle, 
                                              solution, 
-                                             g.get(solution) - g.get(middle));
+                                             g.get(solution) - g.get(middle),
+                                             depth + 1);
                     }
 
                     List<Cell> path  = new ArrayList<>(path1);
@@ -227,6 +235,8 @@ public final class BFHSFinder implements Finder {
     private static Cell expandNode(GridModel model,
                                    GridCellNeighbourIterable neighbourIterable,
                                    Cell n,
+                                   Cell source,
+                                   Cell target,
                                    int level,
                                    int relayLevel,
                                    int upperBound,
@@ -240,9 +250,6 @@ public final class BFHSFinder implements Finder {
         
         HeuristicFunction h = pathfindingSettings.getHeuristicFunction();
         neighbourIterable.setStartingCell(n);
-        
-        Cell source = model.getSourceGridCell();
-        Cell target = model.getTargetGridCell();
         
         expansionLoop:
         for (Cell neighbour : neighbourIterable) {
