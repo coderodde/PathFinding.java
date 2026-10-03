@@ -262,8 +262,6 @@ public final class BFHSFinder implements Finder {
                 continue expansionLoop;
             }
             
-            searchSleep(pathfindingSettings);
-            
             if (g.get(n) + 1 + h.estimate(neighbour, target) > upperBound) {
                 continue;
             }
@@ -301,7 +299,6 @@ public final class BFHSFinder implements Finder {
                         g.get(neighbour) + h.estimate(neighbour, target));
             
             searchStatistics.incrementOpened();
-            searchSleep(pathfindingSettings);
         }
         
         return null;
